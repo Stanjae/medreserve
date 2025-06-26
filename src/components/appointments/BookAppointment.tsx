@@ -80,6 +80,9 @@ const BookAppointment = () => {
             type="submit"
           />
         </Flex>
+        <div>
+          <Text c="m-gray" className="  px-[18px] text-[18px] leading-[22.5px]">Showing available doctors on Decmber 21, 2020</Text>
+        </div>
       </Paper>
     </div>
   );
