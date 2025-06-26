@@ -1,0 +1,304 @@
+{
+  "doctors": [
+    {
+      "doctorId": "DRX0000001",
+      "firstName": "John",
+      "lastName": "Smith",
+      "gender": "Male",
+      "email": "john.smith@example.com",
+      "designation": "MD",
+      "specialization": "Cardiology",
+      "imageUrl": "https://example.com/images/john_smith.jpg"
+    },
+    {
+      "doctorId": "DRX0000002",
+      "firstName": "Emily",
+      "lastName": "Johnson",
+      "gender": "Female",
+      "email": "emily.johnson@example.com",
+      "designation": "MBBS",
+      "specialization": "Pediatrics",
+      "imageUrl": "https://example.com/images/emily_johnson.jpg"
+    },
+    {
+      "doctorId": "DRX0000003",
+      "firstName": "Michael",
+      "lastName": "Brown",
+      "gender": "Male",
+      "email": "michael.brown@example.com",
+      "designation": "MD",
+      "specialization": "Neurology",
+      "imageUrl": "https://example.com/images/michael_brown.jpg"
+    },
+    {
+      "doctorId": "DRX0000004",
+      "firstName": "Sarah",
+      "lastName": "Davis",
+      "gender": "Female",
+      "email": "sarah.davis@example.com",
+      "designation": "MD",
+      "specialization": "Dermatology",
+      "imageUrl": "https://example.com/images/sarah_davis.jpg"
+    },
+    {
+      "doctorId": "DRX0000005",
+      "firstName": "David",
+      "lastName": "Wilson",
+      "gender": "Male",
+      "email": "david.wilson@example.com",
+      "designation": "MBBS",
+      "specialization": "Orthopedics",
+      "imageUrl": "https://example.com/images/david_wilson.jpg"
+    },
+    {
+      "doctorId": "DRX0000006",
+      "firstName": "Laura",
+      "lastName": "Moore",
+      "gender": "Female",
+      "email": "laura.moore@example.com",
+      "designation": "MD",
+      "specialization": "Gynecology",
+      "imageUrl": "https://example.com/images/laura_moore.jpg"
+    },
+    {
+      "doctorId": "DRX0000007",
+      "firstName": "James",
+      "lastName": "Taylor",
+      "gender": "Male",
+      "email": "james.taylor@example.com",
+      "designation": "MD",
+      "specialization": "General Surgery",
+      "imageUrl": "https://example.com/images/james_taylor.jpg"
+    },
+    {
+      "doctorId": "DRX0000008",
+      "firstName": "Jessica",
+      "lastName": "Anderson",
+      "gender": "Female",
+      "email": "jessica.anderson@example.com",
+      "designation": "MBBS",
+      "specialization": "Psychiatry",
+      "imageUrl": "https://example.com/images/jessica_anderson.jpg"
+    },
+    {
+      "doctorId": "DRX0000009",
+      "firstName": "Robert",
+      "lastName": "Thomas",
+      "gender": "Male",
+      "email": "robert.thomas@example.com",
+      "designation": "MD",
+      "specialization": "Radiology",
+      "imageUrl": "https://example.com/images/robert_thomas.jpg"
+    },
+    {
+      "doctorId": "DRX0000010",
+      "firstName": "Linda",
+      "lastName": "Jackson",
+      "gender": "Female",
+      "email": "linda.jackson@example.com",
+      "designation": "MD",
+      "specialization": "Endocrinology",
+      "imageUrl": "https://example.com/images/linda_jackson.jpg"
+    },
+    {
+      "doctorId": "DRX0000011",
+      "firstName": "William",
+      "lastName": "White",
+      "gender": "Male",
+      "email": "william.white@example.com",
+      "designation": "MBBS",
+      "specialization": "Anesthesiology",
+      "imageUrl": "https://example.com/images/william_white.jpg"
+    },
+    {
+      "doctorId": "DRX0000012",
+      "firstName": "Barbara",
+      "lastName": "Harris",
+      "gender": "Female",
+      "email": "barbara.harris@example.com",
+      "designation": "MD",
+      "specialization": "Ophthalmology",
+      "imageUrl": "https://example.com/images/barbara_harris.jpg"
+    },
+    {
+      "doctorId": "DRX0000013",
+      "firstName": "Richard",
+      "lastName": "Martin",
+      "gender": "Male",
+      "email": "richard.martin@example.com",
+      "designation": "MD",
+      "specialization": "Urology",
+      "imageUrl": "https://example.com/images/richard_martin.jpg"
+    },
+    {
+      "doctorId": "DRX0000014",
+      "firstName": "Susan",
+      "lastName": "Thompson",
+      "gender": "Female",
+      "email": "susan.thompson@example.com",
+      "designation": "MBBS",
+      "specialization": "Family Medicine",
+      "imageUrl": "https://example.com/images/susan_thompson.jpg"
+    },
+    {
+      "doctorId": "DRX0000015",
+      "firstName": "Charles",
+      "lastName": "Garcia",
+      "gender": "Male",
+      "email": "charles.garcia@example.com",
+      "designation": "MD",
+      "specialization": "Gastroenterology",
+      "imageUrl": "https://example.com/images/charles_garcia.jpg"
+    },
+    {
+      "doctorId": "DRX0000016",
+      "firstName": "Karen",
+      "lastName": "Martinez",
+      "gender": "Female",
+      "email": "karen.martinez@example.com",
+      "designation": "MD",
+      "specialization": "Pulmonology",
+      "imageUrl": "https://example.com/images/karen_martinez.jpg"
+    },
+    {
+      "doctorId": "DRX0000017",
+      "firstName": "Joseph",
+      "lastName": "Robinson",
+      "gender": "Male",
+      "email": "joseph.robinson@example.com",
+      "designation": "MBBS",
+      "specialization": "Pathology",
+      "imageUrl": "https://example.com/images/joseph_robinson.jpg"
+    },
+    {
+      "doctorId": "DRX0000018",
+      "firstName": "Nancy",
+      "lastName": "Clark",
+      "gender": "Female",
+      "email": "nancy.clark@example.com",
+      "designation": "MD",
+      "specialization": "Rheumatology",
+      "imageUrl": "https://example.com/images/nancy_clark.jpg"
+    },
+    {
+      "doctorId": "DRX0000019",
+      "firstName": "Thomas",
+      "lastName": "Rodriguez",
+      "gender": "Male",
+      "email": "thomas.rodriguez@example.com",
+      "designation": "MD",
+      "specialization": "Nephrology",
+      "imageUrl": "https://example.com/images/thomas_rodriguez.jpg"
+    },
+    {
+      "doctorId": "DRX0000020",
+      "firstName": "Lisa",
+      "lastName": "Lewis",
+      "gender": "Female",
+      "email": "lisa.lewis@example.com",
+      "designation": "MBBS",
+      "specialization": "Allergy and Immunology",
+      "imageUrl": "https://example.com/images/lisa_lewis.jpg"
+    },
+    {
+      "doctorId": "DRX0000021",
+      "firstName": "Mark",
+      "lastName": "Lee",
+      "gender": "Male",
+      "email": "mark.lee@example.com",
+      "designation": "MD",
+      "specialization": "Emergency Medicine",
+      "imageUrl": "https://example.com/images/mark_lee.jpg"
+    },
+    {
+      "doctorId": "DRX0000022",
+      "firstName": "Patricia",
+      "lastName": "Walker",
+      "gender": "Female",
+      "email": "patricia.walker@example.com",
+      "designation": "MD",
+      "specialization": "Infectious Disease",
+      "imageUrl": "https://example.com/images/patricia_walker.jpg"
+    },
+    {
+      "doctorId": "DRX0000023",
+      "firstName": "Steven",
+      "lastName": "Hall",
+      "gender": "Male",
+      "email": "steven.hall@example.com",
+      "designation": "MBBS",
+      "specialization": "Physical Medicine and Rehabilitation",
+      "imageUrl": "https://example.com/images/steven_hall.jpg"
+    },
+    {
+      "doctorId": "DRX0000024",
+      "firstName": "Elizabeth",
+      "lastName": "Allen",
+      "gender": "Female",
+      "email": "elizabeth.allen@example.com",
+      "designation": "MD",
+      "specialization": "Nuclear Medicine",
+      "imageUrl": "https://example.com/images/elizabeth_allen.jpg"
+    },
+    {
+      "doctorId": "DRX0000025",
+      "firstName": "Daniel",
+      "lastName": "Young",
+      "gender": "Male",
+      "email": "daniel.young@example.com",
+      "designation": "MD",
+      "specialization": "Otolaryngology",
+      "imageUrl": "https://example.com/images/daniel_young.jpg"
+    },
+    {
+      "doctorId": "DRX0000026",
+      "firstName": "Megan",
+      "lastName": "King",
+      "gender": "Female",
+      "email": "megan.king@example.com",
+      "designation": "MBBS",
+      "specialization": "Neonatology",
+      "imageUrl": "https://example.com/images/megan_king.jpg"
+    },
+    {
+      "doctorId": "DRX0000027",
+      "firstName": "Andrew",
+      "lastName": "Wright",
+      "gender": "Male",
+      "email": "andrew.wright@example.com",
+      "designation": "MD",
+      "specialization": "Psychology",
+      "imageUrl": "https://example.com/images/andrew_wright.jpg"
+    },
+    {
+      "doctorId": "DRX0000028",
+      "firstName": "Angela",
+      "lastName": "Scott",
+      "gender": "Female",
+      "email": "angela.scott@example.com",
+      "designation": "MD",
+      "specialization": "Hematology",
+      "imageUrl": "https://example.com/images/angela_scott.jpg"
+    },
+    {
+      "doctorId": "DRX0000029",
+      "firstName": "Kevin",
+      "lastName": "Green",
+      "gender": "Male",
+      "email": "kevin.green@example.com",
+      "designation": "MBBS",
+      "specialization": "Pathology",
+      "imageUrl": "https://example.com/images/kevin_green.jpg"
+    },
+    {
+      "doctorId": "DRX0000030",
+      "firstName": "Rachel",
+      "lastName": "Adams",
+      "gender": "Female",
+      "email": "rachel.adams@example.com",
+      "designation": "MD",
+      "specialization": "Anesthesiology",
+      "imageUrl": "https://example.com/images/rachel_adams.jpg"
+    }
+  ]
+}

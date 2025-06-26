@@ -1,11 +1,39 @@
-@import "tailwindcss";
+@layer theme, base, mantine, components, utilities;
+
+@import 'tailwindcss';
+
+@import '@mantine/core/styles.layer.css';
+
+@custom-variant dark (&:where([data-mantine-color-scheme=dark], [data-mantine-color-scheme=dark] *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fff;
+  --foreground: #0a0a0a;
+  --primary: #ff594d;      /* orange */
+  --secondary: #283779;    /* default blue */
+  --primary-dark: #b20000; /* lighter orange for dark mode */
+  --secondary-dark: #4c5eba; /* blue for dark mode */
+  --m-gray:#5e616c;
 }
 
-@theme inline {
+
+
+.demo {
+    background: var(--background);
+
+  @mixin dark {
+    background: var(--foreground);
+  }
+}
+
+.customNavlink{
+  &[data-active] {
+      color:var(--primary)
+    };
+}
+
+
+/* @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -17,10 +45,119 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}*/
+
+
+@theme inline{
+  --color-primary: var(--primary);      
+  --color-secondary: var(--secondary);
+  --color-background: var(--background);
+  --color-graytext:var(--m-gray);
+
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Optional: define dark mode variants using postcss-preset-mantine mixins */
+@layer base {
+  @variant dark {
+    @theme inline{
+      --color-primary: var(--primary);
+      --color-secondary: var(--secondary);
+      --color-background: var(--background);
+       --color-graytext:var(--m-gray);
+    }
+  }
 }
+
+
+body {
+  font-family: "Manrope", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.medNavLinks .mantine-NavLink-label{
+  font-size:16px;
+  letter-spacing:0.36px;
+}
+
+.medFooterLinks .mantine-NavLink-label{
+  font-size:20px;
+  line-height: 25px;
+}
+
+/* homepage */
+.hero-image {
+  background-image:url('../../public/hero2.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.banner1{
+  background-image:url('../../public/mother_child3.jpg');
+  background-size: cover;
+  background-position: top right;
+  background-repeat: no-repeat;
+}
+
+/* forms */
+#subscribeFormWrapper .mantine-TextInput-input{
+  background-color: #22306d;
+  border:none !important;
+  color:white !important;
+  border-radius: 35px !important;
+  padding-left: 28px !important;
+  padding-right: 7.5px !important;
+  padding-top: 3.5px !important;
+  padding-bottom: 4px !important;
+  font-size: 16px !important;
+  letter-spacing: 0.32px !important;
+  line-height: 24px !important;
+
+}
+
+.phone-no{
+  background-color:#fff !important;
+border-color:#ced4da;
+border-radius:35px;
+border-style:solid;
+border-width:0.8px;
+font-size:14px;
+line-height:40px;
+padding:0px 14px;
+text-align:left;
+}
+.phone-no input:focus-visible{
+  outline: none !important;
+  border:none !important;
+}
+
+/* auth */
+.authWrapper{
+  background-image:url('../../public/auth.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.authWrapper-fp{
+  background-image:url('../../public/auth2.jpg');
+  background-size: cover;
+  background-position: top;
+  background-repeat: no-repeat;
+}
+
+/*create Profile */
+.create-profile-bg{
+  background-image:url('../../public/auth2.jpg');
+  background-size: cover;
+  background-position: top-center;
+  background-repeat: no-repeat;
+}
+
+.create-profile-bg .card{
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+

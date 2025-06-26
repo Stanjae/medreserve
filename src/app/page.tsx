@@ -1,103 +1,227 @@
-import Image from "next/image";
+'use client'
+import MainNavbar from '@/components/navbar/MainNavbar'
+import NavContent from '@/components/navbar/NavContent'
+import { Box, Button, Center, Flex, Grid, Group, List, Paper, Stack, Text } from '@mantine/core'
+import Image from 'next/image'
+import React from 'react'
+import FirstDoc from '../../public/firstDoc.png'
+import Puzzle from '../../public/puzzle-1.png'
+import Link from 'next/link'
+import { IconActivityHeartbeat, IconChevronCompactRight, IconClock, IconFlipHorizontal } from '@tabler/icons-react'
+import { conditionData, onlinePrograms, pricingPlansData } from '@/lib/api/mockData'
+import Footer from '@/components/footer/Footer'
+import { CAffix } from '@/components/affix/CAffix'
 
-export default function Home() {
+const page = () => {
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main>
+        {/* hero section */}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+        <CAffix/>
+        <MainNavbar/>
+        <section className=' overflow-hidden w-full hero-image min-h-screen'>
+            <NavContent py='30' bg=''/>
+
+            <Box className='max-w-[calc(100%-316px)] mt-[182px] mb-[215px]' mx="auto">
+                <Grid justify="center" align="center" overflow='hidden'>
+                    <Grid.Col className=' space-y-5' span={{base:12, md:6}}>
+                        <h1 className=' mb-6 -ml-0.5 font-extrabold leading-[100px] text-4xl md:text-6xl lg:text-[80px] text-secondary'>
+                            Doctors who<br/> treat with care
+                        </h1>
+ 
+                        <Text size='xl' c="m-gray" mb='40px' className=' leading-[34px]'>
+                            Our skilled doctors have tremendous experience with wide range of diseases to serve the needs of our patients
+                        </Text>
+
+                        <Group>
+                            <Button component={Link} href={'/book-appointment'} color="m-orange" size='xl' variant='filled' className=' hover:bg-secondary duration-500  font-extrabold rounded-full'>
+                                Book an Appointment
+                            </Button>
+
+                            <Button component={Link} href={'/help'} color="m-gray" size='xl' variant='white' className=' hover:text-white hover:bg-primary duration-500  font-extrabold rounded-full'>
+                                Learn More
+                            </Button>
+                        </Group>
+                    </Grid.Col>
+                    <Grid.Col span={{base:12, md:6}}>
+                        <Image width={500} height={500} className=' md:hidden w-full' alt="" src={FirstDoc}/>
+                    </Grid.Col>
+                </Grid>
+            </Box>
+            
+        </section>
+
+        <section className=' bg-secondary py-[95px] relative'>
+            <Image width={500} height={500} className=' absolute right-[180px] -top-28 hidden w-[160px] h-[217px] md:block' alt="" src={Puzzle}/>
+
+            <Box className='max-w-[calc(100%-316px)]' mx="auto">
+                <Grid gutter={{ base: 5, xs: 'md', md: 'xl', xl: 130 }}  overflow='hidden'>
+                    <Grid.Col className=' space-y-5' span={{base:12, md:5}}>
+                        <div className=' flex items-center gap-3'>
+                            <IconClock className=' text-primary size-8'/>
+                            <h4 className=' font-extrabold leading-[28px] text-2xl md:text-2xl lg:text-3xl text-background'>
+                                Working Hours
+                            </h4>
+                        </div>
+                        
+                        <Text fz="18" c="m-gray.4" mb='40px' className=' leading-[34px]'>
+                            Please check below for our working hours throughout the week excluding national holidays.
+                        </Text>
+
+                       <>
+                            <Group justify='space-between'>
+                                <Text fz="18" fw="600" lts="0.36px" lh="30px" c="m-background">Monday - Friday</Text>
+
+                                <Text fz="18" fw="600" lts="0.36px" lh="30px" c="m-background">9am - 10pm</Text>
+                            </Group>
+                            <Group justify='space-between'>
+                                <Text fz="18" fw="600" lts="0.36px" lh="30px" c="m-background">Saturday - Sunday</Text>
+
+                                <Text fz="18" fw="600" lts="0.36px" lh="30px" c="m-background">9am - 6pm</Text>
+                            </Group>
+                       </> 
+
+                        
+                    </Grid.Col>
+
+                     <Grid.Col className=' space-y-5' span={{base:12, md:6}}>
+                        <div className=' flex items-center gap-3'>
+                            <IconActivityHeartbeat className=' text-primary size-8'/>
+                            <h4 className=' font-extrabold leading-[28px] text-2xl md:text-2xl lg:text-3xl text-background'>
+                                Doctor Availability
+                            </h4>
+                        </div>
+                        
+                        <Text fz="18" c="m-gray.4" mb='40px' className=' leading-[34px]'>
+                            Our doctors are available most of the week and if not you can always 
+                            book appointment with other available doctors on our panel of expert doctors.
+                        </Text>
+
+                       <>
+                           <Button component={Link} href={'/auth/sign-in'} color="m-orange" size='md' variant='filled' 
+                           className=' capitalize hover:bg-background hover:text-graytext duration-500  font-extrabold rounded-full'>
+                                Meet our Doctors
+                            </Button>
+                       </> 
+
+                        
+                    </Grid.Col>
+                </Grid>
+            </Box>
+
+        </section>
+
+        <section className=' bg-backgroung py-[132px] relative'>
+
+            <Box className='max-w-[calc(100%-316px)]' mx="auto">
+                <h1 className=' mb-6 -ml-0.5 tracking-tighter font-extrabold text-center leading-[80px] text-2xl md:text-4xl lg:text-6xl text-secondary'>
+                           Quality care for you and<br/> the ones you love.
+                </h1>
+                <Grid className=" mt-12"  gutter={{ xs:30}}  overflow='hidden'>
+                    {conditionData.map((item, index)=>(
+                        <Grid.Col key={index} span={{base:12, md:4}}>
+                            <Paper bg="m-cyan.0" shadow="xs" radius="lg">
+                                <Center px={40} py={35} >
+                                    <Flex align={'center'} gap={17} justify={'center'}>
+                                        <div className=" bg-background p-5 rounded-full text-primary flex justify-center items-center">
+                                            {item.icon}
+                                        </div>
+                                        <h4 className=" text-secondary text-2xl font-extrabold leading-[32px]">{item.title}</h4>
+                                    </Flex>
+                                </Center>
+                                <Box py={41} px={61} className='bg-background border-2 border-cyan-300 rounded-3xl'>
+                                    <List
+                                        spacing="xs" size="sm" center c="m-gray"
+                                        icon={<IconFlipHorizontal size={16} /> }>
+                                            {item.list.map((sub, i)=>(
+                                                <List.Item className=' capitalize duration-500 text-[18px] font-medium leading-[30px] hover:font-bold' key={i}>{sub}</List.Item>
+                                            ))}
+                                    </List>
+                                    <Button className=" mt-8" size='md' rightSection={<IconChevronCompactRight/>} component={Link} href={item.href} variant="white">Learm More</Button>
+                                </Box>
+                            </Paper>
+                        </Grid.Col>
+                    ))}
+                </Grid>
+            </Box>
+
+        </section>
+
+         <section className=' overflow-hidden w-full banner1'>
+            <Box className='max-w-[calc(100%-316px)] mt-[132px] mb-[150px]' mx="auto">
+                <Grid justify="center" align="center" overflow='hidden'>
+                    <Grid.Col className=' space-y-5' span={{base:12, md:7}}>
+                        <h2 className=' mb-6 -ml-0.5 font-extrabold leading-[80px] text-2xl md:text-4xl lg:text-6xl text-secondary'>
+                            We provide quality care<br/> that treats everyone.
+                        </h2>
+ 
+                        <Text size='xl' c="m-gray.0" mb='40px' className=' leading-[34px]'>
+                            Our skilled doctors have tremendous experience with wide range of diseases to serve the needs of our patients
+                        </Text>
+
+                        <Grid className=" mt-12"  gutter={{ xs:30}}  overflow='hidden'>
+                            {pricingPlansData.map((item, index)=>(
+                                <Grid.Col key={index} span={{base:12, md:4}}>
+                                    <Paper bg="m-background" shadow="xs" radius="lg">
+                                        <Center px={40} py={35} >
+                                            <Stack align={'center'} gap={17} justify={'center'}>
+                                                <div className=" bg-cyan-100 p-5 rounded-full text-primary flex justify-center items-center">
+                                                    {item.icon}
+                                                </div>
+                                                <h4 className=" text-center text-secondary leading-[28px] text-xl font-bold ">{item.title}</h4>
+                                            </Stack>
+                                        </Center>
+                                    </Paper>
+                                </Grid.Col>
+                            ))}
+                        </Grid>
+
+                        <Group mt={50}>
+                            <Button component={Link} href={'/book-appointment'} color="m-orange" size='xl' variant='filled' className=' hover:bg-secondary duration-500  font-extrabold rounded-full'>
+                                View Planning Plans
+                            </Button>
+                        </Group>
+                    </Grid.Col>
+                    <Grid.Col span={{base:12, md:5}}>
+                        <Image width={500} height={500} className=' md:hidden w-full' alt="" src={FirstDoc}/>
+                    </Grid.Col>
+                </Grid>
+            </Box>
+            
+        </section>
+
+        <section className=' bg-background py-[132px] relative'>
+
+            <Box className='max-w-[calc(100%-316px)]' mx="auto">
+                <h1 className=' mb-6 -ml-0.5 tracking-tighter font-extrabold text-center leading-[80px] text-2xl md:text-4xl lg:text-6xl text-secondary'>
+                           How does our online <br/> program works?
+                </h1>
+                <Grid className=" mt-12"  gutter={{ xs:30}}  overflow='hidden'>
+                    {onlinePrograms.map((item, index)=>(
+                        <Grid.Col key={index} className=' space-y-2.5' span={{base:12, md:4}}>
+                            <div className='w-full relative'>
+                                <Image width={500} height={500} className='h-[461px] mx-auto z-10  w-[298px]' alt="" src={item.image}/>
+                                <div className=' -mt-[calc(327px+0px)] rounded-4xl bg-secondary -z-50 max-w-[370px] h-[327px]'/>
+                            </div>
+                            
+                            <Box py={41} px={61} bg="m-cyan.1" className=' space-y-4 rounded-4xl'>
+                                <h4 className=" capitalize font-extrabold text-2xl text-secondary">{item.title}</h4>
+                                <Text c="m-gray" fw="500" fz={"18"} lh={"30px"}>{item.description}</Text>
+                                <Button size='md' rightSection={<IconChevronCompactRight/>} component={Link} href={item.href} 
+                                variant="transparent">Learm More</Button>
+                            </Box>
+                            
+                        </Grid.Col>
+                    ))}
+                </Grid>
+            </Box>
+
+        </section>
+        
+        <Footer/>
+    </main>
+  )
 }
+
+export default page
