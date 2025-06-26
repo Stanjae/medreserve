@@ -1,6 +1,7 @@
+@import 'tailwindcss';
 @layer theme, base, components, utilities, mantine;
 @import '@mantine/core/styles.layer.css';
-@import 'tailwindcss';
+
 
 
 
@@ -48,7 +49,7 @@
 }*/
 
 
-@theme inline{
+@theme {
   --color-primary: var(--primary);      
   --color-secondary: var(--secondary);
   --color-background: var(--background);
