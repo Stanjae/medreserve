@@ -218,7 +218,7 @@ export default function DashboardLayout({
                 >
                   {item.sub?.map((lol, opp) => (
                     <NavLink
-                      active={lol.href == 'index' ? pathname.endsWith(item.href) : pathname.endsWith(lol.href)}
+                      active={lol.href == 'index' ? pathname.endsWith(item.href) : pathname.includes(lol.href)}
                       label={lol.label}
                       component={Link}
                       key={opp}

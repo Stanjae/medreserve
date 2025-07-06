@@ -5,6 +5,8 @@ import {
   CreatePatientProfileParams,
   ClientRegistrationParams,
   PatientLoginParams,
+  CreateDoctorProfileParams,
+  CreateAppointmentParams2,
 } from "@/types/actions.types";
 import { ROLES } from "@/types/store";
 import { cookies } from "next/headers";
@@ -23,6 +25,7 @@ export async function checkAuthStatus() {
       role: response?.labels[0],
       emailVerified: response?.emailVerification,
       medId: response?.labels[0] == "doctor" ? response?.prefs?.medId : null,
+      databaseId: response?.prefs?.databaseId
     };
   } catch (error) {
     console.error("User is not authenticated:", error);
@@ -134,13 +137,69 @@ export async function createPatientAction(data: CreatePatientProfileParams) {
   try {
     const { database, users } = await createAdminClient();
     const uniqueID = ID.unique();
-    await database.createDocument(
-      process.env.NEXT_APPWRITE_DATABASE_USERS_ID!,
+    const a = await database.createDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PATIENT_ID!,
       uniqueID, // documentId
       { ...data }
     );
     await users.updateEmailVerification(data?.userId as string, true);
+    await users.updatePrefs(data?.userId as string, { databaseId: a.$id });
+    return {
+      code: 200,
+      status: "success",
+      message: "Profile created successfully",
+    };
+  } catch (err) {
+    console.log(err);
+    return { code: 400, status: "error", message: `${err}` };
+  }
+}
+
+export async function createDoctorAction(data: CreateDoctorProfileParams) {
+  try {
+    const {
+      weekdayEndTime,
+      weekdayStartTime,
+      weekendEndTime,
+      weekendStartTime,
+      workSchedule,
+      ...rest
+    } = data;
+    const { database, users } = await createAdminClient();
+    const uniqueID = ID.unique();
+    const uniqueID2 = ID.unique();
+    const response = await database.createDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_ID!,
+      uniqueID, // documentId
+      { ...rest }
+    );
+    await users.updateEmailVerification(data?.userId as string, true);
+    await users.updatePrefs(data?.userId as string, { databaseId: response.$id });
+
+    const response2 = await database.createDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_AVAILABILITY_ID!,
+      uniqueID2, // documentId
+      {
+        weekdayEndTime,
+        weekdayStartTime,
+        weekendEndTime,
+        weekendStartTime,
+        workSchedule,
+        doctorId: response.$id,
+      }
+    );
+
+    await database.updateDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_ID!,
+      uniqueID, // documentId
+      {
+        doctorAvailability: response2.$id,
+      }
+    );
     return {
       code: 200,
       status: "success",
@@ -183,5 +242,69 @@ export async function resetPasswordAction(userId: string, password: string) {
   } catch (err) {
     console.log(err);
     return { code: 400, status: "error", message: "Failed to reset password" };
+  }
+}
+
+/**
+ * Create an Appoinment to see a doctor
+ *
+ * A reusable server action that creates a booking for the patient.
+ *
+ * Props:
+ * - items: An object of items. Each item must have a unique `id` property.
+ *
+ * Usage:
+ * Pass an array of objects and specify how to render each item.
+ * This component ensures type safety using TypeScript generics.
+ */
+export async function createAppointmentAction(data: CreateAppointmentParams2) {
+  try {
+    const { database } = await createAdminClient();
+    const uniqueID = ID.unique();
+    await database.createDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      uniqueID, // documentId
+      { ...data }
+    );
+    return {
+      code: 201,
+      status: "success",
+      message: "Appointment created successfully",
+    };
+  } catch (err) {
+    console.log(err);
+    return { code: 500, status: "error", message: `${err}` };
+  }
+};
+
+/**
+ * cancel an Appoinment to see a doctor
+ *
+ * A reusable server action that deletes a booking for the patient.
+ *
+ * Props:
+ * - items: An object of items. Each item must have a unique `id` property.
+ *
+ * Usage:
+ * Pass an array of objects and specify how to render each item.
+ * This component ensures type safety using TypeScript generics.
+ */
+export async function deleteAppointmentAction(uniqueID: string) {
+  try {
+    const { database } = await createAdminClient();
+    await database.deleteDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      uniqueID, // documentID
+    );
+    return {
+      code: 201,
+      status: "success",
+      message: "Appointment cancelled successfully",
+    };
+  } catch (err) {
+    console.log(err);
+    return { code: 500, status: "error", message: `${err}` };
   }
 }

@@ -1,8 +1,13 @@
-import { ButtonProps, ComboboxData, CSSProperties } from "@mantine/core";
+import {
+  ButtonProps,
+  NumberInputProps,
+  SelectProps,
+} from "@mantine/core";
 import { DateInputStylesNames, TimePickerProps } from "@mantine/dates";
 
-export type INPUTFORMPROPS =
-  | {
+
+export type INPUTFORMPROPS = 
+   {
       label: string;
       type: "text";
       size?: "xs" | "sm" | "md" | "lg" | "xl";
@@ -16,7 +21,6 @@ export type INPUTFORMPROPS =
       error?: React.ReactNode;
       leftSection?: React.ReactNode;
       radius?: string | number;
-      rightSection?: React.ReactNode;
       withAsterisk?: boolean;
       key?: React.Key | null | undefined;
       onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -61,23 +65,12 @@ export type INPUTFORMPROPS =
       disabled?: boolean;
       error?: React.ReactNode;
       key?: React.Key | null | undefined;
-      onChange: () => void;
+      onChange: () => void; // Consider adding event param if needed
     }
-  | {
-      label: string;
-      placeholder?: string;
-      className?: string;
+  | ({
       type: "select";
-      size?: "xs" | "sm" | "md" | "lg" | "xl";
-      required?: boolean;
-      disabled?: boolean;
-      error?: React.ReactNode;
-      data: ComboboxData;
-      radius?: string | number;
-      key?: React.Key | null | undefined;
-      onChange: () => void;
-    }
-  | {
+    } & SelectProps)
+  | ({
       label?: string;
       placeholder?: string;
       className?: string;
@@ -92,9 +85,9 @@ export type INPUTFORMPROPS =
         | undefined;
       key?: React.Key | null | undefined;
       valueFormat?: "YYYY MMMM DD" | "YYYY-MM-DD" | "YYYY/MM/DD" | "yyyy-mm-dd";
-      onChange?: () => void;
-      styles?: Partial<Record<DateInputStylesNames, CSSProperties>>;
-    }
+      onChange?: () => void; // Consider adding event param if needed
+      styles?: Partial<Record<DateInputStylesNames, React.CSSProperties>>;
+    } & DateInputProps)
   | {
       label: string;
       type: "textarea";
@@ -119,9 +112,22 @@ export type INPUTFORMPROPS =
     }
   | ({
       type: "timepicker";
-    } & TimePickerProps);
+    } & TimePickerProps)
+  | ({ type: "number" } & NumberInputProps);
 
-export type CUSTOMSUBMITBTNPROPS = ButtonProps &{
-    text: string;
-    type: "submit" | "button" | "reset";
-}
+
+export type CUSTOMSUBMITBTNPROPS = ButtonProps & {
+  text: string;
+  type?: "submit" | "button" | "reset";
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+};
+
+export type GETADDBYPARAMS =
+  | "day"
+  | "week"
+  | "month"
+  | "year"
+  | "hour"
+  | "minute"
+  | "second"
+  | "millisecond";

@@ -38,6 +38,7 @@ export type AuthCredentials = {
   role: ROLES | string;
   emailVerified: boolean;
   medId: string | undefined | null;
+  databaseId?: string | undefined | null;
 };
 
 //export type DoctorCredentials = AuthCredentials & {medId?: string | undefined};

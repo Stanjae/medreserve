@@ -1,63 +1,136 @@
 "use client";
-import { Flex, MultiSelect, Paper, Text } from "@mantine/core";
-import React, { useState } from "react";
+import { ActionIcon, Box, Divider, Flex, Text } from "@mantine/core";
+import React, { useEffect, useState } from "react";
 import CustomFilters from "../filters/CustomFilters";
 import { doctorCategories } from "@/constants";
 import CustomInput from "../inputs/CustomInput";
 import SubmitBtn from "../CButton/SubmitBtn";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { IconSearch, IconX } from "@tabler/icons-react";
+import dayjs from "dayjs";
+import { formatDate } from "@/utils/utilsFn";
 
 const BookAppointment = () => {
-  const [searchValue, setSearchValue] = useState("");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
 
-  console.log("gyum: ", searchValue);
+  // Controlled form state
+  const [specialty, setSpecialty] = useState<string | null>(null);
+  const [capacity, setCapacity] = useState<string | null>("");
+  const [date, setDate] = useState<string>("");
+
+  // Sync state with URL params on mount or when params change
+  useEffect(() => {
+    setSpecialty(searchParams.get("specialty") || null);
+    setCapacity(searchParams.get("capacity") || null);
+    setDate(searchParams.get("date") || "");
+  }, [searchParams]);
+
+  // Build URL params from state
+  const buildParams = () => {
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    if (specialty) params.set("specialty", specialty);
+    if (capacity) params.set("capacity", capacity);
+    if (date) params.set("date", date);
+    return params;
+  };
+
+  function handleSearch() {
+    const params = buildParams();
+    router.replace(`${pathname}?${params.toString()}`);
+  }
+
+  function clearSearch(key: string) {
+    if (key === "specialty") setSpecialty('');
+    if (key === "capacity") setCapacity("");
+    if (key === "date") setDate("");
+    // Remove from URL
+    const params = buildParams();
+    params.delete(key);
+    router.replace(`${pathname}?${params.toString()}`);
+  }
+
+  function clearAllSearch() {
+    setSpecialty(null);
+    setCapacity(null);
+    setDate("");
+    router.replace(`${pathname}`);
+  }
   return (
-    <div suppressHydrationWarning>
-      <Paper p={20} shadow="md" radius={"md"}>
-        <Text
-          fz={"40px"}
-          lh={"45px"}
-          fw={700}
-          c="m-blue"
-          mb="30px"
-          className=""
-        >
-          Select a Doctor
-        </Text>
-        <Flex gap={10}>
-          <CustomFilters label={"Showing Doctors in"}>
-            <MultiSelect
-              size="lg"
-              searchable
-              searchValue={searchValue}
-              clearable
-              maxValues={2}
-              onSearchChange={setSearchValue}
-              placeholder="Pick Doctor Speciality"
-              data={doctorCategories}
-              nothingFoundMessage="No Search Results found..."
-              styles={{
-                input: {
-                  border: "1px solid cyan",
-                },
-              }}
-              radius={"xl"}
-            />
-          </CustomFilters>
+    <Box>
+      <Text fz={"38px"} lh={"43px"} fw={700} c="m-blue" mb="30px" >
+        Select a Doctor
+      </Text>
+      <Flex direction={{ base: "column", md: "row" }} align={"center"} gap={10}>
+        <CustomFilters label={"Speciality in"}>
+          <CustomInput
+            type="select"
+            size="lg"
+            searchable
+            value={specialty}
+            onChange={setSpecialty}
+            onClear={() => {
+              clearSearch("specialty");
+            }}
+            clearable
+            placeholder="Pick Doctor Speciality"
+            data={doctorCategories}
+            nothingFoundMessage="No Search Results found..."
+            styles={{
+              root: { width: "100%" },
+              input: {
+                border: "1px solid cyan",
+              },
+            }}
+            radius={"xl"}
+          />
+        </CustomFilters>
 
-          <CustomFilters label={"On"}>
-            <CustomInput
-              type="datepicker"
-              size="lg"
-              styles={{
-                input: {
-                  border: "1px solid cyan",
-                },
-              }}
-              radius={"xl"}
-            />
-          </CustomFilters>
+        <CustomFilters label={"for"}>
+          <CustomInput
+            type="select"
+            size="lg"
+            value={capacity}
+            onChange={setCapacity}
+            placeholder="Capacity of persons"
+            clearable
+            onClear={() => {
+              clearSearch("capacity");
+            }}
+            styles={{
+              root: { width: "130px" },
+              input: {
+                border: "1px solid cyan",
+              },
+            }}
+            radius={"xl"}
+            data={[
+              { label: "1 Person", value: "1" },
+              { label: "2 People", value: "2" },
+            ]}
+          />
+        </CustomFilters>
 
-          <CustomFilters label={"At"}>
+        <CustomFilters label={"On"}>
+          <CustomInput
+            type="datepicker"
+            size="lg"
+            value={date}
+            onChange={setDate}
+            styles={{
+              root: {},
+              input: {
+                border: "1px solid cyan",
+              },
+            }}
+            radius={"xl"}
+          />
+        </CustomFilters>
+
+        {/* <CustomFilters label={"At"}>
             <CustomInput
               type="timepicker"
               min="09:00"
@@ -70,21 +143,41 @@ const BookAppointment = () => {
               }}
               radius={"xl"}
             />
-          </CustomFilters>
-
-          <SubmitBtn
-            radius={"xl"}
+          </CustomFilters> */}
+        <Divider orientation="vertical" />
+        {specialty || capacity || date ? (
+          <ActionIcon
+            onClick={() => clearAllSearch()}
             size="lg"
-            color="m-blue"
-            text={"Book Appointment"}
-            type="submit"
-          />
-        </Flex>
-        <div>
-          <Text c="m-gray" className="  px-[18px] text-[18px] leading-[22.5px]">Showing available doctors on Decmber 21, 2020</Text>
-        </div>
-      </Paper>
-    </div>
+            variant="outline"
+            aria-label="Settings"
+          >
+            <IconX />
+          </ActionIcon>
+        ) : null}
+        <SubmitBtn
+          radius={"xl"}
+          leftSection={<IconSearch />}
+          size="lg"
+          color="m-blue"
+          text={"Appointments"}
+          type="button"
+          onClick={handleSearch}
+        />
+      </Flex>
+      <div className=" my-[36] px-[18px]">
+        <Text c="m-gray" className=" font-medium text-[17px] leading-[22.5px]">
+          Showing available doctors On{" "}
+          <Text
+            className="text-[17px] font-bold"
+            component="span"
+            c="m-blue"
+          >
+            {formatDate(date || dayjs().format("YYYY-MM-DD"))}
+          </Text>
+        </Text>
+      </div>
+    </Box>
   );
 };
 

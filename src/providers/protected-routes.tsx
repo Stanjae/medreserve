@@ -12,7 +12,7 @@ const ProtectedRoutes = ({
   auth,
 }: {
   children: React.ReactNode;
-  auth: AuthCredentials;
+  auth: AuthCredentials | null;
 }) => {
   const pathname = usePathname();
   const router = useRouter();
@@ -33,13 +33,13 @@ const ProtectedRoutes = ({
         setAuthCredentials(auth);
         if (
           userRoles.some((item) => pathname.includes(item)) &&
-          !pathname.includes(auth.role)
+          !pathname.includes(auth?.role)
         ) {
           router.back();
         }
 
         if (pathname.includes("auth")) {
-          router.push(`/patient/${auth.userId}/dashboard`);
+          router.push(`/${auth?.role}/${auth?.userId}/dashboard`);
         }
       }
     };

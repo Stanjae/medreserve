@@ -1,6 +1,8 @@
-@import 'tailwindcss';
+/* @import 'tailwindcss';
+
+@import '@mantine/core/styles.layer.css'; */
+@import "tailwind-preset-mantine";
 @layer theme, base, components, utilities, mantine;
-@import '@mantine/core/styles.layer.css';
 
 
 
@@ -49,7 +51,7 @@
 }*/
 
 
-@theme {
+@theme inline{
   --color-primary: var(--primary);      
   --color-secondary: var(--secondary);
   --color-background: var(--background);
@@ -162,3 +164,6 @@ text-align:left;
     -webkit-backdrop-filter: blur(16px) saturate(180%);
 }
 
+.inputFul{
+  width:100% !important;
+}

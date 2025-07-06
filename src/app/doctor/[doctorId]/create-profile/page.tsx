@@ -1,19 +1,19 @@
-'use client'
-import useLogout from '@/hooks/useLogout';
-import { useMedStore } from '@/providers/med-provider';
-import { Button } from '@mantine/core';
-import React from 'react'
+import CreateDoctorProfileForm from "@/components/forms/CreateDoctorProfileForm";
+import { stateOptions } from "@/lib/queryclient/query-actions";
+import { getQueryClient } from "@/lib/queryclient/query-config";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 const Page = () => {
-  const { credentials } = useMedStore((state) => state);
-  const {logoutPatient} = useLogout()
+  const queryClient = getQueryClient();
 
-  console.log("credentials:", credentials)
+  void queryClient.prefetchQuery(stateOptions);
   return (
-    <div>create profile
-      <Button onClick={logoutPatient}>logout</Button>
-    </div>
-  )
-}
+    <main className="h-screen flex justify-center items-center create-profile-bg">
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <CreateDoctorProfileForm />
+      </HydrationBoundary>
+    </main>
+  );
+};
 
-export default Page
+export default Page;
