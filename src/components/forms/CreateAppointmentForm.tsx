@@ -201,7 +201,7 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
                 toast.error("You cannot book an appointment in the past.");
                 return;
               }
-              createAppointment.mutateAsync(values);
+              await createAppointment.mutateAsync(values);
             })}
           >
             <Grid gutter={{ base: 10, sm: 30 }}>

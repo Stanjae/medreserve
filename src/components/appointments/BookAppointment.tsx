@@ -20,6 +20,7 @@ const BookAppointment = () => {
   const [specialty, setSpecialty] = useState<string | null>(null);
   const [capacity, setCapacity] = useState<string | null>("");
   const [date, setDate] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   // Sync state with URL params on mount or when params change
   useEffect(() => {
@@ -39,8 +40,10 @@ const BookAppointment = () => {
   };
 
   function handleSearch() {
+    setLoading(true);
     const params = buildParams();
     router.replace(`${pathname}?${params.toString()}`);
+    setLoading(false);
   }
 
   function clearSearch(key: string) {
@@ -59,9 +62,10 @@ const BookAppointment = () => {
     setDate("");
     router.replace(`${pathname}`);
   }
+
   return (
     <Box>
-      <Text fz={"38px"} lh={"43px"} fw={700} c="m-blue" mb="30px" >
+      <Text fz={"38px"} lh={"43px"} fw={700} c="m-blue" mb="30px">
         Select a Doctor
       </Text>
       <Flex direction={{ base: "column", md: "row" }} align={"center"} gap={10}>
@@ -129,21 +133,6 @@ const BookAppointment = () => {
             radius={"xl"}
           />
         </CustomFilters>
-
-        {/* <CustomFilters label={"At"}>
-            <CustomInput
-              type="timepicker"
-              min="09:00"
-              max="18:00"
-              size="lg"
-              styles={{
-                input: {
-                  border: "1px solid cyan",
-                },
-              }}
-              radius={"xl"}
-            />
-          </CustomFilters> */}
         <Divider orientation="vertical" />
         {specialty || capacity || date ? (
           <ActionIcon
@@ -161,6 +150,7 @@ const BookAppointment = () => {
           size="lg"
           color="m-blue"
           text={"Appointments"}
+          loading={loading}
           type="button"
           onClick={handleSearch}
         />
@@ -168,11 +158,7 @@ const BookAppointment = () => {
       <div className=" my-[36] px-[18px]">
         <Text c="m-gray" className=" font-medium text-[17px] leading-[22.5px]">
           Showing available doctors On{" "}
-          <Text
-            className="text-[17px] font-bold"
-            component="span"
-            c="m-blue"
-          >
+          <Text className="text-[17px] font-bold" component="span" c="m-blue">
             {formatDate(date || dayjs().format("YYYY-MM-DD"))}
           </Text>
         </Text>

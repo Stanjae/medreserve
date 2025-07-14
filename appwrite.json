@@ -275,6 +275,14 @@
                     "array": false,
                     "size": 50,
                     "default": null
+                },
+                {
+                    "key": "rating",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 10,
+                    "default": null
                 }
             ],
             "indexes": [
@@ -284,6 +292,28 @@
                     "status": "available",
                     "attributes": [
                         "medId"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "index_2",
+                    "type": "key",
+                    "status": "available",
+                    "attributes": [
+                        "userId"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "index_3",
+                    "type": "key",
+                    "status": "available",
+                    "attributes": [
+                        "$id"
                     ],
                     "orders": [
                         "ASC"
@@ -534,7 +564,100 @@
             "name": "appointment",
             "enabled": true,
             "documentSecurity": false,
-            "attributes": [],
+            "attributes": [
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 20,
+                    "default": null
+                },
+                {
+                    "key": "doctorId",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "684c07260032c48b6e8b",
+                    "relationType": "manyToOne",
+                    "twoWay": false,
+                    "twoWayKey": "68644cec0014a68d8359",
+                    "onDelete": "setNull",
+                    "side": "parent"
+                },
+                {
+                    "key": "patientId",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "684c073e003c5a92e377",
+                    "relationType": "manyToOne",
+                    "twoWay": false,
+                    "twoWayKey": "68644d630009499a0ea7",
+                    "onDelete": "setNull",
+                    "side": "parent"
+                },
+                {
+                    "key": "bookingDate",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 30,
+                    "default": null
+                },
+                {
+                    "key": "startTime",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 30,
+                    "default": null
+                },
+                {
+                    "key": "endTime",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 30,
+                    "default": null
+                },
+                {
+                    "key": "notes",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                },
+                {
+                    "key": "paymentId",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "684c0782002fe313672c",
+                    "relationType": "oneToOne",
+                    "twoWay": true,
+                    "twoWayKey": "appointment",
+                    "onDelete": "cascade",
+                    "side": "parent"
+                },
+                {
+                    "key": "capacity",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 1,
+                    "max": 2,
+                    "default": null
+                },
+                {
+                    "key": "didPatientSeeDoctor",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
             "indexes": []
         },
         {
@@ -544,8 +667,106 @@
             "name": "payment",
             "enabled": true,
             "documentSecurity": false,
-            "attributes": [],
-            "indexes": []
+            "attributes": [
+                {
+                    "key": "metaData",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 5000,
+                    "default": null
+                },
+                {
+                    "key": "appointment",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "684c074e00127f4ed323",
+                    "relationType": "oneToOne",
+                    "twoWay": true,
+                    "twoWayKey": "paymentId",
+                    "onDelete": "cascade",
+                    "side": "child"
+                },
+                {
+                    "key": "amount",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "reference",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 30,
+                    "default": null
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 10,
+                    "default": null
+                },
+                {
+                    "key": "patientId",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "684c073e003c5a92e377",
+                    "relationType": "manyToOne",
+                    "twoWay": false,
+                    "twoWayKey": "686bf542003d33bbb3c6",
+                    "onDelete": "setNull",
+                    "side": "parent"
+                },
+                {
+                    "key": "doctorId",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "684c07260032c48b6e8b",
+                    "relationType": "manyToOne",
+                    "twoWay": false,
+                    "twoWayKey": "686bf571000fddb491ee",
+                    "onDelete": "setNull",
+                    "side": "parent"
+                },
+                {
+                    "key": "authorization",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 5000,
+                    "default": null
+                },
+                {
+                    "key": "paidOn",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 40,
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "index_1",
+                    "type": "unique",
+                    "status": "available",
+                    "attributes": [
+                        "reference"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
         },
         {
             "$id": "68605017000e57848f0f",

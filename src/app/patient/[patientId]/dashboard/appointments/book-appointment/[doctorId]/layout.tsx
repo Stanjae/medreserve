@@ -24,7 +24,7 @@ const Bookinglayout = async ({
             <Image
               width={370}
               height={407}
-              className=" rounded-xl w-full h-[407px]"
+              className=" object-cover rounded-xl w-full h-[407px]"
               src={response?.profilePicture}
               alt="doctor-profile-picture"
             />

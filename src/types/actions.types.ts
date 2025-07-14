@@ -1,5 +1,6 @@
-import { CreateBookingSchema } from "@/lib/schema/zod";
+import { CreateBookingSchema, PaymentFormSchema } from "@/lib/schema/zod";
 import { z } from "zod";
+import { Payment } from "../../types/appwrite";
 
 export type ClientRegistrationParams = {
   username: string;
@@ -87,3 +88,27 @@ export type CreateAppointMentParams = {
 };
 
 export type CreateAppointmentParams2 = z.infer<typeof CreateBookingSchema>;
+
+export type PaymentFormParams = z.infer<typeof PaymentFormSchema>;
+
+
+export type getUserAppointmentsResponse = {
+  project: {
+    doctorName: string;
+    id: string;
+    bookingDate: string;
+    startTime: string;
+    endTime: string;
+    timeFramestatus: string;
+    paymentStatus: "pending" | "approved" | "declined";
+    createdAt: string;
+    specialization: string;
+    profilePicture: string;
+    rating: string[];
+    patientUserId: string;
+    doctorUserId: string;
+    slotId: string;
+    paymentId: Payment
+  }[];
+  total: number;
+};

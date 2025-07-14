@@ -1,4 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
+import { getPatientAppointmentTable } from "../actions/getActions";
+import { checkDateTimeDifferenceFromNow } from "@/utils/utilsFn";
 
 export const stateOptions = queryOptions({
   queryKey: ["nga-states"],
@@ -17,4 +19,13 @@ export const lgaOptions = async (state: string | undefined) => {
   return json || [];
 };
 
+export const getUserAppointments = (patientId: string) =>
+  queryOptions({
+    queryKey: ["patient-appointments", patientId],
+    queryFn: async () => await getPatientAppointmentTable(patientId),
+    select: (data) => {
+      const result = data ?.project?.filter((item) => (checkDateTimeDifferenceFromNow(item.createdAt) == 0 || item.paymentStatus != "pending"));
+      return { project: result, total: result?.length };
+    },
+  });
 

@@ -5,8 +5,8 @@ import React from 'react'
 
 const headerData = [
     {slug:'step-1',title:'Make Reservation'},
-    { slug: 'step-2', title: 'Book Appointment' },
-    { slug: 'step-3', title: 'Make Payment' },
+    { slug: 'step-2', title: 'Pay and Finish' },
+    { slug: 'step-3', title: 'Booking Confirmed' },
 ]
 const CustomHeaders = () => {
     const pathname = usePathname();

@@ -5,8 +5,11 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { GETADDBYPARAMS } from "@/types";
 import calendar from "dayjs/plugin/calendar";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
-
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 dayjs.extend(calendar);
 
@@ -108,7 +111,7 @@ export function formatDate(dateString: string): string {
 
 export function getAMPM(timeString: string): string {
   // Prepend a default date to the time string
-  const dateTimeString = `1970-01-01 ${timeString}`;
+  const dateTimeString = `2000-01-01 ${timeString}`;
 
   // Parse with format including date and time
   const parsed = dayjs(dateTimeString, "YYYY-MM-DD HH:mm:ss");
@@ -129,12 +132,12 @@ export function addOrSubtractTime(
   const parsed = dayjs(dateTimeString, "YYYY-MM-DD HH:mm:ss");
   if (type == "add") {
     const a = parsed.add(incrementBy, unit);
-    return a.format(timeFormat == "h-m-s" ? "h:mm:ss" : "h:mm A");
+    return a.format(timeFormat == "h-m-s" ? "HH:mm:ss" : "HH:mm A");
   }
 
   return parsed
     .subtract(incrementBy, unit)
-    .format(timeFormat == "h-m-s" ? "h:mm:ss" : "h:mm A");
+    .format(timeFormat == "h-m-s" ? "HH:mm:ss" : "HH:mm A");
 }
 
 export function isbBeforeDateTime(dateString: string): boolean {
@@ -155,4 +158,10 @@ export function getCalendarDateTime(dateTimeString: string) {
     lastWeek: "[Last] dddd", // Last week ( Last Monday at 2:30 AM )
     sameElse: "DD/MM/YYYY", // Everything else ( 7/10/2011 )
   });
+}
+
+export function getAMPWAT(timeString: string) {
+  const watTime = dayjs.utc(timeString).tz("Africa/Lagos").subtract(1, "hour");
+  const formatted = watTime.format("hA [WAT]"); // "4PM WAT"
+  return formatted;
 }

@@ -1,6 +1,8 @@
 "use server";
 import { createAdminClient } from "@/appwrite/appwrite";
 import { Query } from "node-appwrite";
+import { Payment} from "../../../types/appwrite";
+import { getUserAppointmentsResponse } from "@/types/actions.types";
 
 export const getAvailableDoctorsFilterAction = async (
   specialty: string | null | undefined,
@@ -109,19 +111,71 @@ export async function checkIfUserBookedASlot(
       ]),
     ]
   );
-  if (response.total == 0) return null
+  if (response.total == 0) return null;
   return response.documents;
 }
 
-/* export async function getPatientId() {
-        const { database } = await createAdminClient();
-        const response = await database.getDocument(
-          process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-          process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PATIENT_ID!,
-            [
-              Query.equal('$id', userId)
-          ]
-        );
-        if (!response) throw new Error("No patient found");
-        return response;
-    } */
+export async function fetchCurrentBookingSlot(slotId: string) {
+  const { database } = await createAdminClient();
+  const response = await database.getDocument(
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+    slotId
+  );
+  if (!response) throw new Error("No patient found");
+  return {
+    doctorSpecialization: response?.doctorId?.specialization,
+    patientFullname: response?.patientId.fullname,
+    address: response?.patientId.address,
+    phone: response?.patientId.phone,
+  };
+}
+
+export async function getPatientBookingReference(
+  paymentreferenceId: string
+): Promise<Payment | null> {
+  const { database } = await createAdminClient();
+  const response = await database.listDocuments(
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PAYMENT_ID!,
+    [Query.equal("reference", paymentreferenceId)]
+  );
+  if (response.total == 0) return null;
+  return response.documents[0];
+}
+
+/* Tables */
+
+export async function getPatientAppointmentTable(
+  patientId: string
+): Promise<getUserAppointmentsResponse> {
+  const { database } = await createAdminClient();
+  const response = await database.listDocuments(
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+    [Query.equal("patientId", patientId), Query.orderDesc("$createdAt")]
+  );
+  if (response.total == 0 || !response) return { project: [], total: 0 };
+  const newResponse = response.documents.map((slot) => ({
+    doctorName: slot.doctorId.fullname,
+    id: slot.$id,
+    bookingDate: slot.bookingDate,
+    startTime: slot.startTime,
+    endTime: slot.endTime,
+    timeFramestatus: slot.timeFramestatus,
+    paymentStatus: slot.status,
+    createdAt: slot.$createdAt,
+    specialization: slot.doctorId.specialization,
+    profilePicture: slot.doctorId.profilePicture,
+    rating: slot.doctorId.rating,
+    bio: slot.doctorId.bio,
+    patientUserId: slot.patientId.userId,
+    doctorUserId: slot.doctorId.$id,
+    slotId: slot.$id,
+    paymentId: slot.paymentId,
+  }));
+  return {
+    project: newResponse,
+    total: response.total,
+  };
+}

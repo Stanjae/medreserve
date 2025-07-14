@@ -1,9 +1,13 @@
-import React from 'react'
+import AppointMentsTable from "@/components/dataTable/AppointMentsTable";
+import { Paper } from "@mantine/core";
+import React from "react";
 
 const page = () => {
   return (
-    <div>Book Appointment</div>
-  )
-}
+    <Paper p={20} className=" min-h-screen" shadow="md" radius={"md"}>
+      <AppointMentsTable />
+    </Paper>
+  );
+};
 
-export default page
+export default page;

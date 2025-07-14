@@ -11,6 +11,7 @@ import {
 import { ROLES } from "@/types/store";
 import { cookies } from "next/headers";
 import { Query } from "node-appwrite";
+import { PaymentFormParams } from "./../../types/actions.types";
 
 export async function checkAuthStatus() {
   try {
@@ -25,7 +26,7 @@ export async function checkAuthStatus() {
       role: response?.labels[0],
       emailVerified: response?.emailVerification,
       medId: response?.labels[0] == "doctor" ? response?.prefs?.medId : null,
-      databaseId: response?.prefs?.databaseId
+      databaseId: response?.prefs?.databaseId,
     };
   } catch (error) {
     console.error("User is not authenticated:", error);
@@ -176,7 +177,9 @@ export async function createDoctorAction(data: CreateDoctorProfileParams) {
       { ...rest }
     );
     await users.updateEmailVerification(data?.userId as string, true);
-    await users.updatePrefs(data?.userId as string, { databaseId: response.$id });
+    await users.updatePrefs(data?.userId as string, {
+      databaseId: response.$id,
+    });
 
     const response2 = await database.createDocument(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
@@ -276,7 +279,7 @@ export async function createAppointmentAction(data: CreateAppointmentParams2) {
     console.log(err);
     return { code: 500, status: "error", message: `${err}` };
   }
-};
+}
 
 /**
  * cancel an Appoinment to see a doctor
@@ -296,7 +299,7 @@ export async function deleteAppointmentAction(uniqueID: string) {
     await database.deleteDocument(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
-      uniqueID, // documentID
+      uniqueID // documentID
     );
     return {
       code: 201,
@@ -308,3 +311,73 @@ export async function deleteAppointmentAction(uniqueID: string) {
     return { code: 500, status: "error", message: `${err}` };
   }
 }
+
+/**
+ * Creates a payment record in the database for a completed appointment.
+ *
+ * This function is a server-side action that processes payment information
+ * and stores it in the designated payment collection. It ensures that all
+ * necessary payment details are recorded, including metadata and authorization.
+ *
+ * @param {PaymentFormParams & { reference: string; status: "success" | "failed"; metaData: string; paidOn: string; authorization: string }} data
+ * - The payment data object containing all necessary fields for processing
+ *   the payment. It includes information such as the payment reference,
+ *   transaction status, metadata, and authorization.
+ *
+ * @returns {Promise<{ code: number; status: string; message: string }>}
+ * - Returns a promise that resolves to an object indicating the result of
+ *   the operation, including an HTTP status code, a status string, and a
+ *   message describing the outcome.
+ *
+ * @throws Will log an error and return an error response if the payment
+ *         record creation fails.
+ */
+
+export const createPaymentAction = async (
+  data: PaymentFormParams & {
+    reference: string;
+    status: "success" | "failed";
+    metaData: string;
+    paidOn: string;
+    authorization: string;
+  }
+) => {
+  try {
+    const { database } = await createAdminClient();
+    const uniqueID = ID.unique();
+    await database.createDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PAYMENT_ID!,
+      uniqueID, // documentId
+      {
+        metaData: data.metaData,
+        appointment: data.slotId,
+        amount: data.amount,
+        paidOn: data.paidOn,
+        reference: data.reference,
+        status: data.status,
+        patientId: data.patientId,
+        doctorId: data.doctorId,
+        authorization: data.authorization,
+      }
+    );
+    await database.updateDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      data.slotId,
+      {
+        status: "approved",
+        capacity: Number(data.capacity)
+      }
+    )
+    return {
+      code: 201,
+      status: "success",
+      refId:data.reference,
+      message: "Appointment Paid and Completed successfully",
+    };
+  } catch (err) {
+    console.log(err);
+    return { code: 500, status: "error", message: `${err}` };
+  }
+};

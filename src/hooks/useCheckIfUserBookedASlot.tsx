@@ -13,7 +13,7 @@ const useCheckIfUserBookedASlot = (
     queryFn: async () =>
       await checkIfUserBookedASlot(doctorId, bookingDate, patientId),
       //refetchIntervalInBackground: true,
-    select: (data) => data?.filter((item) => checkDateTimeDifferenceFromNow(item.$createdAt) == 0),
+    select: (data) => data?.filter((item) => checkDateTimeDifferenceFromNow(item.createdAt) == 0)
   });
 };
 

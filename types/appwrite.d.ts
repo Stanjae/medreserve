@@ -73,3 +73,14 @@ export type DoctorAvailability = Models.Document & {
   weekdayEndTime: string;
 }
 
+export type Payment = Models.Document & {
+  metaData: string;
+  appointment: Appointment[] | null;
+  amount: number;
+  reference: string;
+  status: string;
+  patientId: Patient[] | null;
+  doctorId: Doctor[] | null;
+  authorization: string;
+  paidOn: string;
+}
