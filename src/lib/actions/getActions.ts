@@ -173,6 +173,11 @@ export async function getPatientAppointmentTable(
     doctorUserId: slot.doctorId.$id,
     slotId: slot.$id,
     paymentId: slot.paymentId,
+    doctorAvailability: slot.doctorId.doctorAvailability.workSchedule,
+    weekdayEndTime: slot.doctorId.doctorAvailability.weekdayEndTime,
+    weekdayStartTime: slot.doctorId.doctorAvailability.weekdayStartTime,
+    weekendEndTime: slot.doctorId.doctorAvailability.weekendEndTime,
+    weekendStartTime: slot.doctorId.doctorAvailability.weekendStartTime,
   }));
   return {
     project: newResponse,

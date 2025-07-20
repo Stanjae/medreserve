@@ -241,3 +241,9 @@ export const newPrices = [
     price: 175000,
   },
 ];
+
+export const statusData = [
+  { label: "Upcoming", value: "upcoming" },
+  { label: "Past", value: "past" },
+  { label: "Today", value: "today" },
+];

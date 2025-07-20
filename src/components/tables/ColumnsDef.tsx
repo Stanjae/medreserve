@@ -8,7 +8,6 @@ import {
   IconCancel,
   IconCircleCheck,
   IconClockHour7,
-  IconClockPlay,
   IconCreditCardPay,
   IconCreditCardRefund,
   IconDots,
@@ -24,6 +23,7 @@ import Link from "next/link";
 import GeneratePdfButton from "../boxes/NewPdf";
 import PdfLayout from "../layout/PdfLayout";
 import AppointmentReceipt from "../pdfTemplates/AppointmentReceipt";
+import TableModals from "../modals/TableModals";
 export type Payment = {
   id: string;
   amount: number;
@@ -143,6 +143,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
   },
   {
     accessorKey: "doctorName",
+    id: "doctorName",
     cell: ({ row }) => (
       <CustomHoverCard
         props={{
@@ -152,7 +153,11 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
           openDelay: 200,
           closeDelay: 400,
         }}
-        trigger={<p className="capitalize">Dr. {row.getValue("doctorName")}</p>}
+        trigger={
+          <p className="capitalize hover:underline">
+            Dr. {row.getValue("doctorName")}
+          </p>
+        }
       >
         <AppointmentTableHoverCard row={row.original} />
       </CustomHoverCard>
@@ -161,7 +166,8 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
     header: ({ column }) => {
       return (
         <Button
-          variant="light"
+          variant="transparent"
+          className=" pl-0 text-[14.5px] font-bold text-black"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Doctor&apos;s Name
@@ -172,7 +178,8 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
   },
   {
     accessorFn: (row) => {
-      return dayjs().isSame(dayjs(row.bookingDate))
+      return dayjs().isSame(dayjs(row.bookingDate), "day") &&
+        isbBeforeDateTime(row.bookingDate)
         ? "today"
         : isbBeforeDateTime(row.bookingDate)
           ? "past"
@@ -186,7 +193,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
           info.getValue() == "upcoming"
             ? "m-gray"
             : info.getValue() == "today"
-              ? "m-cyan"
+              ? "green.9"
               : "red"
         }
       >
@@ -203,7 +210,8 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
     header: ({ column }) => {
       return (
         <Button
-          variant="light"
+          variant="transparent"
+          className=" pl-0 text-[14.5px] font-bold text-black"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Booking Date
@@ -241,7 +249,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
         {info.getValue()}
       </Badge>
     ),
-    filterFn: "fuzzy", //using our custom fuzzy filter function
+    //filterFn: "fuzzy", //using our custom fuzzy filter function
     // filterFn: fuzzyFilter, //or just define with the function
     sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
   },
@@ -250,7 +258,6 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original;
-      console.log('opera:',payment);
       return (
         <CDropdown
           props={{
@@ -293,9 +300,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
                         patientName={
                           JSON.parse(payment.paymentId?.metaData)?.fullname
                         }
-                        email={
-                          JSON.parse(payment.paymentId?.metaData)?.email
-                        }
+                        email={JSON.parse(payment.paymentId?.metaData)?.email}
                         trigger={
                           <Menu.Item
                             color="green"
@@ -306,13 +311,18 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
                         }
                         PdfElement={
                           <PdfLayout>
-                            <AppointmentReceipt response={payment.paymentId} />
+                            <AppointmentReceipt
+                              altTime={getAMPWAT(
+                                `${payment?.bookingDate}T${payment?.startTime}Z`
+                              )}
+                              altDate={payment?.bookingDate}
+                              response={payment.paymentId}
+                            />
                           </PdfLayout>
                         }
                       />
-                      <Menu.Item leftSection={<IconClockPlay size={13} />}>
-                        Reschedule
-                      </Menu.Item>
+                      {/* reschedule */}
+                      <TableModals row={payment}/>
                     </>
                   )}
                 <Menu.Item

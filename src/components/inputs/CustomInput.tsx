@@ -1,10 +1,10 @@
 'use client'
-import { INPUTFORMPROPS } from '@/types'
 import { Button, Checkbox, FileButton, Group, PasswordInput, Select, Text, Textarea, TextInput } from '@mantine/core'
 import React from 'react'
 import PhoneInput from 'react-phone-number-input'
 import { DateInput, TimePicker } from '@mantine/dates';
 import 'react-phone-number-input/style.css'
+import { INPUTFORMPROPS } from '@/types';
 
 const  CustomInput = (props:INPUTFORMPROPS) => {
   const {type} = props

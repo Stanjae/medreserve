@@ -108,7 +108,12 @@ export type getUserAppointmentsResponse = {
     patientUserId: string;
     doctorUserId: string;
     slotId: string;
-    paymentId: Payment
+    paymentId: Payment;
+    doctorAvailability: string[];
+    weekdayEndTime: string;
+    weekdayStartTime: string;
+    weekendEndTime: string;
+    weekendStartTime: string;
   }[];
   total: number;
 };

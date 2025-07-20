@@ -4,7 +4,7 @@ import { Payment } from "../../../types/appwrite";
 import { getAMPWAT } from "@/utils/utilsFn";
 import { styles } from "./style";
 
-const AppointmentReceipt = ({ response }: { response: Payment | null }) => {
+const AppointmentReceipt = ({ response, altTime, altDate }: { response: Payment | null; altDate?: string; altTime?: string }) => {
   const metaData = JSON.parse(response?.metaData || "");
   const authorization = JSON.parse(response?.authorization || "");
   return (
@@ -47,13 +47,13 @@ const AppointmentReceipt = ({ response }: { response: Payment | null }) => {
         <div style={styles.divider2} />
         <View style={styles.flex}>
           <Text style={styles.label}>Date:</Text>
-          <Text style={styles.value}>{response?.appointment?.bookingDate}</Text>
+          <Text style={styles.value}>{response?.appointment?.bookingDate || altDate}</Text>
         </View>
         <div style={styles.divider2} />
         <View style={styles.flex}>
           <Text style={styles.label}>Time:</Text>
           <Text style={styles.value}>
-            {getAMPWAT(
+            {altTime || getAMPWAT(
               `${response?.appointment?.bookingDate}T${response?.appointment?.startTime}Z`
             )}
           </Text>

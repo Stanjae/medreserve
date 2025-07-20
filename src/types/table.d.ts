@@ -17,4 +17,15 @@ export type AppointmentColumnsType = {
   doctorUserId: string;
   slotId: string;
   paymentId: Payment;
+  doctorAvailability: string[];
+  weekdayEndTime: string;
+  weekdayStartTime: string;
+  weekendEndTime: string;
+  weekendStartTime: string;
 };
+
+interface ColumnFilter {
+  id: string;
+  value: unknown;
+}
+type ColumnFiltersState = ColumnFilter[];

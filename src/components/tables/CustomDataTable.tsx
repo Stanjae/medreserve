@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import React from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import {
   ColumnDef,
@@ -19,8 +19,9 @@ import {
   RankingInfo,
   rankItem,
 } from "@tanstack/match-sorter-utils";
-import { Pagination, Space, Table } from "@mantine/core";
+import { Flex, Pagination, Space, Table } from "@mantine/core";
 import CustomInput from "../inputs/CustomInput";
+import { IconSearch } from "@tabler/icons-react";
 
 declare module "@tanstack/react-table" {
   //add fuzzy filter to the filterFns
@@ -54,10 +55,11 @@ type GenericTableProps<T> = {
   placeHolder: string;
   refetchData?: () => void;
   total: number;
-  limit: number
+  limit: number;
+  filterComponent:React.JSX.Element
 };
 
-export function CustomDataTable<T>({ placeHolder, columns, data, limit, total}: GenericTableProps<T>) {
+export function CustomDataTable<T>({ placeHolder, columns, data, limit, total, filterComponent}: GenericTableProps<T>) {
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -102,40 +104,126 @@ export function CustomDataTable<T>({ placeHolder, columns, data, limit, total}: 
     debugColumns: false, */
   });
 
-  //apply the fuzzy sort if the fullName column is being filtered
+/*   //apply the fuzzy sort if the fullName column is being filtered
   React.useEffect(() => {
-    if (table.getState().columnFilters[0]?.id === "fullName") {
-      if (table.getState().sorting[0]?.id !== "fullName") {
-        table.setSorting([{ id: "fullName", desc: false }]);
+    if (table.getState().columnFilters[1]?.id === "doctorName") {
+      if (table.getState().sorting[1]?.id !== "doctorName") {
+        table.setSorting([{ id: "doctorName", desc: false }]);
       }
     }
-  }, [table.getState().columnFilters[0]?.id]);
+    console.log('oppp',table.getState().columnFilters);
+  }, [table.getState().columnFilters[1]?.id]); */
 
   const handleSearch = useDebouncedCallback((e) => {
     setGlobalFilter(e);
   }, 300);
 
+/*   const handleFiltersChange = (e: string) => {
+    setColumnFilters(e);
+     /*  if (e == "all" || !e) {
+        table.resetColumnFilters();
+        return;
+      }
+      table.getColumn("timeFrameStatus")?.setFilterValue(e);
+    
+  }  */
+  const [selectValues, setSelectValues] = useState<
+    Record<number, string | null>
+  >({});
+
+  // Mantine Select onChange passes the new value (string | null)
+  function handleSelectChange(index: number, value: string | null) {
+    setSelectValues((prev) => ({
+      ...prev,
+      [index]: value,
+    }));
+    console.log('abel', index, value);
+  }
+
+
+  // Clone each Mantine Select child injecting controlled value & onChange
+  const enhancedSelects: ReactNode = React.Children.map(
+    filterComponent.props.children,
+    (child: any, index) => {
+      const opera = child?.props.type as string
+      if (React.isValidElement(child) && opera) {
+        return React.cloneElement(child, {
+          value: selectValues[index] ?? null, // controlled value, default null
+          onChange: (value: string | null) => handleSelectChange(index, value),
+        } as {value:string | null, onChange: (value: string | null) => void});
+      }
+      return child; // pass through non-Select children untouched
+    }
+  );
+
+  const getColumnFiltersFromSelects = (
+    selectValues: Record<number, string | null>,
+    selects: ReactNode
+  ): ColumnFiltersState => {
+    const filters: ColumnFiltersState = [];
+
+    React.Children.forEach(selects, (child: React.ReactNode, index) => {
+      if (
+        React.isValidElement(child) &&
+        selectValues[index] !== null &&
+        selectValues[index] !== undefined &&
+        selectValues[index] !== ""
+      ) {
+        const child2 = child as {props: { "data-column-id": string }}
+        const columnId = child2.props["data-column-id"] as string | undefined;
+        if (columnId) {
+          filters.push({
+            id: columnId,
+            value: selectValues[index]!,
+          });
+        }
+      }
+    });
+
+    return filters;
+  };
+
+  useEffect(() => {
+    const filtersFromSelects = getColumnFiltersFromSelects(
+      selectValues,
+      filterComponent.props.children
+    );
+    console.log("filtersFromSelects", filtersFromSelects);
+    setColumnFilters(filtersFromSelects);
+  }, [selectValues, filterComponent.props.children]);
+
   return (
     <div className="p-2">
-      <div>
+      <Flex justify={"space-between"}>
         <CustomInput
           type="text"
           defaultValue={globalFilter ?? ""}
           onChange={(value: React.ChangeEvent<HTMLInputElement>) =>
             handleSearch(value.target.value)
           }
-          className="max-w-md w-full"
+          className="max-w-3xl block focus-within:w-[500px] duration-750 transition-all w-full"
           placeholder={placeHolder}
+          leftSection={<IconSearch />}
           size="md"
           radius="xl"
         />
-      </div>
+        {enhancedSelects}
+      </Flex>
       <Space h="md" />
       <Table
-        styles={{ tbody: { fontSize: "13.5px" }, thead: { fontSize: "16px" } }}
+        styles={{
+          tbody: { fontSize: "13.5px" },
+          thead: {
+            fontSize: "14.5px",
+            fontWeight: "700",
+            color: '#000'//"#283779",
+          },
+        }}
         striped
         highlightOnHover
         withTableBorder
+        className=" shadow-md"
+        verticalSpacing={"md"}
       >
         <Table.Thead>
           {table.getHeaderGroups().map((headerGroup) => (
