@@ -12,7 +12,6 @@ const AppointmentReferenceCard = async ({
   paymentreferenceId,
 }: Readonly<{ paymentreferenceId: string }>) => {
   const response = await getPatientBookingReference(paymentreferenceId);
-  console.log("type 1", response);
   const metaData = JSON.parse(response?.metaData || "");
   const authorization = JSON.parse(response?.authorization || "");
   return (

@@ -1,6 +1,6 @@
-import { CreateBookingSchema, PaymentFormSchema } from "@/lib/schema/zod";
+import { CreateBookingSchema, PaymentFormSchema, UpdateBookingSchema } from "@/lib/schema/zod";
 import { z } from "zod";
-import { Payment } from "../../types/appwrite";
+import { AppointmentColumnsType } from "./table.types";
 
 export type ClientRegistrationParams = {
   username: string;
@@ -91,29 +91,10 @@ export type CreateAppointmentParams2 = z.infer<typeof CreateBookingSchema>;
 
 export type PaymentFormParams = z.infer<typeof PaymentFormSchema>;
 
+export type RescheduleAppointmentParams = z.infer<typeof UpdateBookingSchema>;
+
 
 export type getUserAppointmentsResponse = {
-  project: {
-    doctorName: string;
-    id: string;
-    bookingDate: string;
-    startTime: string;
-    endTime: string;
-    timeFramestatus: string;
-    paymentStatus: "pending" | "approved" | "declined";
-    createdAt: string;
-    specialization: string;
-    profilePicture: string;
-    rating: string[];
-    patientUserId: string;
-    doctorUserId: string;
-    slotId: string;
-    paymentId: Payment;
-    doctorAvailability: string[];
-    weekdayEndTime: string;
-    weekdayStartTime: string;
-    weekendEndTime: string;
-    weekendStartTime: string;
-  }[];
+  project: AppointmentColumnsType[];
   total: number;
 };

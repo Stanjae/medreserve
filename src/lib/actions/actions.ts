@@ -105,8 +105,6 @@ export async function loginClientAction(data: PatientLoginParams) {
     const response = await account.createEmailPasswordSession(email, password);
     const result = await users.get(response?.userId);
 
-    console.log("result:", result);
-
     (await cookies()).set("my-custom-session", response.secret, {
       path: "/",
       httpOnly: true,
@@ -129,7 +127,6 @@ export async function loginClientAction(data: PatientLoginParams) {
     };
   } catch (err) {
     const error = err as { code: number; type: string; response: string };
-    console.log("err:", error);
     return { code: error.code, status: error.type, message: error.response };
   }
 }
@@ -152,7 +149,6 @@ export async function createPatientAction(data: CreatePatientProfileParams) {
       message: "Profile created successfully",
     };
   } catch (err) {
-    console.log(err);
     return { code: 400, status: "error", message: `${err}` };
   }
 }
@@ -209,7 +205,6 @@ export async function createDoctorAction(data: CreateDoctorProfileParams) {
       message: "Profile created successfully",
     };
   } catch (err) {
-    console.log(err);
     return { code: 400, status: "error", message: `${err}` };
   }
 }
@@ -276,7 +271,6 @@ export async function createAppointmentAction(data: CreateAppointmentParams2) {
       message: "Appointment created successfully",
     };
   } catch (err) {
-    console.log(err);
     return { code: 500, status: "error", message: `${err}` };
   }
 }
@@ -307,7 +301,6 @@ export async function deleteAppointmentAction(uniqueID: string) {
       message: "Appointment cancelled successfully",
     };
   } catch (err) {
-    console.log(err);
     return { code: 500, status: "error", message: `${err}` };
   }
 }
@@ -377,7 +370,6 @@ export const createPaymentAction = async (
       message: "Appointment Paid and Completed successfully",
     };
   } catch (err) {
-    console.log(err);
     return { code: 500, status: "error", message: `${err}` };
   }
 };

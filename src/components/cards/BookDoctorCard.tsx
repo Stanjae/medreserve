@@ -24,7 +24,6 @@ const BookDoctorCard = ({ item }: { item: Doctor }) => {
     ? dayjs(searchParams.get("date")).get("day")
         : dayjs().get("day");
     
-    console.log('hunter: ', item);
 
     const handleSettingBookingParams = () => {
       setWeekSchedule(item?.workSchedule);
@@ -55,7 +54,7 @@ const BookDoctorCard = ({ item }: { item: Doctor }) => {
           <div className="flex gap-2 items-center">
             <Rating readOnly fractions={2} defaultValue={newRating} />
             <Text>
-              {newRating}/({totalCount})
+              {newRating.toFixed(1)}/({totalCount})
             </Text>
           </div>
           <Group>

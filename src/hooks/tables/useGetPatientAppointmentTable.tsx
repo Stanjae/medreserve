@@ -1,11 +1,18 @@
 'use client'
-import { getUserAppointments } from "@/lib/queryclient/query-actions";
+import { getPatientAppointmentTable } from "@/lib/actions/getActions";
+import { checkDateTimeDifferenceFromNow } from "@/utils/utilsFn";
 //import { getPatientAppointmentTable } from "@/lib/actions/getActions";
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery} from "@tanstack/react-query"
 
 const useGetPatientAppointmentTable = (patientId: string) => {
-    const response = getUserAppointments(patientId);
-    return useSuspenseQuery(response);
+    return useQuery({
+        queryKey: ["patient-appointments", patientId],
+            queryFn: async () => await getPatientAppointmentTable(patientId),
+            select: (data) => {
+              const result = data ?.project?.filter((item) => (checkDateTimeDifferenceFromNow(item.createdAt) == 0 || item.paymentStatus != "pending"));
+              return { project: result, total: result?.length };
+            },
+    });
 }
 
 export default useGetPatientAppointmentTable

@@ -40,7 +40,7 @@ type CDateInput = DateInputProps & {
   dateParser?: ((value: string) => DateStringValue | Date | null) | undefined;
   key?: React.Key | null | undefined;
   valueFormat?: "YYYY MMMM DD" | "YYYY-MM-DD" | "YYYY/MM/DD" | "yyyy-mm-dd";
-  onChange?: () => void; // Consider adding event param if needed
+  //onChange?: () => void; // Consider adding event param if needed
   styles?: Partial<Record<DateInputStylesNames, React.CSSProperties>>;
 };
 

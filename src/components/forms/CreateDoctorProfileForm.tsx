@@ -119,7 +119,6 @@ const CreateDoctorProfileForm = () => {
       setActive((current) => (current < 4 ? current + 1 : current));
       return;
     }
-    console.log(validationErrors.errors, form.errors);
   };
 
   const prevStep = () => {

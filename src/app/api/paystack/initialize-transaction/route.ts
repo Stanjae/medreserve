@@ -45,7 +45,6 @@ export async function POST(request: Request) {
         body: JSON.stringify(payload),
       }
     );
-    console.log('unit', paystackRes)
     const data = await paystackRes.json();
 
     // Return the Paystack response to the client

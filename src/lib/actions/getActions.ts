@@ -162,7 +162,6 @@ export async function getPatientAppointmentTable(
     bookingDate: slot.bookingDate,
     startTime: slot.startTime,
     endTime: slot.endTime,
-    timeFramestatus: slot.timeFramestatus,
     paymentStatus: slot.status,
     createdAt: slot.$createdAt,
     specialization: slot.doctorId.specialization,
@@ -178,6 +177,12 @@ export async function getPatientAppointmentTable(
     weekdayStartTime: slot.doctorId.doctorAvailability.weekdayStartTime,
     weekendEndTime: slot.doctorId.doctorAvailability.weekendEndTime,
     weekendStartTime: slot.doctorId.doctorAvailability.weekendStartTime,
+    notes: slot.notes,
+    patientPhone: slot.patientId.phone,
+    patientFullname: slot.patientId.fullname,
+    patientAddress: slot.patientId.address,
+    patientEmail: slot.patientId.email,
+    capacity: slot.capacity
   }));
   return {
     project: newResponse,

@@ -104,7 +104,6 @@ const CreateProfileForm = () => {
       setActive((current) => (current < 3 ? current + 1 : current));
       return;
     }
-    console.log(validationErrors.errors, form.errors);
   };
 
   const prevStep = () => {

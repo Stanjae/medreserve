@@ -13,8 +13,8 @@ const useGetDoctorsFilterQuery = () => {
     const searchParams = useSearchParams();
     const newDate = searchParams.get("date") ? dayjs(searchParams.get("date")).get("day") : dayjs().get("day");
     const newSpecialty = searchParams.get("specialty") ? searchParams.get("specialty")?.toString() : null;
-    const now = dayjs()
-    const isPast = dayjs(searchParams.get("date") || dayjs()).isBefore(now);
+    const now = dayjs().format("YYYY-MM-DD");
+    const isPast = dayjs(searchParams.get("date") || dayjs()).isBefore(now, "day");
 
     const { data, isLoading, error, isSuccess, isPlaceholderData } = useQuery({
       queryKey: [

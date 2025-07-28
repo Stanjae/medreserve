@@ -4,9 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
 const CustomPagination = ({
-  isPlaceholderData,
   total,
-  dataHasMore,
 }: {
   isPlaceholderData: boolean;
   total: number;
@@ -16,7 +14,6 @@ const CustomPagination = ({
   const pathname = usePathname();
   const router = useRouter();
 
-    console.log(isPlaceholderData, dataHasMore)
   const buildParams = (digit = 1) => {
     const params = new URLSearchParams();
     params.set("page", digit.toString());

@@ -19,14 +19,14 @@ const BookAppointment = () => {
   // Controlled form state
   const [specialty, setSpecialty] = useState<string | null>(null);
   const [capacity, setCapacity] = useState<string | null>("");
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState<string | null>("");
   const [loading, setLoading] = useState(false);
 
   // Sync state with URL params on mount or when params change
   useEffect(() => {
     setSpecialty(searchParams.get("specialty") || null);
     setCapacity(searchParams.get("capacity") || null);
-    setDate(searchParams.get("date") || "");
+    setDate(searchParams.get("date") ?? dayjs().format("YYYY-MM-DD"));
   }, [searchParams]);
 
   // Build URL params from state
@@ -49,7 +49,7 @@ const BookAppointment = () => {
   function clearSearch(key: string) {
     if (key === "specialty") setSpecialty('');
     if (key === "capacity") setCapacity("");
-    if (key === "date") setDate("");
+    if (key === "date") setDate(dayjs().format("YYYY-MM-DD"));
     // Remove from URL
     const params = buildParams();
     params.delete(key);
@@ -122,6 +122,7 @@ const BookAppointment = () => {
           <CustomInput
             type="datepicker"
             size="lg"
+            minDate={dayjs().format("YYYY-MM-DD")}
             value={date}
             onChange={setDate}
             styles={{

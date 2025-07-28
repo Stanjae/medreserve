@@ -16,7 +16,6 @@ export async function GET(request: Request) {
       }
     );
     const data = await paystackRes.json();
-    console.log("unit", data);
     // Return the Paystack response to the client
     return NextResponse.json(await data, { status: paystackRes.status });
   } catch (error) {

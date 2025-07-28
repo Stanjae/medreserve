@@ -16,14 +16,6 @@ const SubscribeForm = () => {
     },
   });
 
-  /* #22306d
-letter-spacing:
-0.32px
-line-height:
-24px
-padding:
-3.5px 7.5px 4px 28px */
-
   return (
    <Box component='form' className="space-y-3" onSubmit={form.onSubmit((values) => console.log(values))}>
         <div id="subscribeFormWrapper" className=' relative'>

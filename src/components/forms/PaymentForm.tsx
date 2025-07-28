@@ -47,7 +47,6 @@ const PaymentForm = ({
             errors[err.path[0]] = err.message;
           }
         }
-        console.log("theme: ", errors);
         return errors;
       }
     },
@@ -66,15 +65,13 @@ const PaymentForm = ({
       amount: yun?.price,
       slotId,
     });
-      form.setFieldValue("phone", response?.phone);
+    form.setFieldValue("phone", response?.phone);
   }, [credentials, doctorId]);
-    
-    const {handleTransaction} = useHandlePayments()
- 
+
+  const { handleTransaction } = useHandlePayments();
+
   return (
-    <form
-      onSubmit={form.onSubmit(async (values) => handleTransaction(values))}
-    >
+    <form onSubmit={form.onSubmit(async (values) => handleTransaction(values))}>
       <Grid overflow="hidden">
         <GridCol span={{ base: 12 }}>
           <CustomInput
@@ -133,8 +130,8 @@ const PaymentForm = ({
             type="select"
             size="md"
             label="Capacity of persons"
-                      placeholder="Capacity of persons"
-                      withAsterisk
+            placeholder="Capacity of persons"
+            withAsterisk
             radius={35}
             data={[
               { label: "1 Person", value: "1" },

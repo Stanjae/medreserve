@@ -63,7 +63,6 @@ export const theme = createTheme({
   }
 
   if (input.variant === 'outline') {
-    console.log("hundred:", parsedColor)
     return {
       background: 'var(--mantine-color-red-5)',
       hover: rgba(parsedColor.value, 0.15),

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
@@ -19,7 +18,7 @@ import {
   RankingInfo,
   rankItem,
 } from "@tanstack/match-sorter-utils";
-import { Flex, Pagination, Space, Table } from "@mantine/core";
+import { Flex, Pagination, Skeleton, Space, Table } from "@mantine/core";
 import CustomInput from "../inputs/CustomInput";
 import { IconSearch } from "@tabler/icons-react";
 
@@ -50,16 +49,17 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 // Define a custom fuzzy sort function that will sort by rank if the row has ranking information
 
 type GenericTableProps<T> = {
-  data: T[]
+  data: T[] | undefined;
   columns: ColumnDef<T, any>[];
   placeHolder: string;
   refetchData?: () => void;
   total: number;
   limit: number;
-  filterComponent:React.JSX.Element
+  filterComponent:React.JSX.Element;
+  isLoading?: boolean;
 };
 
-export function CustomDataTable<T>({ placeHolder, columns, data, limit, total, filterComponent}: GenericTableProps<T>) {
+export function CustomDataTable<T>({ placeHolder, columns, data=[], limit, total, filterComponent, isLoading}: GenericTableProps<T>) {
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -99,9 +99,6 @@ export function CustomDataTable<T>({ placeHolder, columns, data, limit, total, f
     getFilteredRowModel: getFilteredRowModel(), //client side filtering
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    /* debugTable: true,
-    debugHeaders: true,
-    debugColumns: false, */
   });
 
 /*   //apply the fuzzy sort if the fullName column is being filtered
@@ -111,7 +108,6 @@ export function CustomDataTable<T>({ placeHolder, columns, data, limit, total, f
         table.setSorting([{ id: "doctorName", desc: false }]);
       }
     }
-    console.log('oppp',table.getState().columnFilters);
   }, [table.getState().columnFilters[1]?.id]); */
 
   const handleSearch = useDebouncedCallback((e) => {
@@ -137,7 +133,6 @@ export function CustomDataTable<T>({ placeHolder, columns, data, limit, total, f
       ...prev,
       [index]: value,
     }));
-    console.log('abel', index, value);
   }
 
 
@@ -222,7 +217,6 @@ export function CustomDataTable<T>({ placeHolder, columns, data, limit, total, f
         striped
         highlightOnHover
         withTableBorder
-        className=" shadow-md"
         verticalSpacing={"md"}
       >
         <Table.Thead>
@@ -246,7 +240,22 @@ export function CustomDataTable<T>({ placeHolder, columns, data, limit, total, f
           ))}
         </Table.Thead>
         <Table.Tbody>
-          {!table.getRowModel().rows?.length ? (
+          {isLoading && (
+            Array(limit).fill('_').map((_, index) => {
+              return (
+                <Table.Tr key={index}>
+                  {Array(columns.length).fill('_').map((_, index) => {
+                    return (
+                      <Table.Td className="c-table-td" key={index}>
+                        <Skeleton height={10} radius="xl"/>
+                      </Table.Td>
+                    );
+                  })}
+                </Table.Tr>
+              );
+            })
+          )}
+          {!table.getRowModel().rows?.length && !isLoading ? (
             <Table.Tr>
               <Table.Td colSpan={columns.length} className="h-24 text-center">
                 No results.
@@ -273,11 +282,11 @@ export function CustomDataTable<T>({ placeHolder, columns, data, limit, total, f
         </Table.Tbody>
       </Table>
       <Space h="lg" />
-      <Pagination
+      {!isLoading && <Pagination
         onChange={(val) => table.setPageIndex(val - 1)}
         total={totalPages}
         value={table.getState().pagination.pageIndex + 1}
-      />
+      />}
       {/*  <div className="flex items-center gap-2">
         <button
           className="border rounded p-1"

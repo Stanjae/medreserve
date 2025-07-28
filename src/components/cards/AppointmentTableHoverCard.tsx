@@ -1,5 +1,5 @@
 'use client'
-import { AppointmentColumnsType } from '@/types/table';
+import { AppointmentColumnsType } from '@/types/table.types';
 import { parseResponse } from '@/utils/utilsFn';
 import { Avatar, Group, Rating, Stack, Text } from '@mantine/core';
 import React from 'react'

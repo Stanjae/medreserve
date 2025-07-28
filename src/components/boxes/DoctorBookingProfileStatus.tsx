@@ -44,7 +44,7 @@ const DoctorBookingProfileStatus = ({
         <div className="flex gap-2 items-center">
           <Rating readOnly fractions={2} defaultValue={newRating} />
           <Text>
-            {newRating}/({totalCount})
+            {newRating.toFixed(1)}/({totalCount})
           </Text>
         </div>
         <Text c="m-gray" className="leading-[30px] capitalize mt-1 text-[16px] font-medium">{parseResponse(specialization)}</Text>

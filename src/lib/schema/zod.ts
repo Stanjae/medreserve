@@ -211,14 +211,46 @@ export const CreateBookingSchema = z
       message: "You cannot book an appointment in the past",
       path: ["startTime"], // Optional: attach error to endDate field
     }
-);
-  
+  );
+
+export const UpdateBookingSchema = z
+  .object({
+    patientId: z.string().nonempty("Patient ID is required"),
+    doctorId: z.string().nonempty("Doctor ID is required"),
+    paymentId: z.string().nonempty("Payment ID is required"),
+    bookingDate: z.coerce.string(),
+    startTime: z.string(),
+    endTime: z.string(),
+    notes: z.string().nonempty("Notes is required"),
+    slotId: z.string().nonempty("Slot ID is required"),
+    address: z.string().nonempty("Address is required"),
+    fullname: z.string().nonempty("Full name is required"),
+    email: z.string().email({ message: "Invalid email address" }),
+    phone: z.string().nonempty("Phone number is required"),
+    capacity: z.string().nonempty("Capacity is required"),
+    rescheduleFees: z
+    .number()
+    .int("Amount must be an integer")
+    .positive("Amount must be positive")
+    .min(1, "Amount must be at least 1")
+    .max(1000000, "Amount exceeds maximum allowed"),
+  })
+  .refine(
+    (data) =>
+      false == isbBeforeDateTime(`${data.bookingDate} ${data.startTime}`),
+    {
+      message: "You cannot book an appointment in the past",
+      path: ["startTime"], // Optional: attach error to endDate field
+    }
+  );
+
 export const PaymentFormSchema = z.object({
-  amount: z.number()
-  .int("Amount must be an integer")
-  .positive("Amount must be positive")
-  .min(1, "Amount must be at least 1")
-  .max(1000000, "Amount exceeds maximum allowed"),
+  amount: z
+    .number()
+    .int("Amount must be an integer")
+    .positive("Amount must be positive")
+    .min(1, "Amount must be at least 1")
+    .max(1000000, "Amount exceeds maximum allowed"),
   patientId: z.string().nonempty("Patient ID is required"),
   doctorId: z.string().nonempty("Doctor ID is required"),
   slotId: z.string().nonempty("Slot ID is required"),
@@ -228,4 +260,3 @@ export const PaymentFormSchema = z.object({
   phone: z.string().nonempty("Phone number is required"),
   capacity: z.string().nonempty("Capacity is required"),
 });
-

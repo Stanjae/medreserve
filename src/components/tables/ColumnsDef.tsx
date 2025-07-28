@@ -1,29 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { AppointmentColumnsType } from "@/types/table";
-import { getAMPM, getAMPWAT, isbBeforeDateTime } from "@/utils/utilsFn";
-import { ActionIcon, Badge, Button, Checkbox, Menu } from "@mantine/core";
+import { AppointmentColumnsType } from "@/types/table.types";
+import { getAMPM, isbBeforeDateTime } from "@/utils/utilsFn";
+import { Badge, Button, Checkbox } from "@mantine/core";
 import {
   IconArrowsUpDown,
-  IconCancel,
   IconCircleCheck,
   IconClockHour7,
-  IconCreditCardPay,
-  IconCreditCardRefund,
-  IconDots,
-  IconDownload,
 } from "@tabler/icons-react";
 import { compareItems } from "@tanstack/match-sorter-utils";
 import { ColumnDef, SortingFn, sortingFns } from "@tanstack/react-table";
-import dayjs from "dayjs";
-import { CDropdown } from "../dropdown/CDropdown";
+import dayjs from "dayjs";;
 import { CustomHoverCard } from "../hovercard/CustomHoverCard";
 import AppointmentTableHoverCard from "../cards/AppointmentTableHoverCard";
-import Link from "next/link";
-import GeneratePdfButton from "../boxes/NewPdf";
-import PdfLayout from "../layout/PdfLayout";
-import AppointmentReceipt from "../pdfTemplates/AppointmentReceipt";
-import TableModals from "../modals/TableModals";
+
 export type Payment = {
   id: string;
   amount: number;
@@ -253,91 +243,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
     // filterFn: fuzzyFilter, //or just define with the function
     sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
   },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-      return (
-        <CDropdown
-          props={{
-            styles: { item: { fontSize: 13 } },
-            width: 150,
-            position: "bottom-end",
-          }}
-          trigger={
-            <ActionIcon variant="transparent" aria-label="more options">
-              <IconDots size={16} />
-            </ActionIcon>
-          }
-        >
-          <Menu.Dropdown>
-            {payment.paymentStatus == "pending" ? (
-              <>
-                {/*  href={`/patient/${credentials?.userId}/dashboard/appointments/book-appointment/${doctorId}/step-2?slotId=${userBookedSlot?.at(0)?.$id}`} */}
-                <Menu.Item
-                  component={Link}
-                  href={`/patient/${payment.patientUserId}/dashboard/appointments/book-appointment/${payment.doctorUserId}/step-2?slotId=${payment.slotId}`}
-                  leftSection={<IconCreditCardPay size={13} />}
-                >
-                  Make Payment
-                </Menu.Item>
-                <Menu.Item color="red" leftSection={<IconCancel size={13} />}>
-                  Cancel Booking
-                </Menu.Item>
-              </>
-            ) : (
-              <>
-                {payment.bookingDate &&
-                  !isbBeforeDateTime(payment.bookingDate) && (
-                    <>
-                      <GeneratePdfButton
-                        appointmentDate={payment?.bookingDate}
-                        appointmentTime={getAMPWAT(
-                          `${payment?.bookingDate}T${payment?.startTime}`
-                        )}
-                        doctorName={payment.doctorName}
-                        patientName={
-                          JSON.parse(payment.paymentId?.metaData)?.fullname
-                        }
-                        email={JSON.parse(payment.paymentId?.metaData)?.email}
-                        trigger={
-                          <Menu.Item
-                            color="green"
-                            leftSection={<IconDownload size={13} />}
-                          >
-                            Get Receipt
-                          </Menu.Item>
-                        }
-                        PdfElement={
-                          <PdfLayout>
-                            <AppointmentReceipt
-                              altTime={getAMPWAT(
-                                `${payment?.bookingDate}T${payment?.startTime}Z`
-                              )}
-                              altDate={payment?.bookingDate}
-                              response={payment.paymentId}
-                            />
-                          </PdfLayout>
-                        }
-                      />
-                      {/* reschedule */}
-                      <TableModals row={payment}/>
-                    </>
-                  )}
-                <Menu.Item
-                  color="red"
-                  leftSection={<IconCreditCardRefund size={13} />}
-                >
-                  Refund
-                </Menu.Item>
-              </>
-            )}
-          </Menu.Dropdown>
-        </CDropdown>
-      );
-    },
-  },
+  
   /* {
     accessorFn: (row) => `${row.paymentStatus} ${row.timeFrameTimeZone}`,
     id: "f",

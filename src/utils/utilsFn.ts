@@ -124,7 +124,7 @@ export function addOrSubtractTime(
   type: "add" | "subtract",
   incrementBy: number,
   unit: GETADDBYPARAMS,
-  timeFormat:'h-m-s'|'am-pm'
+  timeFormat: "h-m-s" | "am-pm"
 ): string {
   // Prepend a default date to the time string
 
@@ -164,4 +164,13 @@ export function getAMPWAT(timeString: string) {
   const watTime = dayjs.utc(timeString).tz("Africa/Lagos").subtract(1, "hour");
   const formatted = watTime.format("hA [WAT]"); // "4PM WAT"
   return formatted;
+}
+
+export function convertToCurrency(amount: number): string {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "decimal", // or 'currency', 'percent'
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `${formatter.format(amount)}`;
 }
