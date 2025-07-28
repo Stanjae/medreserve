@@ -130,7 +130,11 @@ const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
         </Box>
       </Flex>
       <Divider color={"m-cyan"} my="lg" size="md" variant="dotted" />
-      <form onSubmit={form.onSubmit(async (values) => console.log('underhand: ',values))}>
+      <form
+        onSubmit={form.onSubmit(async (values) =>
+          console.log("underhand: ", values)
+        )}
+      >
         <Stepper active={active}>
           <Stepper.Step label="First step" description="Reschedule Booking">
             <Grid overflow="hidden">
@@ -284,26 +288,34 @@ const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
                   </Text>
 
                   <Group justify="space-between" mb="md">
-                    <Text fz={"15px"} fw={500} c="m-gray">Initial Payment Fees</Text>
+                    <Text fz={"15px"} fw={500} c="m-gray">
+                      Initial Payment Fees
+                    </Text>
                     <Text fz={"15px"} td="line-through" fw={500} c="m-blue">
-                      &#8358; {convertToCurrency(Number(row?.paymentId?.amount))}
+                      &#8358;{" "}
+                      {convertToCurrency(Number(row?.paymentId?.amount))}
                     </Text>
                   </Group>
 
                   <Group justify="space-between" mb="md">
-                    <Text fz={"15px"} fw={500} c="m-gray">Reschedule Fees</Text>
+                    <Text fz={"15px"} fw={500} c="m-gray">
+                      Reschedule Fees
+                    </Text>
                     <Text fz={"15px"} fw={500} c="m-blue">
-                      &#8358; {convertToCurrency(Number(form.values.rescheduleFees))}
+                      &#8358;{" "}
+                      {convertToCurrency(Number(form.values.rescheduleFees))}
                     </Text>
                   </Group>
                   <Divider color={"m-gray"} size="xs" variant="solid" />
                   <Group justify="space-between" mb="md">
-                    <Text fz={"15px"} fw={500} c="m-gray">Total</Text>
+                    <Text fz={"15px"} fw={500} c="m-gray">
+                      Total
+                    </Text>
                     <Text fz={"15px"} fw={500} c="m-blue">
-                      &#8358; {convertToCurrency(Number(form.values.rescheduleFees))}
+                      &#8358;{" "}
+                      {convertToCurrency(Number(form.values.rescheduleFees))}
                     </Text>
                   </Group>
-                    
                 </Box>
               </GridCol>
             </Grid>
