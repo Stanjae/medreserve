@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { AppointmentColumnsType } from "@/types/table.types";
-import { getAMPM, isbBeforeDateTime } from "@/utils/utilsFn";
+import {
+  AppointmentColumnsType,
+  PaymentColumnsType,
+} from "@/types/table.types";
+import { convertToCurrency, getAMPM, getDateTimeAMPM, isbBeforeDateTime } from "@/utils/utilsFn";
 import { Badge, Button, Checkbox } from "@mantine/core";
 import {
   IconArrowsUpDown,
@@ -10,7 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { compareItems } from "@tanstack/match-sorter-utils";
 import { ColumnDef, SortingFn, sortingFns } from "@tanstack/react-table";
-import dayjs from "dayjs";;
+import dayjs from "dayjs";
 import { CustomHoverCard } from "../hovercard/CustomHoverCard";
 import AppointmentTableHoverCard from "../cards/AppointmentTableHoverCard";
 
@@ -243,7 +246,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
     // filterFn: fuzzyFilter, //or just define with the function
     sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
   },
-  
+
   /* {
     accessorFn: (row) => `${row.paymentStatus} ${row.timeFrameTimeZone}`,
     id: "f",
@@ -253,4 +256,72 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
     // filterFn: fuzzyFilter, //or just define with the function
     sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
   }, */
+];
+
+export const columnsPayment: ColumnDef<PaymentColumnsType, any>[] = [
+  {
+    accessorFn: (row) => `${row.doctorName} | ${row.specialization}`,
+    header: "Appointment",
+    id: "appointment",
+    cell: (info) => (
+      <p className="capitalize hover:underline">Dr. {info.getValue()}</p>
+    ),
+    filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
+  },
+  {
+    accessorKey: "reference",
+    header: "Payment Reference",
+    cell: (info) => <p>#{info.getValue()}</p>,
+    filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
+  },
+  {
+    accessorFn: (row) => convertToCurrency(Number(row.amount)),
+    id: "amount",
+    cell: (info) => <p className=" font-medium">&#8358; {info.getValue()}</p>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="transparent"
+          className=" pl-0 text-[14.5px] font-bold text-black"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Amount
+          <IconArrowsUpDown />
+        </Button>
+      );
+    },
+    sortingFn: fuzzySort,
+    filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: (info) => (
+      <Badge color={info.getValue() == "success" ? "green.8" : "red"}>
+        {info.getValue()}
+      </Badge>
+    ),
+    filterFn: "fuzzy", //using our custom fuzzy filter function
+    // filterFn: fuzzyFilter, //or just define with the function
+  },
+  {
+    accessorFn: (row) => `${getDateTimeAMPM(row.createdAt)}`,
+    id: "createdAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="transparent"
+          className=" pl-0 text-[14.5px] font-bold text-black"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Paid At
+          <IconArrowsUpDown />
+        </Button>
+      );
+    },
+    cell: (info) => info.getValue(),
+    filterFn: "fuzzy", //using our custom fuzzy filter function
+    // filterFn: fuzzyFilter, //or just define with the function
+    sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+  },
 ];

@@ -2,7 +2,7 @@
 import { createAdminClient } from "@/appwrite/appwrite";
 import { Query } from "node-appwrite";
 import { Payment} from "../../../types/appwrite";
-import { getUserAppointmentsResponse } from "@/types/actions.types";
+import { getUserAppointmentsResponse, getUserPaymentsResponse } from "@/types/actions.types";
 
 export const getAvailableDoctorsFilterAction = async (
   specialty: string | null | undefined,
@@ -168,9 +168,8 @@ export async function getPatientAppointmentTable(
     profilePicture: slot.doctorId.profilePicture,
     rating: slot.doctorId.rating,
     bio: slot.doctorId.bio,
-    patientUserId: slot.patientId.userId,
+    patientUserId: slot.patientId.$id,
     doctorUserId: slot.doctorId.$id,
-    slotId: slot.$id,
     paymentId: slot.paymentId,
     doctorAvailability: slot.doctorId.doctorAvailability.workSchedule,
     weekdayEndTime: slot.doctorId.doctorAvailability.weekdayEndTime,
@@ -182,10 +181,41 @@ export async function getPatientAppointmentTable(
     patientFullname: slot.patientId.fullname,
     patientAddress: slot.patientId.address,
     patientEmail: slot.patientId.email,
-    capacity: slot.capacity
+    capacity: slot.capacity,
   }));
   return {
     project: newResponse,
     total: response.total,
   };
 }
+
+export const getPatientPaymentsTable = async (
+  patientId: string
+):Promise<getUserPaymentsResponse | null>=> {
+  const { database } = await createAdminClient();
+  const response = await database.listDocuments(
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PAYMENT_ID!,
+    [Query.orderDesc("$createdAt")]
+  );
+  if (response.total == 0) return null;
+
+  const userPayments = response.documents
+    .filter((payment) => payment.patientId.$id == patientId)
+    .map((payment) => ({
+      id: payment.$id,
+      reference: payment.reference,
+      amount: payment.amount,
+      status: payment.status,
+      createdAt: payment.$createdAt,
+      patientUserId: payment.patientId.$id,
+      doctorUserId: payment.doctorId.$id,
+      metaData: payment.metaData ? JSON.parse(payment.metaData) : null,
+      appointmentId: payment.appointment?.$id,
+      specialization: payment.doctorId?.specialization,
+      type: payment?.type,
+      doctorName: payment.doctorId?.fullname,
+    }));
+
+  return { project: userPayments, total: response.total };
+};

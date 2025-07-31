@@ -109,7 +109,7 @@ const AppointmentReferenceCard = async ({
               Booking Code:
             </Text>
             <Text className=" capitalize" fz={18} c="m-blue">
-              {response?.doctorId?.$id}
+             # {response?.appointment?.$id}
             </Text>
           </Group>
           <Divider variant="dotted" color={"m-cyan"} />

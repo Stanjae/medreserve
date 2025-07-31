@@ -7,11 +7,14 @@ import { GETADDBYPARAMS } from "@/types";
 import calendar from "dayjs/plugin/calendar";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { Payment } from "../../types/appwrite";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 dayjs.extend(calendar);
+dayjs.extend(relativeTime);
 
 export const parseResponse = (response: string) =>
   response.replace(/[_-]/g, " ");
@@ -115,8 +118,12 @@ export function getAMPM(timeString: string): string {
 
   // Parse with format including date and time
   const parsed = dayjs(dateTimeString, "YYYY-MM-DD HH:mm:ss");
-
   return parsed.format("h:mm A");
+}
+
+export function getDateTimeAMPM(dateTimeString: string): string {
+  const parsed = dayjs(dateTimeString, "YYYY-MM-DD HH:mm:ss");
+  return parsed.format("YYYY-MM-DD @ HH:mm A");
 }
 
 export function addOrSubtractTime(
@@ -166,6 +173,9 @@ export function getAMPWAT(timeString: string) {
   return formatted;
 }
 
+export const getTimeFromNow = (dateTimeString: string) =>
+  dayjs(dateTimeString).fromNow();
+
 export function convertToCurrency(amount: number): string {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "decimal", // or 'currency', 'percent'
@@ -174,3 +184,13 @@ export function convertToCurrency(amount: number): string {
   });
   return `${formatter.format(amount)}`;
 }
+
+export const getLatestObjectByCreatedAt = (arr: Payment[]) => {
+  if (arr.length === 0) return null;
+
+  return arr.reduce((latest, current) => {
+    return new Date(current.createdAt) > new Date(latest.createdAt)
+      ? current
+      : latest;
+  });
+};

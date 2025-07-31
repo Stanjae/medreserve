@@ -57,9 +57,10 @@ type GenericTableProps<T> = {
   limit: number;
   filterComponent:React.JSX.Element;
   isLoading?: boolean;
+  handleRowClick?: (row: T ) => void;
 };
 
-export function CustomDataTable<T>({ placeHolder, columns, data=[], limit, total, filterComponent, isLoading}: GenericTableProps<T>) {
+export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=[], limit, total, filterComponent, isLoading}: GenericTableProps<T>) {
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -264,7 +265,7 @@ export function CustomDataTable<T>({ placeHolder, columns, data=[], limit, total
           ) : (
             table?.getRowModel()?.rows?.map((row) => {
               return (
-                <Table.Tr key={row.id}>
+                <Table.Tr onClick={() => handleRowClick && handleRowClick(row.original)} key={row.id}>
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <Table.Td className="c-table-td" key={cell.id}>

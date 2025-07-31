@@ -7,6 +7,7 @@ import {
   PatientLoginParams,
   CreateDoctorProfileParams,
   CreateAppointmentParams2,
+  RescheduleAppointmentParams,
 } from "@/types/actions.types";
 import { ROLES } from "@/types/store";
 import { cookies } from "next/headers";
@@ -368,6 +369,60 @@ export const createPaymentAction = async (
       status: "success",
       refId:data.reference,
       message: "Appointment Paid and Completed successfully",
+    };
+  } catch (err) {
+    return { code: 500, status: "error", message: `${err}` };
+  }
+};
+
+
+export const reschedulePaymentAction = async (
+  data: RescheduleAppointmentParams & {
+    reference: string;
+    status: "success" | "failed";
+    metaData: string;
+    paidOn: string;
+    authorization: string;
+    type: "reschedule-fees" | "initial-fees";
+  }
+) => {
+  try {
+    const { database } = await createAdminClient();
+    const uniqueId = ID.unique();
+    await database.createDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PAYMENT_ID!,
+      uniqueId, // documentId
+      {
+        metaData: data.metaData,
+        appointment: data.slotId,
+        amount: data.amount,
+        paidOn: data.paidOn,
+        reference: data.reference,
+        status: data.status,
+        patientId: data.patientId,
+        doctorId: data.doctorId,
+        authorization: data.authorization,
+        type: data.type
+      }
+    );
+  await database.updateDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      data.slotId,
+      {
+        capacity: Number(data.capacity),
+        bookingDate: data.bookingDate,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        notes: data.notes
+      }
+    ); 
+    return {
+      code: 201,
+      status: "success",
+      refId: data.reference,
+      message: "Dear user, your appointment has been rescheduled successfully",
     };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };

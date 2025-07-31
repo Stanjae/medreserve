@@ -15,6 +15,7 @@ import {
   LoadingOverlay,
   Stepper,
   Text,
+  Transition,
 } from "@mantine/core";
 import { DatePicker, getTimeRange, TimeGrid } from "@mantine/dates";
 import { useForm } from "@mantine/form";
@@ -24,17 +25,27 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import CustomInput from "../inputs/CustomInput";
 import SubmitBtn from "../CButton/SubmitBtn";
-import { IconCircleDottedLetterP } from "@tabler/icons-react";
+import {
+  IconCircleCheckFilled,
+  IconCircleDottedLetterP,
+} from "@tabler/icons-react";
+import useRescheduleAppointment from "@/hooks/useRescheduleAppointment";
+import { scaleY } from "./CreateAppointmentForm";
 
-const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
+const RescheduleAppointment = ({ row, handleClose }: { row: AppointmentColumnsType, handleClose: () => void }) => {
   const [active, setActive] = useState<number>(0);
+
+  const initialAmount = row?.paymentId?.find(
+    (item) => item.type === "initial-fees"
+  )?.amount as number;
 
   const form = useForm<RescheduleAppointmentParams>({
     mode: "uncontrolled",
     initialValues: {
       doctorId: row?.doctorUserId,
+      doctorName:row?.doctorName,
       patientId: row?.patientUserId,
-      paymentId: row?.paymentId?.$id,
+      paymentId: row?.paymentId,
       slotId: row?.id,
       bookingDate: row?.bookingDate,
       startTime: row?.startTime,
@@ -43,7 +54,7 @@ const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
       fullname: row?.patientFullname as string,
       email: row?.patientEmail as string,
       address: row?.patientAddress as string,
-      rescheduleFees: 15000,
+      amount: 15000,
       phone: row?.patientPhone as string,
       capacity: row?.capacity?.toString() as string,
     },
@@ -75,10 +86,13 @@ const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
             errors[err.path[0]] = err.message;
           }
         }
+        console.error("Validation errors:", errors);
         return errors;
       }
     },
   });
+
+  const { handleTransaction, message } = useRescheduleAppointment(setActive);
 
   const { data, isLoading } = useGetAvailableSlots(
     row.bookingDate,
@@ -131,8 +145,8 @@ const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
       </Flex>
       <Divider color={"m-cyan"} my="lg" size="md" variant="dotted" />
       <form
-        onSubmit={form.onSubmit(async (values) =>
-          console.log("underhand: ", values)
+        onSubmit={form.onSubmit(
+          async (values) => await handleTransaction(values, "reschedule-fees")
         )}
       >
         <Stepper active={active}>
@@ -292,8 +306,7 @@ const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
                       Initial Payment Fees
                     </Text>
                     <Text fz={"15px"} td="line-through" fw={500} c="m-blue">
-                      &#8358;{" "}
-                      {convertToCurrency(Number(row?.paymentId?.amount))}
+                      &#8358; {convertToCurrency(Number(initialAmount))}
                     </Text>
                   </Group>
 
@@ -302,8 +315,7 @@ const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
                       Reschedule Fees
                     </Text>
                     <Text fz={"15px"} fw={500} c="m-blue">
-                      &#8358;{" "}
-                      {convertToCurrency(Number(form.values.rescheduleFees))}
+                      &#8358; {convertToCurrency(Number(form.values.amount))}
                     </Text>
                   </Group>
                   <Divider color={"m-gray"} size="xs" variant="solid" />
@@ -312,8 +324,7 @@ const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
                       Total
                     </Text>
                     <Text fz={"15px"} fw={500} c="m-blue">
-                      &#8358;{" "}
-                      {convertToCurrency(Number(form.values.rescheduleFees))}
+                      &#8358; {convertToCurrency(Number(form.values.amount))}
                     </Text>
                   </Group>
                 </Box>
@@ -331,15 +342,49 @@ const RescheduleAppointment = ({ row }: { row: AppointmentColumnsType }) => {
               />
             </Group>
           </Stepper.Step>
+          <Stepper.Completed>
+            <Text
+              fz={"20px"}
+              lh={"28px"}
+              ta="center"
+              fw={700}
+              c="m-blue"
+              mb="20px"
+            >
+              {message}
+            </Text>
+            <Group justify="center" mt="xl">
+              <Transition
+                mounted={!!message && active === 2}
+                transition={scaleY}
+                duration={200}
+                timingFunction="ease"
+                keepMounted
+              >
+                {(styles) => (
+                  <IconCircleCheckFilled
+                    style={{ ...styles, zIndex: 1, color: "green" }}
+                    size={80}
+                  />
+                )}
+              </Transition>
+              <Text ta="center" c="m-gray" size="md">
+                Check your mail for more detailsl
+              </Text>
+            </Group>
+            <Group justify="center" mt="md">
+              <Button onClick={handleClose}>Close</Button>
+            </Group>
+          </Stepper.Completed>
         </Stepper>
 
         <Group justify={active !== 1 ? "flex-end" : "space-between"} mt="md">
-          {active !== 0 && (
-            <Button variant="default" onClick={prevStep}>
+          {active == 1 && (
+            <Button variant="outline" onClick={prevStep}>
               Back
             </Button>
           )}
-          {active !== 1 && <Button onClick={nextStep}>Next step</Button>}
+          {active == 0 && <Button onClick={nextStep}>Next step</Button>}
         </Group>
       </form>
     </div>

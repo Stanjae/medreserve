@@ -20,7 +20,7 @@ import {
   IconDownload,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { getAMPWAT, isbBeforeDateTime } from "@/utils/utilsFn";
+import { getAMPWAT,  getLatestObjectByCreatedAt, isbBeforeDateTime } from "@/utils/utilsFn";
 import GeneratePdfButton from "../boxes/NewPdf";
 import PdfLayout from "../layout/PdfLayout";
 import AppointmentReceipt from "../pdfTemplates/AppointmentReceipt";
@@ -50,6 +50,11 @@ const AppointMentsTable = () => {
       enableHiding: false,
       cell: ({ row }: { row: { original: AppointmentColumnsType } }) => {
         const payment = row.original;
+        const getPaymentId =
+          payment?.paymentId.length > 1
+            ? getLatestObjectByCreatedAt(payment?.paymentId)
+            : payment?.paymentId.find((item) => item.type == "initial-fees");
+        console.log("getPaymentId", getPaymentId);
         return (
           <CDropdown
             props={{
@@ -89,9 +94,14 @@ const AppointMentsTable = () => {
                           )}
                           doctorName={payment.doctorName}
                           patientName={
-                            JSON.parse(payment.paymentId?.metaData)?.fullname
+                            getPaymentId?.metaData &&
+                            JSON.parse(getPaymentId?.metaData)?.fullname
                           }
-                          email={JSON.parse(payment.paymentId?.metaData)?.email}
+                          email={
+                            getPaymentId?.metaData &&JSON.parse(
+                              getPaymentId?.metaData
+                            )?.email
+                          }
                           trigger={
                             <Menu.Item
                               color="green"
@@ -107,13 +117,22 @@ const AppointMentsTable = () => {
                                   `${payment?.bookingDate}T${payment?.startTime}Z`
                                 )}
                                 altDate={payment?.bookingDate}
-                                response={payment.paymentId}
+                                response={getPaymentId}
+                                type="appointment"
                               />
                             </PdfLayout>
                           }
                         />
                         {/* reschedule */}
-                        <Button size="md" color="m-blue" variant="subtle" leftSection={<IconClockPlay size={13} />} onClick={()=> handleRescheduleOption(payment)}>Reschedule</Button>
+                        <Button
+                          size="md"
+                          color="m-blue"
+                          variant="subtle"
+                          leftSection={<IconClockPlay size={13} />}
+                          onClick={() => handleRescheduleOption(payment)}
+                        >
+                          Reschedule
+                        </Button>
                       </>
                     )}
                   <Menu.Item
@@ -140,7 +159,7 @@ const AppointMentsTable = () => {
   return (
     <Paper p={20} radius="lg" shadow="md">
       <CustomModal centered closeOnClickOutside={false} size={'xl'} opened={opened} onClose={close}>
-        {row && <RescheduleAppointment row={row as AppointmentColumnsType} />}
+        {row && <RescheduleAppointment handleClose={close} row={row as AppointmentColumnsType} />}
       </CustomModal>
         <CustomDataTable
           data={data?.project}

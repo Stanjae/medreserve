@@ -217,7 +217,8 @@ export const UpdateBookingSchema = z
   .object({
     patientId: z.string().nonempty("Patient ID is required"),
     doctorId: z.string().nonempty("Doctor ID is required"),
-    paymentId: z.string().nonempty("Payment ID is required"),
+    doctorName: z.string().optional(),
+    paymentId: z.array(z.record(z.any())).optional(),
     bookingDate: z.coerce.string(),
     startTime: z.string(),
     endTime: z.string(),
@@ -228,12 +229,12 @@ export const UpdateBookingSchema = z
     email: z.string().email({ message: "Invalid email address" }),
     phone: z.string().nonempty("Phone number is required"),
     capacity: z.string().nonempty("Capacity is required"),
-    rescheduleFees: z
-    .number()
-    .int("Amount must be an integer")
-    .positive("Amount must be positive")
-    .min(1, "Amount must be at least 1")
-    .max(1000000, "Amount exceeds maximum allowed"),
+    amount: z
+      .number()
+      .int("Amount must be an integer")
+      .positive("Amount must be positive")
+      .min(1, "Amount must be at least 1")
+      .max(100000, "Amount exceeds maximum allowed"),
   })
   .refine(
     (data) =>

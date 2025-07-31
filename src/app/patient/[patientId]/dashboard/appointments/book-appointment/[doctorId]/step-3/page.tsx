@@ -9,7 +9,7 @@ const page = async({searchParams}: {
 
   return (
     <main>
-      <Suspense fallback={<Skeleton/>}>
+      <Suspense fallback={<Skeleton width={'100%'} className=' h-screen'/>}>
         <AppointmentReferenceCard  paymentreferenceId={paymentreferenceId as string}/>
       </Suspense>
     </main>

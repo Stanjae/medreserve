@@ -37,7 +37,7 @@ import useCheckIfUserBookedASlot from "@/hooks/useCheckIfUserBookedASlot";
 import Link from "next/link";
 import CustomCancelBtn from "../CButton/CustomCancelBtn";
 
-const scaleY = {
+export const scaleY = {
   in: { opacity: 1, transform: "scaleY(1)" },
   out: { opacity: 0, transform: "scaleY(0)" },
   common: { transformOrigin: "top" },

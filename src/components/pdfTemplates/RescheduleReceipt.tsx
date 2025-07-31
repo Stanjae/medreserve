@@ -1,24 +1,22 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Image, Text, View } from "@react-pdf/renderer";
-import { Payment } from "../../../types/appwrite";
 import { getAMPWAT } from "@/utils/utilsFn";
 import { styles } from "./style";
+import { RescheduleAppointmentParams } from "@/types/actions.types";
 
+export type ExtendedParams = {
+  reference: string;
+  status: string;
+  authorization: string;
+  paidOn: string;
+  metaData: string;
+};
 type AppointmentReceiptProps = {
-  response: Payment | null | undefined;
-  altDate?: string;
-  altTime?: string;
-  type?: "appointment" | "reschedule";
+  response: RescheduleAppointmentParams & ExtendedParams;
 };
 
-const AppointmentReceipt = ({
-  response,
-  altTime,
-  altDate,
-  type,
-}: AppointmentReceiptProps) => {
-  const metaData = JSON.parse(response?.metaData || "");
-  const authorization = JSON.parse(response?.authorization || "");
+const RescheduleReceipt = ({ response }: AppointmentReceiptProps) => {
+  const authorization = JSON.parse(response?.authorization ?? "");
   return (
     <section className="pr-3">
       <View style={styles.container}>
@@ -32,62 +30,54 @@ const AppointmentReceipt = ({
       </View>
 
       <div style={styles.divider} />
-      {type == "reschedule" && (
-        <Text style={styles.heading}>Reschedule Appointment</Text>
-      )}
-      <Text style={styles.heading2}>Dear, {metaData?.fullname}</Text>
+
+      <Text style={styles.heading}>Reschedule Appointment</Text>
+
+      <Text style={styles.heading2}>Dear, {response?.fullname}</Text>
 
       <Text style={styles.description}>
-        Your appointment with Dr. {response?.doctorId?.fullname} has been
-        {type == "reschedule"
-          ? "rescheduled  sucessfully"
-          : "successfully completed"}{" "}
-        . Bring this document on your day of appointment.
+        Your appointment with Dr. {response?.doctorName} has been rescheduled
+        sucessfully . Bring this document on your day of appointment.
       </Text>
       <View style={styles.margin}>
         <View style={styles.flex}>
           <Text style={styles.label}>Name:</Text>
-          <Text style={styles.value}>{metaData?.fullname}</Text>
+          <Text style={styles.value}>{response?.fullname}</Text>
         </View>
         <div style={styles.divider2} />
         <View style={styles.flex}>
           <Text style={styles.label}>Booking For:</Text>
           <Text style={styles.value}>
-            {metaData?.capacity + "  "}
-            {metaData?.capacity == "1" ? "Person" : "Persons"}
+            {response?.capacity + "  "}
+            {response?.capacity == "1" ? "Person" : "Persons"}
           </Text>
         </View>
         <div style={styles.divider2} />
         <View style={styles.flex}>
           <Text style={styles.label}>Email:</Text>
-          <Text style={styles.value}>{metaData?.email}</Text>
+          <Text style={styles.value}>{response?.email}</Text>
         </View>
         <div style={styles.divider2} />
         <View style={styles.flex}>
           <Text style={styles.label}>Date:</Text>
-          <Text style={styles.value}>
-            {response?.appointment?.bookingDate || altDate}
-          </Text>
+          <Text style={styles.value}>{response?.bookingDate}</Text>
         </View>
         <div style={styles.divider2} />
         <View style={styles.flex}>
           <Text style={styles.label}>Time:</Text>
           <Text style={styles.value}>
-            {altTime ||
-              getAMPWAT(
-                `${response?.appointment?.bookingDate}T${response?.appointment?.startTime}Z`
-              )}
+            {getAMPWAT(`${response?.bookingDate}T${response?.startTime}Z`)}
           </Text>
         </View>
         <div style={styles.divider2} />
         <View style={styles.flex}>
           <Text style={styles.label}>Doctor&apos;s Name:</Text>
-          <Text style={styles.value}>Dr. {response?.doctorId?.fullname}</Text>
+          <Text style={styles.value}>Dr. {response?.doctorName}</Text>
         </View>
         <div style={styles.divider2} />
         <View style={styles.flex}>
           <Text style={styles.label}>Booking Code:</Text>
-          <Text style={styles.value}>#{type == 'appointment' ? response?.$id : response?.appointment?.$id }</Text>
+          <Text style={styles.value}>{response?.slotId}</Text>
         </View>
         <div style={styles.divider2} />
         <View style={styles.flex}>
@@ -107,4 +97,4 @@ const AppointmentReceipt = ({
   );
 };
 
-export default AppointmentReceipt;
+export default RescheduleReceipt;

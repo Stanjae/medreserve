@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   stamp: {
     width: 100,
     height: 100,
-      transform: "rotate(-45deg) translate(-50%, -50%)",
+    transform: "rotate(-45deg) translate(-50%, -50%)",
     opacity: 0.75,
   },
   stampBox: {
@@ -69,6 +69,15 @@ export const styles = StyleSheet.create({
     textTransform: "capitalize",
     fontWeight: 700,
     lineHeight: "34px",
+    marginTop: 0,
+    marginBottom: 4,
+    color: "#000",
+  },
+  heading2: {
+    fontSize: "20px",
+    textTransform: "capitalize",
+    fontWeight: 700,
+    lineHeight: "30px",
     marginTop: 0,
     marginBottom: 4,
     color: "#283779",

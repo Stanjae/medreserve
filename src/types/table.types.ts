@@ -15,7 +15,7 @@ export type AppointmentColumnsType = {
   bio: string;
   patientUserId: string;
   doctorUserId: string;
-  paymentId: Payment;
+  paymentId: Payment[];
   doctorAvailability: string[];
   weekdayEndTime: string;
   weekdayStartTime: string;
@@ -28,6 +28,21 @@ export type AppointmentColumnsType = {
   patientAddress?: string;
   patientEmail?: string;
   capacity?: string;
+};
+
+export type PaymentColumnsType = {
+  id: string;
+  reference: string;
+  amount: number;
+  type: "initial-fees" | "reschedule-fees";
+  status: string;
+  createdAt: string;
+  patientUserId: string;
+  doctorUserId: string;
+  metaData: string;
+  appointmentId: string;
+  specialization: string;
+  doctorName: string;
 };
 
 interface ColumnFilter {

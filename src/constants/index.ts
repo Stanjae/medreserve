@@ -247,3 +247,8 @@ export const statusData = [
   { label: "Past", value: "past" },
   { label: "Today", value: "today" },
 ];
+
+export const paymentStatusData = [
+  { label: "Failed", value: "failed" },
+  { label: "Success", value: "success" },
+];
