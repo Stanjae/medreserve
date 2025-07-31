@@ -12,7 +12,7 @@ const ProtectedRoutes = ({
   auth,
 }: {
   children: React.ReactNode;
-  auth: AuthCredentials | undefined;
+  auth: AuthCredentials | null;
 }) => {
   const pathname = usePathname();
   const router = useRouter();

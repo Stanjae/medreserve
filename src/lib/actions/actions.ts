@@ -30,8 +30,10 @@ export async function checkAuthStatus() {
       databaseId: response?.prefs?.databaseId,
     };
   } catch (error) {
-    console.error("User is not authenticated:", error);
-    return;
+   if (process.env.NODE_ENV === "development") {
+     console.error("Authentication check failed:", error);
+   }
+    return null;
   }
 }
 export async function registerClientAction(
