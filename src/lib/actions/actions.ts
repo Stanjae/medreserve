@@ -31,7 +31,7 @@ export async function checkAuthStatus() {
     };
   } catch (error) {
     console.error("User is not authenticated:", error);
-    return null;
+    return;
   }
 }
 export async function registerClientAction(

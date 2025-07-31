@@ -7,7 +7,7 @@ import { Loader } from '@mantine/core';
 import CustomPagination from '../pagination/CustomPagination';
 
 const FilterableDoctorList = () => {
-  const { data, error, isLoading, isPlaceholderData, isSuccess } = useGetDoctorsFilterQuery();
+  const { data, error, isLoading, isPlaceholderData, isSuccess, isFetching } = useGetDoctorsFilterQuery();
 
   useEffect(() => {
     if (error) toast.error(error?.message);
@@ -15,7 +15,7 @@ const FilterableDoctorList = () => {
 
   return (
     <div>
-      {isLoading && <Loader className="mx-auto" type="bars" />}
+      {(isLoading || isFetching) && <Loader className="mx-auto" type="bars" />}
       {isSuccess &&
         data?.project?.map((item) => <BookDoctorCard item={item} key={item?.$id} />)}
       {!isLoading && (

@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/medreserve/cronjobs/delete-pending-apt-after-one-hr/route.ts",
+      "schedule": "0 10 * * *"
+    }
+  ]
+}

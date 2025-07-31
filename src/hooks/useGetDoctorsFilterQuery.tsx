@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
-
 import { getAvailableDoctorsFilterAction } from "@/lib/actions/getActions";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs";
@@ -16,7 +15,7 @@ const useGetDoctorsFilterQuery = () => {
     const now = dayjs().format("YYYY-MM-DD");
     const isPast = dayjs(searchParams.get("date") || dayjs()).isBefore(now, "day");
 
-    const { data, isLoading, error, isSuccess, isPlaceholderData } = useQuery({
+    const { data, isLoading, error, isSuccess, isPlaceholderData, isFetching } = useQuery({
       queryKey: [
         "doctors-filter",
         searchParams.get("date"),
@@ -52,7 +51,7 @@ const useGetDoctorsFilterQuery = () => {
       queryClient,
     ]);
 
-    return { data, isLoading, error, isSuccess, isPlaceholderData };
+    return { data, isLoading, error, isSuccess, isPlaceholderData, isFetching };
 }
 
 export default useGetDoctorsFilterQuery
