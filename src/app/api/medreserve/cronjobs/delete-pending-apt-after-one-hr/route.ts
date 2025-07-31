@@ -3,7 +3,7 @@ import { Query } from "node-appwrite";
 import type { NextRequest } from "next/server";
 
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   // Verify the request is from your cron service (optional)
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
