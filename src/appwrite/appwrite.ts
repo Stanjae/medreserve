@@ -3,7 +3,9 @@
 import { Client, Account, Users, Storage, Databases } from "node-appwrite";
 import { cookies } from "next/headers";
 
-export async function createSessionClient() {
+export async function createSessionClient(): Promise<{
+  account: Account | null;
+}> {
   const client = new Client()
     .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
     .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!);
@@ -11,7 +13,7 @@ export async function createSessionClient() {
   const sessionCookie = await cookies()
   const session = sessionCookie.get("my-custom-session");
   if (!session || !session.value) {
-    throw new Error("No session");
+   return { account: null };
   }
 
   client.setSession(session?.value);

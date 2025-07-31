@@ -22,7 +22,7 @@ const ProtectedRoutes = ({
   useEffect(() => {
     const handleProtectedRoutes = async () => {
       if (!auth && userRoles.some((item) => pathname.includes(item))) {
-        clearCookies();
+        await clearCookies();
         clearAuthCredentials();
         toast.error("Session expired. Redirecting to login...");
         router.push("/auth/login");

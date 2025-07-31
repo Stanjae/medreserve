@@ -17,6 +17,8 @@ import { PaymentFormParams } from "./../../types/actions.types";
 export async function checkAuthStatus() {
   try {
     const { account } = await createSessionClient();
+
+    if(!account) return null;
     // If successful, user is authenticated
     const response = await account.get();
 
@@ -93,7 +95,7 @@ export async function signOut() {
   try {
     const { account } = await createSessionClient();
     (await cookies()).delete("my-custom-session");
-    await account.deleteSession("current");
+    await account?.deleteSession("current");
     return { code: 200, type: "success", message: "Logged out successfully" };
   } catch (err) {
     console.log(err);
