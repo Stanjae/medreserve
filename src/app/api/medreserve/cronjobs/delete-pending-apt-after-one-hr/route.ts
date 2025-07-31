@@ -1,13 +1,13 @@
 import { createAdminClient } from "@/appwrite/appwrite";
-import { NextResponse } from "next/server";
 import { Query } from "node-appwrite";
+import type { NextRequest } from "next/server";
 
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   // Verify the request is from your cron service (optional)
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
     try {
@@ -33,11 +33,11 @@ export async function POST(request: Request) {
 
     await Promise.all(deletePromises);
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       deleted: expiredAppointments.documents.length,
     });
   } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+    return Response.json({ error }, { status: 500 });
   }
 }
