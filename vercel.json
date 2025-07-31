@@ -4,6 +4,10 @@
     {
       "path": "/api/medreserve/cronjobs/delete-pending-apt-after-one-hr",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/medreserve/cronjobs/hello",
+      "schedule": "0 10 * * *"
     }
   ]
 }
