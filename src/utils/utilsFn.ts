@@ -152,7 +152,7 @@ export function isbBeforeDateTime(dateString: string): boolean {
   return newDate;
 }
 
-export function checkDateTimeDifferenceFromNow(dateTimeString: string) {
+export function checkDateTimeDifferenceFromNow(dateTimeString: string | undefined) {
   return dayjs().diff(dayjs(dateTimeString), "hour"); // 7
 }
 
