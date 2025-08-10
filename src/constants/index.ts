@@ -1,3 +1,12 @@
+import {
+  IconClock,
+  IconCheck,
+  IconX,
+  IconCurrencyDollar,
+  IconCircleCheck,
+  IconCalendarEvent,
+  //IconLoader,
+} from "@tabler/icons-react";
 export const IdentificationTypes = [
   "Driver's License",
   "Military ID Card",
@@ -74,6 +83,12 @@ export const doctorCategories = [
       { value: "preventive-medicine", label: "Preventive Medicine Specialist" },
     ],
   },
+];
+
+export const appointmentType = [
+  { label: "Consultation", value: "consultation" },
+  { label: "Follow up", value: "follow-up" },
+  { label: "Emergency", value: "emergency" },
 ];
 
 export const medicalCourses = [
@@ -242,13 +257,137 @@ export const newPrices = [
   },
 ];
 
-export const statusData = [
-  { label: "Upcoming", value: "upcoming" },
-  { label: "Past", value: "past" },
-  { label: "Today", value: "today" },
-];
-
-export const paymentStatusData = [
+export const paymentStatusFilter = [
   { label: "Failed", value: "failed" },
   { label: "Success", value: "success" },
 ];
+
+export const appointmentTabsData = [
+  { label: "Upcoming", value: "upcoming" },
+  { label: "Today", value: "today" },
+  { label: "Past", value: "past" },
+  { label: "Cancelled", value: "cancelled" },
+  { label: "Refunded", value: "refunded" },
+];
+
+export const dashboardMetricsCardInfo = [
+  { label: "Upcoming Appointment(s)", value: "upcoming" },
+  { label: "Total Appointment(s)", value: "total" },
+  { label: "Doctors Visited", value: "visited" },
+  { label: "Health Score", value: "healthscore" },
+];
+
+export const barChartData = [
+  { label: "Jan - Jun", value: "first-half" },
+  { label: "Jul - Dec", value: "second-half" },
+];
+
+export const appointmentStatusData = [
+  "pending",
+  "approved",
+  "cancelled",
+  "refunded",
+  "completed",
+  "rescheduled",
+];
+
+export const cancel_refundStatusFilter = ["cancelled", "refunded"];
+
+// Status configuration with colors and icons
+export const statusConfig = {
+  pending: {
+    color: "gray",
+    variant: "light",
+    icon: IconClock,
+    label: "Pending",
+  },
+  approved: {
+    color: "teal",
+    variant: "light",
+    icon: IconCheck,
+    label: "Approved",
+  },
+  cancelled: {
+    color: "red",
+    variant: "light",
+    icon: IconX,
+    label: "Cancelled",
+  },
+  refunded: {
+    color: "violet",
+    variant: "outline",
+    icon: IconCurrencyDollar,
+    label: "Refunded",
+  },
+  completed: {
+    color: "green",
+    variant: "filled",
+    icon: IconCircleCheck,
+    label: "Completed",
+  },
+  rescheduled: {
+    color: "blue",
+    variant: "light",
+    icon: IconCalendarEvent,
+    label: "Rescheduled",
+  },
+  /* processing: {
+    color: "orange", // Changed from yellow for better distinction
+    variant: "light",
+    icon: IconLoader, 
+    label: "Processing",
+  }, */
+} as const;
+
+export const CANCELLATION_REASONS = [
+  { value: "emergency", label: "Personal emergency" },
+  { value: "illness", label: "Patient illness" },
+  { value: "schedule", label: "Schedule conflict" },
+  { value: "other", label: "Other" },
+];
+
+export const cancellationRate = 15; //15%
+export const refundRate = 15; //10%
+export const adminFee = 5;
+
+export const refundType = ["refund", "cancellation"];
+export const refundStatus = ["approved", "failed", "pending"];
+
+export const refundTextStatusInfo = [
+  {
+    title: "Processing Cancellation",
+    subtitle: "Please wait while we process your request...",
+    status:'initialized'
+  },
+  {
+    title: "Processing Refund",
+    subtitle: "Initiating refund to your original payment method...",
+    status:"pending"
+  },
+  {
+    title: "Refund Completed",
+    subtitle: "Your refund has been processed successfully",
+    status:"success"
+  },
+];
+
+export const refundTextStatusInfo2 = [
+  {
+    title: "Processing Refund",
+    subtitle: "Initiating refund to your original payment method...",
+    status:"pending"
+  },
+  {
+    title: "Refund Completed",
+    subtitle: "Your refund has been processed successfully",
+    status:"success"
+  },
+];
+
+ export const refundReasons = [
+    { value: "medical_emergency", label: "Medical Emergency" },
+    { value: "family_emergency", label: "Family Emergency" },
+    { value: "transportation", label: "Transportation Issues" },
+    { value: "hospitalization", label: "Hospitalization" },
+    { value: "other", label: "Other (requires approval)" },
+  ];

@@ -1,22 +1,27 @@
 "use client";
+import { workSchedule } from "@/constants";
 import useCheckIfUserBookedASlot from "@/hooks/useCheckIfUserBookedASlot";
 import { useMedStore } from "@/providers/med-provider";
 import { addOrSubtractTime, getCalendarDateTime, parseResponse} from "@/utils/utilsFn";
-import { Card, Rating, Skeleton, Text } from "@mantine/core";
+import { Card, Pill, Rating, Skeleton, Text } from "@mantine/core";
 import { IconClockHour5 } from "@tabler/icons-react";
 import React from "react";
+
+type Props = {
+  fullname: string;
+  rating: string[];
+  doctorId: string;
+  specialization: string;
+  workingDays: string[] | undefined;
+};
 
 const DoctorBookingProfileStatus = ({
   fullname,
   rating,
   doctorId,
-  specialization
-}: {
-  fullname: string;
-  rating: string[];
-    doctorId: string;
-  specialization: string
-}) => {
+  specialization,
+  workingDays
+}: Props) => {
   const { dateTime, credentials } = useMedStore((state) => state);
   const total =
     rating?.length == 0
@@ -31,6 +36,13 @@ const DoctorBookingProfileStatus = ({
     credentials?.databaseId as string
   );
 
+  const newWorkingDays = workSchedule.filter(item => workingDays?.includes(item.value))?.map((item, index) => (
+    <Pill key={index} className=" border border-primary text-secondary">
+      {item.label}
+    </Pill>
+  ));
+
+
   return (
     <div className=" space-y-4">
       <Card className="rounded-xl" bg="m-cyan.0" px={40} py={27}>
@@ -41,6 +53,9 @@ const DoctorBookingProfileStatus = ({
         >
           Dr. {fullname}
         </Text>
+        <Pill.Group>
+          {newWorkingDays}
+        </Pill.Group>
         <div className="flex gap-2 items-center">
           <Rating readOnly fractions={2} defaultValue={newRating} />
           <Text>

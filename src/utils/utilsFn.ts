@@ -3,18 +3,25 @@ import doctorsData from "../lib/api/data.json";
 import universitiesData from "../lib/api/universities.json";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { GETADDBYPARAMS } from "@/types";
+import { DayUnits, GETADDBYPARAMS } from "@/types";
 import calendar from "dayjs/plugin/calendar";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import IsBetween from 'dayjs/plugin/isBetween'
 import { Payment } from "../../types/appwrite";
+import BanksData from '../lib/api/bank-json.json'
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 dayjs.extend(calendar);
 dayjs.extend(relativeTime);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(IsBetween)
 
 export const parseResponse = (response: string) =>
   response.replace(/[_-]/g, " ");
@@ -147,14 +154,51 @@ export function addOrSubtractTime(
     .format(timeFormat == "h-m-s" ? "HH:mm:ss" : "HH:mm A");
 }
 
-export function isbBeforeDateTime(dateString: string): boolean {
-  const newDate = dayjs().isAfter(dayjs(dateString));
-  return newDate;
+//fixed functions
+
+export function isTodayBeforeOrSameWithDateTime(
+  dateString: string,
+  unit: DayUnits
+): boolean {
+  return dayjs().isSameOrBefore(dayjs(dateString), unit);
 }
 
-export function checkDateTimeDifferenceFromNow(dateTimeString: string | undefined) {
-  return dayjs().diff(dayjs(dateTimeString), "hour"); // 7
+export function isTodaySameWithOrAfterDateTime(
+  dateString: string,
+  unit: DayUnits
+): boolean {
+  return dayjs().isSameOrAfter(dayjs(dateString), unit);
 }
+
+export function isTodaySameWithDateTime(
+  dateString: string,
+  unit: DayUnits
+): boolean {
+  return dayjs().isSame(dayjs(dateString), unit);
+}
+
+export function isTodayBeforeDateTime(
+  dateString: string,
+  unit: DayUnits
+): boolean {
+  return dayjs().isBefore(dayjs(dateString), unit);
+}
+
+export function isTodayAfterDateTime(
+  dateString: string,
+  unit: DayUnits
+): boolean {
+  return dayjs().isAfter(dayjs(dateString), unit);
+}
+
+export function checkDateTimeDifferenceFromNow(
+  dateTimeString: string | undefined,
+  unit: GETADDBYPARAMS
+) {
+  return dayjs().diff(dayjs(dateTimeString), unit); // 7
+}
+
+//end
 
 export function getCalendarDateTime(dateTimeString: string) {
   return dayjs(dateTimeString).calendar(null, {
@@ -194,3 +238,31 @@ export const getLatestObjectByCreatedAt = (arr: Payment[]) => {
       : latest;
   });
 };
+
+export const getFilterByCreatedAt = (value: string) => {
+  switch (value) {
+    case "upcoming":
+      return (strong: string, unit: DayUnits) =>
+        isTodayBeforeDateTime(strong, unit) &&
+        !isTodaySameWithDateTime(strong, unit);
+    case "today":
+      return (strong: string, unit: DayUnits) =>
+        isTodaySameWithDateTime(strong, unit);
+    case "past":
+      return (strong: string, unit: DayUnits) =>
+        isTodayAfterDateTime(strong, unit) &&
+        !isTodaySameWithDateTime(strong, unit);
+    default:
+     return (strong: string, unit: DayUnits) =>
+       isTodayBeforeDateTime(strong, unit) &&
+       !isTodaySameWithDateTime(strong, unit);
+  }
+};
+
+export const checkIfDateIsBetweenAYear = (dateString: string) => {
+  const startDate = `${dayjs().year()}-01-01`;
+  const endDate = `${dayjs().add(1, "year").year()}-01-01`;
+  return dayjs(dateString).isBetween(startDate, endDate);
+}
+
+export const getBankCodesData = BanksData.map((bank) =>({ label:bank.name, value:bank.code}))

@@ -171,3 +171,10 @@ text-align:left;
 .c-table-td .m_4081bf90 {
   justify-content: flex-start !important;
 }
+
+.bg-card-metrics{
+  background-image:url('../../public/card.svg');
+  background-size: contain;
+  background-position:right center;
+  background-repeat: no-repeat;
+}

@@ -85,3 +85,5 @@ export type GETADDBYPARAMS =
   | "minute"
   | "second"
   | "millisecond";
+
+export type DayUnits = "second" | "minute" | "hour" | "day" | "date" | "week" | "month" | "year";

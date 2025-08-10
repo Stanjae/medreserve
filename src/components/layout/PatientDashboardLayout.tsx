@@ -218,11 +218,19 @@ export default function DashboardLayout({
                 >
                   {item.sub?.map((lol, opp) => (
                     <NavLink
-                      active={lol.href == 'index' ? pathname.endsWith(item.href) : pathname.includes(lol.href)}
+                      active={
+                        lol.href == "index"
+                          ? pathname.endsWith(item.href)
+                          : pathname.includes(lol.href)
+                      }
                       label={lol.label}
                       component={Link}
                       key={opp}
-                      href={lol.href == "index" ? item.href : `${item.href}/${lol.href}`}
+                      href={
+                        lol.href == "index"
+                          ? item.href
+                          : `${item.href}/${lol.href}`
+                      }
                       styles={{
                         label: {
                           fontSize: "15px",
@@ -238,7 +246,7 @@ export default function DashboardLayout({
           })}
         </Box>
       </AppShell.Navbar>
-      <AppShell.Main bg={"m-blue.0"}>
+      <AppShell.Main bg={"#F8F8F8"}>
         <Stack>
           <Text className=" capitalize font-semibold" fz={"h3"}>
             {pathname
@@ -247,7 +255,7 @@ export default function DashboardLayout({
               ?.replaceAll("-", " ")}
           </Text>
         </Stack>
-        <Box mt={20}>{children}</Box>
+        <Box mt={15}>{children}</Box>
       </AppShell.Main>
     </AppShell>
   );

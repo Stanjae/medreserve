@@ -1,17 +1,13 @@
 'use client'
 import { getPatientAppointmentTable } from "@/lib/actions/getActions";
-import { checkDateTimeDifferenceFromNow } from "@/utils/utilsFn";
-//import { getPatientAppointmentTable } from "@/lib/actions/getActions";
 import { useQuery} from "@tanstack/react-query"
+import { useSearchParams } from "next/navigation";
 
 const useGetPatientAppointmentTable = (patientId: string) => {
+  const searchParams = useSearchParams();
     return useQuery({
-        queryKey: ["patient-appointments", patientId],
-            queryFn: async () => await getPatientAppointmentTable(patientId),
-            select: (data) => {
-              const result = data?.project?.filter((item) => (checkDateTimeDifferenceFromNow(item?.createdAt as string) == 0 || item.paymentStatus != "pending"));
-              return { project: result, total: result?.length };
-            },
+        queryKey: ["patient-appointments", patientId, searchParams.get("activeTab")],
+            queryFn: async () => await getPatientAppointmentTable(patientId, searchParams.get("activeTab") as string),
     });
 }
 

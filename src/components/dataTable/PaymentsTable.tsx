@@ -7,7 +7,7 @@ import { columnsPayment } from "../tables/ColumnsDef";
 import { PaymentColumnsType } from "@/types/table.types";
 import { useMedStore } from "@/providers/med-provider";
 import CustomInput from "../inputs/CustomInput";
-import { paymentStatusData } from "@/constants";
+import { paymentStatusFilter } from "@/constants";
 import { Paper } from "@mantine/core";
 import useGetPatientPaymentsTable from "@/hooks/tables/useGetPatientPaymentsTable";
 import MedReverseDrawer from "../drawers/MedReverseDrawer";
@@ -89,8 +89,6 @@ const PaymentsTable = () => {
     setActiveNo(index);
     open();
   };
-
-  console.log("data", data);
   return (
     <div>
       <MedReverseDrawer
@@ -121,7 +119,7 @@ const PaymentsTable = () => {
                 placeholder="Filter Status"
                 size="md"
                 radius="xl"
-                data={paymentStatusData}
+                data={paymentStatusFilter}
                 data-column-id="status"
               />
             </div>

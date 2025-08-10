@@ -1,4 +1,10 @@
-import { isbBeforeDateTime } from "@/utils/utilsFn";
+import {
+  appointmentStatusData,
+  appointmentType,
+  refundStatus,
+  refundType,
+} from "@/constants";
+import { isTodayAfterDateTime } from "@/utils/utilsFn";
 import { z } from "zod";
 
 export const PatientStepFormValidation = [
@@ -202,13 +208,17 @@ export const CreateBookingSchema = z
     startTime: z.string(),
     endTime: z.string(),
     notes: z.string().nonempty("Notes is required"),
-    status: z.enum(["pending", "approved", "declined"]),
+    status: z.enum(appointmentStatusData as [string, ...string[]]),
+    appointmentType: z.enum(
+      appointmentType.map((type) => type.value) as [string, ...string[]]
+    ),
   })
   .refine(
     (data) =>
-      false == isbBeforeDateTime(`${data.bookingDate} ${data.startTime}`),
+      false ==
+      isTodayAfterDateTime(`${data.bookingDate} ${data.startTime}`, "date"),
     {
-      message: "You cannot book an appointment in the past",
+      message: "You cannot booki an appointment in the past",
       path: ["startTime"], // Optional: attach error to endDate field
     }
   );
@@ -222,6 +232,7 @@ export const UpdateBookingSchema = z
     bookingDate: z.coerce.string(),
     startTime: z.string(),
     endTime: z.string(),
+    appointmentStatus: z.enum(appointmentStatusData as [string, ...string[]]),
     notes: z.string().nonempty("Notes is required"),
     slotId: z.string().nonempty("Slot ID is required"),
     address: z.string().nonempty("Address is required"),
@@ -238,7 +249,8 @@ export const UpdateBookingSchema = z
   })
   .refine(
     (data) =>
-      false == isbBeforeDateTime(`${data.bookingDate} ${data.startTime}`),
+      false ==
+      isTodayAfterDateTime(`${data.bookingDate} ${data.startTime}`, "date"),
     {
       message: "You cannot book an appointment in the past",
       path: ["startTime"], // Optional: attach error to endDate field
@@ -260,4 +272,34 @@ export const PaymentFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   phone: z.string().nonempty("Phone number is required"),
   capacity: z.string().nonempty("Capacity is required"),
+});
+
+export const RefundSchema = z.object({
+  doctorId: z.string().nonempty("Doctor ID is required"),
+  patientId: z.string().nonempty("Patient ID is required"),
+  appointmentId: z.string().nonempty("Slot ID is required"),
+  refundAmount: z
+    .number()
+    .int("Amount must be an integer")
+    .positive("Amount must be positive")
+    .min(1, "Amount must be at least 1")
+    .max(1000000, "Amount exceeds maximum allowed"),
+  consultationFee: z
+    .number()
+    .int("Amount must be an integer")
+    .positive("Amount must be positive")
+    .min(1, "Amount must be at least 1")
+    .max(1000000, "Amount exceeds maximum allowed"),
+  cancellationFee: z
+    .number()
+    .int("Amount must be an integer")
+    .positive("Amount must be positive")
+    .min(1, "Amount must be at least 1")
+    .max(1000000, "Amount exceeds maximum allowed"),
+  type: z.enum(refundType as [string, ...string[]]),
+  reason: z.string().nonempty("Reasons is required"),
+  status: z.enum(refundStatus as [string, ...string[]]),
+  bankCode: z.string().nonempty("Bank code is required"),
+  bankName: z.string().nonempty("Bank name is required"),
+  bankAccountNumber: z.string().nonempty("Bank account number is required").max(10, "Bank account number must be 10 digits"),
 });

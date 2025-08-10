@@ -57,6 +57,7 @@ const RescheduleAppointment = ({ row, handleClose }: { row: AppointmentColumnsTy
       amount: 15000,
       phone: row?.patientPhone as string,
       capacity: row?.capacity?.toString() as string,
+      appointmentStatus:"rescheduled",
     },
     validateInputOnChange: true,
     transformValues: (values) => ({

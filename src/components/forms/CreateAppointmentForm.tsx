@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useMedStore } from "@/providers/med-provider";
-import { addOrSubtractTime, isbBeforeDateTime } from "@/utils/utilsFn";
+import { addOrSubtractTime,  isTodayAfterDateTime } from "@/utils/utilsFn";
 import {
   Alert,
   Box,
@@ -12,7 +12,6 @@ import {
   Group,
   Loader,
   LoadingOverlay,
-  Skeleton,
   Text,
   Transition,
 } from "@mantine/core";
@@ -36,6 +35,8 @@ import useGetAvailableSlots from "@/hooks/useGetAvailableSlots";
 import useCheckIfUserBookedASlot from "@/hooks/useCheckIfUserBookedASlot";
 import Link from "next/link";
 import CustomCancelBtn from "../CButton/CustomCancelBtn";
+import dayjs from "dayjs";
+import { appointmentType } from "@/constants";
 
 export const scaleY = {
   in: { opacity: 1, transform: "scaleY(1)" },
@@ -64,6 +65,7 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
       endTime: "",
       notes: "",
       status: "pending",
+      appointmentType: "consultancy",
     },
     validateInputOnChange: true,
     transformValues: (values) => ({
@@ -125,7 +127,7 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
   const cancelAppointmentFn = async () =>
     await cancelAppointment.mutateAsync(userBookedSlot?.at(0)?.$id as string);
   return (
-    <div>
+    <div className="relative">
       <CustomModal
         size={"lg"}
         closeButtonProps={{ icon: <div></div> }}
@@ -189,14 +191,21 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
             </Group>
           )}
       </CustomModal>
-      {loading2 ? (
-        <Skeleton height={400} radius="lg" />
-      ) : (
-        !userBookedSlot && (
+  
+        <LoadingOverlay
+          visible={loading2}
+          zIndex={2000}
+          overlayProps={{ radius: "sm", blur: 2 }}
+        />
+  
+       { !userBookedSlot && (
           <form
             onSubmit={form.onSubmit(async (values) => {
               if (
-                isbBeforeDateTime(`${values.bookingDate} ${values.startTime}`)
+                isTodayAfterDateTime(
+                  `${values.bookingDate} ${values.startTime}`,
+                  "date"
+                )
               ) {
                 toast.error("You cannot book an appointment in the past.");
                 return;
@@ -221,6 +230,7 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
                   onChange={(value) =>
                     setDateTime({ ...dateTime, date: value })
                   }
+                  minDate={dayjs().format("YYYY-MM-DD")}
                 />
               </GridCol>
               <GridCol span={{ base: 12, sm: 6 }}>
@@ -248,6 +258,18 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
                     disableTime={!data ? [] : data}
                   />
                 </Box>
+                <CustomInput
+                  mt={20}
+                  required
+                  size="md"
+                  radius={35}
+                  type="select"
+                  data={appointmentType}
+                  placeholder="Select Type of Appointment"
+                  label="Type of Appointment"
+                  key={form.key("appointmentType")}
+                  {...form.getInputProps("appointmentType")}
+                />
               </GridCol>
             </Grid>
             <Divider color={"m-cyan"} my="lg" size="md" variant="dotted" />
@@ -275,7 +297,7 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
             </Group>
           </form>
         )
-      )}
+      }
       {success && userBookedSlot && (
         <div>
           <Alert

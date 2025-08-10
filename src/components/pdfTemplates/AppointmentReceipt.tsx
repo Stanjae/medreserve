@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
+'use client'
 import { Image, Text, View } from "@react-pdf/renderer";
 import { Payment } from "../../../types/appwrite";
 import { getAMPWAT } from "@/utils/utilsFn";

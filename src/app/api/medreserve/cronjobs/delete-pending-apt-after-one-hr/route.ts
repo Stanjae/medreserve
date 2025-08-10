@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
     return Response.json({
       success: true,
       deleted: expiredAppointments.documents.length,
+      message: "Expired appointments deleted successfully",
     });
   } catch (error) {
     return Response.json({ error }, { status: 500 });

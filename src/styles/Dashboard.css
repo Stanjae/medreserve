@@ -1,0 +1,66 @@
+
+  .card-animated{
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0px 0px 3px 1px #00000088;
+  }
+
+  .card-animated .card-animated-content {
+    border-radius: 5px;
+    z-index: 1;
+    padding: 20px;
+    color: white;
+  }
+
+  .card-animated-contentt::before {
+    opacity: 0;
+    transition: opacity 300ms;
+    content: " ";
+    display: block;
+    width: 5px;
+    height: 50px;
+    position: absolute;
+    filter: blur(50px);
+    overflow: hidden;
+  }
+
+  .card-animated:hover .card-animated-contentt::before {
+    opacity: 1;
+  }
+
+  .card-animated::before {
+    opacity: 0;
+    content: " ";
+    position: absolute;
+    display: block;
+    width: 80px;
+    height: 360px;
+    background: linear-gradient(#ff2288, #387ef0);
+    transition: opacity 300ms;
+    animation: rotation_9018 8000ms infinite linear;
+    animation-play-state: paused;
+  }
+
+  .card-animated:hover::before {
+    opacity: 1;
+    animation-play-state: running;
+  }
+
+  .card-animated::after {
+    position: absolute;
+    content: " ";
+    display: block;
+    width: 250px;
+    height: 360px;
+    backdrop-filter: blur(50px);
+  }
+
+  @keyframes rotation_9018 {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }

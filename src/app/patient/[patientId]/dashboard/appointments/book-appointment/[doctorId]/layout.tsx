@@ -14,6 +14,7 @@ const Bookinglayout = async ({
 }) => {
   const { doctorId } = await params;
   const response = await getDoctorDetailsOnBooking(doctorId);
+
   return (
     <Paper p={20} className=" min-h-screen" shadow="md" radius={"md"}>
       <CustomHeaders />
@@ -34,6 +35,7 @@ const Bookinglayout = async ({
                 fullname={response?.fullname}
                 doctorId={doctorId}
                 specialization={response?.specialization}
+                workingDays={response?.doctorAvailability?.workSchedule}
               />
             </Suspense>
           </section>

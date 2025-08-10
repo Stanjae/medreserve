@@ -163,7 +163,7 @@ export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=
         React.isValidElement(child) &&
         selectValues[index] !== null &&
         selectValues[index] !== undefined &&
-        selectValues[index] !== ""
+        selectValues[index] !== "all"
       ) {
         const child2 = child as {props: { "data-column-id": string }}
         const columnId = child2.props["data-column-id"] as string | undefined;

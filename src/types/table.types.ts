@@ -1,14 +1,16 @@
+
 import { Payment } from "../../types/appwrite";
+import { AppointmentStatus, AppointmentType, PaymentDataType } from "./actions.types";
 
 export type AppointmentColumnsType = {
   id: string;
   bookingDate: string;
-  timeFrameTimeZone?: string;
   startTime: string;
   endTime: string;
-  timeFrameStatus?: "upcoming" | "past" | "today";
-  paymentStatus: "pending" | "approved" | "declined";
+  appointmentStatus: AppointmentStatus;
   doctorName: string;
+  doctorExperience: number;
+  didPatientSeeDoctor: boolean;
   profilePicture: string;
   specialization: string;
   rating: string[];
@@ -16,6 +18,7 @@ export type AppointmentColumnsType = {
   patientUserId: string;
   doctorUserId: string;
   paymentId: Payment[];
+  cancelRefund: { [key: string]: unknown };
   doctorAvailability: string[];
   weekdayEndTime: string;
   weekdayStartTime: string;
@@ -28,13 +31,14 @@ export type AppointmentColumnsType = {
   patientAddress?: string;
   patientEmail?: string;
   capacity?: string;
+  appointmentType?: AppointmentType;
 };
 
 export type PaymentColumnsType = {
   id: string;
   reference: string;
   amount: number;
-  type: "initial-fees" | "reschedule-fees";
+  type: PaymentDataType;
   status: string;
   createdAt: string;
   patientUserId: string;

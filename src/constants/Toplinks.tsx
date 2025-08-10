@@ -1,8 +1,11 @@
 import {
   IconCalendarBolt,
+  IconCalendarWeek,
   IconChevronRight,
   IconCoins,
   IconDashboard,
+  IconReportAnalytics,
+  IconSearch,
 } from "@tabler/icons-react";
 
 export const Toplinks = [
@@ -96,4 +99,31 @@ export const patientDashLinks = [
     child: false,
     leftIcon: <IconCoins size={17} stroke={1.5} />,
   },
+];
+
+export const dashboardShortCutLinks = [
+  {
+    title: "Book Appointment",
+    description: "Schedule a new appointment with your preferred doctor",
+    href: "/patient/userId/dashboard/appointments/book-appointment",
+    icon: <IconCalendarWeek size={40} stroke={1.5} color="#fff" />,
+  },
+  {
+    title: "Find Doctors",
+    description: "Search for specialists in your area",
+    href: "/patient/userId/dashboard/appointments/book-appointment",
+    icon: <IconSearch size={40} stroke={1.5} color="#fff" />,
+  },
+    {
+    title: "View Records",
+    description: "Access your complete medical history",
+    href: "/patient/userId/dashboard/appointments/book-appointment",
+    icon: <IconReportAnalytics size={40} stroke={1.5} color="#fff" />,
+  },
+      {
+    title: "Prescriptions",
+    description: "Manage your medications and refills",
+    href: "/patient/userId/dashboard/appointments/book-appointment",
+    icon: <IconReportAnalytics size={40} stroke={1.5} color="#fff" />,
+  }
 ];

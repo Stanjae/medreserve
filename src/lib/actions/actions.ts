@@ -8,6 +8,9 @@ import {
   CreateDoctorProfileParams,
   CreateAppointmentParams2,
   RescheduleAppointmentParams,
+  PaymentDataType,
+  RefundAppointmentParams,
+  AppointmentStatus,
 } from "@/types/actions.types";
 import { ROLES } from "@/types/store";
 import { cookies } from "next/headers";
@@ -18,7 +21,7 @@ export async function checkAuthStatus() {
   try {
     const { account } = await createSessionClient();
 
-    if(!account) return null;
+    if (!account) return null;
     // If successful, user is authenticated
     const response = await account.get();
 
@@ -32,9 +35,9 @@ export async function checkAuthStatus() {
       databaseId: response?.prefs?.databaseId,
     };
   } catch (error) {
-   if (process.env.NODE_ENV === "development") {
-     console.error("Authentication check failed:", error);
-   }
+    if (process.env.NODE_ENV === "development") {
+      console.error("Authentication check failed:", error);
+    }
     return null;
   }
 }
@@ -365,20 +368,19 @@ export const createPaymentAction = async (
       data.slotId,
       {
         status: "approved",
-        capacity: Number(data.capacity)
+        capacity: Number(data.capacity),
       }
-    )
+    );
     return {
       code: 201,
       status: "success",
-      refId:data.reference,
+      refId: data.reference,
       message: "Appointment Paid and Completed successfully",
     };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };
   }
 };
-
 
 export const reschedulePaymentAction = async (
   data: RescheduleAppointmentParams & {
@@ -387,7 +389,7 @@ export const reschedulePaymentAction = async (
     metaData: string;
     paidOn: string;
     authorization: string;
-    type: "reschedule-fees" | "initial-fees";
+    type: PaymentDataType;
   }
 ) => {
   try {
@@ -407,10 +409,10 @@ export const reschedulePaymentAction = async (
         patientId: data.patientId,
         doctorId: data.doctorId,
         authorization: data.authorization,
-        type: data.type
+        type: data.type,
       }
     );
-  await database.updateDocument(
+    await database.updateDocument(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
       data.slotId,
@@ -419,14 +421,46 @@ export const reschedulePaymentAction = async (
         bookingDate: data.bookingDate,
         startTime: data.startTime,
         endTime: data.endTime,
-        notes: data.notes
+        notes: data.notes,
+        status: data.appointmentStatus,
       }
-    ); 
+    );
     return {
       code: 201,
       status: "success",
       refId: data.reference,
       message: "Dear user, your appointment has been rescheduled successfully",
+    };
+  } catch (err) {
+    return { code: 500, status: "error", message: `${err}` };
+  }
+};
+
+export const createCancellationAction = async (params:RefundAppointmentParams, appointmentStatus: AppointmentStatus) => {
+  try {
+    const { database } = await createAdminClient();
+    const uniqueID = ID.unique();
+    await database.createDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_CANCEL_REFUND_ID!,
+      uniqueID, // documentId
+      {
+      ...params
+      }
+    );
+    await database.updateDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      params.appointmentId,
+      {
+        cancelRefund: uniqueID,
+        status: appointmentStatus
+      }
+    );
+    return {
+      code: 201,
+      status: "success",
+      message: "Appointment Paid and Completed successfully",
     };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };

@@ -1,10 +1,12 @@
 import {
   CreateBookingSchema,
   PaymentFormSchema,
+  RefundSchema,
   UpdateBookingSchema,
 } from "@/lib/schema/zod";
 import { z } from "zod";
 import { AppointmentColumnsType, PaymentColumnsType } from "./table.types";
+import { Payment } from "../../types/appwrite";
 
 export type ClientRegistrationParams = {
   username: string;
@@ -81,6 +83,10 @@ export type CreateDoctorProfileParams = {
   workSchedule?: string[];
 };
 
+export type AppointmentStatus = "pending" | "approved" | "cancelled" | "refunded" | "completed" | "rescheduled" ;
+export type AppointmentType = "consultation" | "follow-up" | "emergency";
+export type PaymentDataType = "initial-fees" | "reschedule-fees";
+export type refundStatus = 'pending' | 'approved' | 'failed';
 export type CreateAppointMentParams = {
   doctorId: string;
   patientId: string;
@@ -88,7 +94,7 @@ export type CreateAppointMentParams = {
   startTime: string;
   endTime: string;
   notes: string;
-  status: "pending" | "approved" | "declined";
+  status:AppointmentStatus;
 };
 
 export type CreateAppointmentParams2 = z.infer<typeof CreateBookingSchema>;
@@ -96,6 +102,8 @@ export type CreateAppointmentParams2 = z.infer<typeof CreateBookingSchema>;
 export type PaymentFormParams = z.infer<typeof PaymentFormSchema>;
 
 export type RescheduleAppointmentParams = z.infer<typeof UpdateBookingSchema>;
+
+export type RefundAppointmentParams = z.infer<typeof RefundSchema>;
 
 export type getUserAppointmentsResponse = {
   project: AppointmentColumnsType[];
@@ -105,4 +113,28 @@ export type getUserAppointmentsResponse = {
 export type getUserPaymentsResponse = {
   project: PaymentColumnsType[];
   total: number;
+};
+
+export type getDashboardBarchartAnalyticsType = {
+  month: string;
+  followUp: number;
+  consultation: number;
+  emergency: number;
+};
+
+export type cancelAppointmentResponse = {
+  doctorSpecialization: string;
+  doctorName: string;
+  doctorProfilePicture: string;
+  patientFullname: string;
+  appointmentType: string;
+  appointmentStatus: string;
+  bookingDate: string;
+  startTime: string;
+  endTime: string;
+  paymentId: Payment[];
+  doctorId: string;
+  patientId: string;
+  slotId: string;
+  refundStatus: refundStatus;
 };

@@ -4,18 +4,16 @@ import {
   AppointmentColumnsType,
   PaymentColumnsType,
 } from "@/types/table.types";
-import { convertToCurrency, getAMPM, getDateTimeAMPM, isbBeforeDateTime } from "@/utils/utilsFn";
+import { convertToCurrency, getAMPM, getDateTimeAMPM,  parseResponse } from "@/utils/utilsFn";
 import { Badge, Button, Checkbox } from "@mantine/core";
 import {
   IconArrowsUpDown,
-  IconCircleCheck,
-  IconClockHour7,
 } from "@tabler/icons-react";
 import { compareItems } from "@tanstack/match-sorter-utils";
 import { ColumnDef, SortingFn, sortingFns } from "@tanstack/react-table";
-import dayjs from "dayjs";
 import { CustomHoverCard } from "../hovercard/CustomHoverCard";
 import AppointmentTableHoverCard from "../cards/AppointmentTableHoverCard";
+import { statusConfig } from "@/constants";
 
 export type Payment = {
   id: string;
@@ -164,28 +162,20 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Doctor&apos;s Name
-          <IconArrowsUpDown />
+          <IconArrowsUpDown size={13} />
         </Button>
       );
     },
   },
   {
-    accessorFn: (row) => {
-      return dayjs().isSame(dayjs(row.bookingDate), "day") &&
-        isbBeforeDateTime(row.bookingDate)
-        ? "today"
-        : isbBeforeDateTime(row.bookingDate)
-          ? "past"
-          : "upcoming";
-    },
-    id: "timeFrameStatus",
-    header: "Status",
+    accessorKey: 'appointmentType',
+    header: "Type",
     cell: (info) => (
       <Badge
         color={
-          info.getValue() == "upcoming"
+          info.getValue() == "follow-up"
             ? "m-gray"
-            : info.getValue() == "today"
+            : info.getValue() == "consultation"
               ? "green.9"
               : "red"
         }
@@ -208,7 +198,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Booking Date
-          <IconArrowsUpDown />
+          <IconArrowsUpDown size={13} />
         </Button>
       );
     },
@@ -225,23 +215,23 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
   },
 
   {
-    accessorFn: (row) => row.paymentStatus,
+    accessorFn: (row) => row.appointmentStatus,
     id: "paymentStatus",
     header: "Payment Status",
-    cell: (info) => (
-      <Badge
+    cell: (info) => {
+      const statusKey = info.getValue() as keyof typeof statusConfig;
+      const config = statusConfig[statusKey];
+      const IconComponent = config.icon;
+      return <Badge
         leftSection={
-          info.getValue() == "pending" ? (
-            <IconClockHour7 size={12} />
-          ) : (
-            <IconCircleCheck size={12} />
-          )
+            <IconComponent size={12} />
         }
-        color={info.getValue() == "pending" ? "yellow" : "green"}
+        color={config.color}
+        variant={config.variant}
       >
         {info.getValue()}
       </Badge>
-    ),
+    },
     //filterFn: "fuzzy", //using our custom fuzzy filter function
     // filterFn: fuzzyFilter, //or just define with the function
     sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
@@ -260,7 +250,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
 
 export const columnsPayment: ColumnDef<PaymentColumnsType, any>[] = [
   {
-    accessorFn: (row) => `${row.doctorName} | ${row.specialization}`,
+    accessorFn: (row) => `${row.doctorName} | ${parseResponse(row.specialization)}`,
     header: "Appointment",
     id: "appointment",
     cell: (info) => (
@@ -286,7 +276,7 @@ export const columnsPayment: ColumnDef<PaymentColumnsType, any>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Amount
-          <IconArrowsUpDown />
+          <IconArrowsUpDown size={13} />
         </Button>
       );
     },
@@ -315,7 +305,7 @@ export const columnsPayment: ColumnDef<PaymentColumnsType, any>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Paid At
-          <IconArrowsUpDown />
+          <IconArrowsUpDown size={13} />
         </Button>
       );
     },

@@ -21,6 +21,7 @@ function MedReverseDrawer({
       opened={opened}
       onClose={onClose}
       title={title}
+      size="550px"
       styles={{
           header: { boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)" },
           title: { fontSize: "22px", fontWeight: "bold" },
