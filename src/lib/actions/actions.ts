@@ -128,6 +128,7 @@ export async function loginClientAction(data: PatientLoginParams) {
         role: result?.labels[0],
         emailVerified: result?.emailVerification,
         medId: result?.labels[0] == "doctor" ? result?.prefs?.medId : null,
+        databaseId: result?.prefs?.databaseId,
       },
       code: 200,
       status: "success",
@@ -155,9 +156,10 @@ export async function createPatientAction(data: CreatePatientProfileParams) {
       code: 200,
       status: "success",
       message: "Profile created successfully",
+      databaseId: a.$id,
     };
   } catch (err) {
-    return { code: 400, status: "error", message: `${err}` };
+    return { code: 400, status: "error", message: `${err}`, databaseId: '' };
   }
 }
 

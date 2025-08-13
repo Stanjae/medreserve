@@ -15,7 +15,7 @@ export const Toplinks = [
     rightIcon: <IconChevronRight size={12} stroke={1.5} />,
   },
   {
-    href: "/about-us",
+    href: "/about",
     label: "About Us",
     rightIcon: <IconChevronRight size={12} stroke={1.5} />,
   },

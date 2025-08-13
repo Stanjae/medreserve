@@ -174,9 +174,6 @@ const AppointMentsTable = () => {
                           trigger={
                             <Menu.Item
                               color="green"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
                               leftSection={<IconDownload size={13} />}
                             >
                               Get Receipt

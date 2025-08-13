@@ -2,11 +2,9 @@
 import { signOut } from '@/lib/actions/actions';
 import { useMedStore } from '@/providers/med-provider';
 import { parseResponse } from '@/utils/utilsFn';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 const useLogout = () => {
-    const router = useRouter();
     const {clearAuthCredentials} = useMedStore((state) => state)
     const logoutPatient = async() => {
             const response = await signOut();
@@ -15,7 +13,7 @@ const useLogout = () => {
             }else{
                 toast.success(response?.message);
                 clearAuthCredentials();
-                router.push(`/auth/login`);
+                window.location.replace(`/auth/login`);
             }
         }
   return {logoutPatient}

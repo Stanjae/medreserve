@@ -30,12 +30,13 @@ import { IconRosetteDiscountCheckFilled } from "@tabler/icons-react";
 import { createPatientAction } from "@/lib/actions/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { AuthCredentials } from "@/types/store";
 
 dayjs.extend(customParseFormat);
 
 const CreateProfileForm = () => {
   const [active, setActive] = useState(0);
-  const { credentials } = useMedStore((state) => state);
+  const { credentials, setAuthCredentials } = useMedStore((state) => state);
 
   const [file, setFile] = useState<File | null>(null);
   const [documentFile, setDocumentFile] = useState<File | null>(null);
@@ -127,9 +128,10 @@ const CreateProfileForm = () => {
       toast.error(response?.message);
       return;
     }
+    setAuthCredentials({...credentials as AuthCredentials, databaseId: response?.databaseId});
     toast.success(response?.message);
     setTimeout(() => {
-      router.push(`/patient/${credentials?.userId}/dashboard`);
+      window.location.replace(`/patient/${credentials?.userId}/dashboard`);
     }, 1000);
   };
   return (

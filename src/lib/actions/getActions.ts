@@ -2,9 +2,10 @@
 "use server";
 import { createAdminClient } from "@/appwrite/appwrite";
 import { Query } from "node-appwrite";
-import { Payment } from "../../../types/appwrite";
+import { Doctor, Payment } from "../../../types/appwrite";
 import {
   getDashboardBarchartAnalyticsType,
+  GetDoctorsMasonryResponse,
   getUserAppointmentsResponse,
   getUserPaymentsResponse,
 } from "@/types/actions.types";
@@ -107,7 +108,9 @@ export async function checkIfSlotIsBooked(
     ]
   );
   if (response.total == 0) return [];
-  return response.documents.filter((doc) => !cancel_refundStatusFilter.includes(doc.status));
+  return response.documents.filter(
+    (doc) => !cancel_refundStatusFilter.includes(doc.status)
+  );
 }
 
 export async function checkIfUserBookedASlot(
@@ -178,13 +181,18 @@ export async function getPatientAppointmentTable(
   const customFn = getFilterByCreatedAt(activeTab);
   if (response.total == 0 || !response) return { project: [], total: 0 };
 
-
   if (cancel_refundStatusFilter.includes(activeTab)) {
-    appointRecords = response.documents.filter((item) => item.status == activeTab);
+    appointRecords = response.documents.filter(
+      (item) => item.status == activeTab
+    );
   } else {
-    appointRecords = response.documents.filter((item) => customFn(item?.bookingDate, "day") && !cancel_refundStatusFilter.includes(item?.status));
+    appointRecords = response.documents.filter(
+      (item) =>
+        customFn(item?.bookingDate, "day") &&
+        !cancel_refundStatusFilter.includes(item?.status)
+    );
   }
-  
+
   const newResponse = appointRecords?.map((slot) => ({
     doctorName: slot.doctorId.fullname,
     doctorExperience: slot.doctorId.experience,
@@ -231,10 +239,10 @@ export const getPatientPaymentsTable = async (
     process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PAYMENT_ID!,
     [Query.orderDesc("$createdAt")]
   );
-  if (response.total == 0) return null;
+  if (response.total == 0) return { project: [], total: 0 };
 
   const userPayments = response.documents
-    .filter((payment) => payment.patientId.$id == patientId)
+    .filter((payment) => payment?.patientId?.$id == patientId)
     .map((payment) => ({
       id: payment.$id,
       reference: payment.reference,
@@ -255,7 +263,14 @@ export const getPatientPaymentsTable = async (
 
 export const getPatientsTabsCountAction = async (
   patientId: string
-): Promise<{ upcoming: number; past: number; today: number; all: number, refunded: number; cancelled: number }> => {
+): Promise<{
+  upcoming: number;
+  past: number;
+  today: number;
+  all: number;
+  refunded: number;
+  cancelled: number;
+}> => {
   const { database } = await createAdminClient();
   const response = await database.listDocuments(
     process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
@@ -263,7 +278,15 @@ export const getPatientsTabsCountAction = async (
     [Query.equal("patientId", patientId)]
   );
 
-  if (response.total == 0) return { upcoming: 0, past: 0, today: 0, all: 0, refunded: 0, cancelled: 0 };
+  if (response.total == 0)
+    return {
+      upcoming: 0,
+      past: 0,
+      today: 0,
+      all: 0,
+      refunded: 0,
+      cancelled: 0,
+    };
 
   const upcomingCount = response.documents.filter(
     (doc) =>
@@ -285,9 +308,13 @@ export const getPatientsTabsCountAction = async (
       !cancel_refundStatusFilter.includes(doc.status)
   ).length;
 
-  const cancelled = response.documents.filter((doc) => doc.status == "cancelled").length;
+  const cancelled = response.documents.filter(
+    (doc) => doc.status == "cancelled"
+  ).length;
 
-  const refunded = response.documents.filter((doc) => doc.status == "refunded").length;
+  const refunded = response.documents.filter(
+    (doc) => doc.status == "refunded"
+  ).length;
 
   return {
     upcoming: upcomingCount,
@@ -295,7 +322,7 @@ export const getPatientsTabsCountAction = async (
     today: todayCount,
     all: response.total,
     refunded: refunded,
-    cancelled: cancelled
+    cancelled: cancelled,
   };
 };
 
@@ -473,4 +500,57 @@ export async function getCurrentAppointmentForCancelSlot(slotId: string) {
     paymentId: response?.paymentId,
     refundStatus: response?.cancelRefund?.status,
   };
+}
+
+/* fetch all doctors */
+export async function getAllDoctors(
+  filter: string
+): Promise<GetDoctorsMasonryResponse[]> {
+  const queries = [
+    Query.select([
+      "$id",
+      "fullname",
+      "profilePicture",
+      "specialization",
+      "bio",
+    ]),
+    Query.limit(1000),
+  ];
+
+  if (filter) {
+    queries.push(Query.equal("specialization", filter));
+  }
+
+  const { database } = await createAdminClient();
+  const response = await database.listDocuments(
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_ID!,
+    queries
+  );
+  if (!response) throw new Error("No doctor found");
+
+  const doctors = response.documents.map((doctor) => ({
+    id: doctor.$id,
+    fullname: doctor.fullname,
+    profilePicture: doctor.profilePicture,
+    specialization: doctor.specialization,
+    bio: doctor.bio,
+  }));
+
+  return doctors as GetDoctorsMasonryResponse[];
+}
+
+export async function getDoctorDetails(
+  doctorId: string
+): Promise<Doctor> {
+
+  const { database } = await createAdminClient();
+  const response = await database.getDocument(
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_ID!,
+    doctorId
+  );
+  if (!response) throw new Error("No doctor found");
+
+  return response as Doctor;
 }

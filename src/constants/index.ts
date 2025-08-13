@@ -390,4 +390,8 @@ export const refundTextStatusInfo2 = [
     { value: "transportation", label: "Transportation Issues" },
     { value: "hospitalization", label: "Hospitalization" },
     { value: "other", label: "Other (requires approval)" },
-  ];
+];
+  
+export const pageHeadersObject = {
+  'our-doctors':"Doctor's details"
+}

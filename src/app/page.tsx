@@ -17,7 +17,6 @@ const page = () => {
   return (
     <main>
         {/* hero section */}
-
         <CAffix/>
         <MainNavbar/>
         <section className=' overflow-hidden w-full hero-image min-h-screen'>

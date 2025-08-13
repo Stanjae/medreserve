@@ -46,7 +46,7 @@ const GeneratePdfButton = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: "stanykhay29@gmail.com",
+          email,
           pdfBase64: base64,
           patientName,
           doctorName,
@@ -82,7 +82,7 @@ const GeneratePdfButton = ({
     saveAs(zipBlob, "receipt.zip");
   }
 
-  return <div onClick={generatePdf}>{trigger}</div>;
+  return <div onClick={(e) => { e.stopPropagation(); generatePdf() }}>{trigger}</div>;
 };
 
 export default GeneratePdfButton;

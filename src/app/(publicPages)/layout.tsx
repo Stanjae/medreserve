@@ -1,4 +1,8 @@
+import MedReserveBreadCrumbs from "@/components/breadcrumbs/MedReserveBreadCrumbs";
+import PageHeaders from "@/components/headers/PageHeaders";
 import MainNavbar from "@/components/navbar/MainNavbar";
+import NavContent from "@/components/navbar/NavContent";
+import { Box } from "@mantine/core";
 
 export default function RootLayout({
   children,
@@ -7,8 +11,18 @@ export default function RootLayout({
 }>) {
   return (
     <main>
-      <MainNavbar/>
-        {children}
+      <MainNavbar />
+      <section className=" overflow-hidden w-full bg-[#EBF6FA] ">
+        <NavContent py="30" bg="" />
+        <Box
+          className="max-w-[calc(100%-316px)] mt-[101px] mb-[130px] space-y-[13px]"
+          mx="auto"
+        >
+          <PageHeaders />
+          <MedReserveBreadCrumbs />
+        </Box>
+      </section>
+      {children}
     </main>
   );
 }

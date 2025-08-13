@@ -16,11 +16,11 @@ const usePatientLogin = () => {
     } else {
       toast.success(response?.message);
       setAuthCredentials(response?.credentials);
-      router.push(
-        !response?.credentials?.emailVerified
-          ? `/${response?.credentials?.role}/${response?.credentials?.userId}/create-profile`
-          : `/${response?.credentials?.role}/${response?.credentials?.userId}/dashboard`
-      );
+      if (!response?.credentials?.emailVerified) {
+        router.push(`/${response?.credentials?.role}/${response?.credentials?.userId}/create-profile`);
+        return
+      }
+      window.location.replace(`/${response?.credentials?.role}/${response?.credentials?.userId}/dashboard`);
     }
   };
   return {

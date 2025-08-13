@@ -28,6 +28,7 @@ export type Doctor = Models.Document & {
   privacyConsent: boolean;
   doctorAvailability: DoctorAvailability | null;
   userId: string;
+  rating: string[];
 };
 
 export type Patient = Models.Document & {

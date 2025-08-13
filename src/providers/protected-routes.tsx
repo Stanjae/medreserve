@@ -17,22 +17,27 @@ const ProtectedRoutes = ({
   const pathname = usePathname();
   const router = useRouter();
 
-  const { setAuthCredentials, clearAuthCredentials } = useMedStore((state) => state);
+  const { setAuthCredentials, clearAuthCredentials } = useMedStore(
+    (state) => state
+  );
 
   useEffect(() => {
     const handleProtectedRoutes = async () => {
-      if (!auth && userRoles.some((item) => pathname.includes(item))) {
-        await clearCookies();
+      const isProtectedRoute = userRoles.some(
+        (role) => pathname.startsWith(`/${role}/`) || pathname === `/${role}`
+      );
+      if (!auth && isProtectedRoute) {
+        clearCookies();
         clearAuthCredentials();
         toast.error("Session expired. Redirecting to login...");
-        router.push("/auth/login");
+        window.location.replace ("/auth/login");
         return;
       }
 
       if (auth) {
         setAuthCredentials(auth);
         if (
-          userRoles.some((item) => pathname.includes(item)) &&
+          isProtectedRoute &&
           !pathname.includes(auth?.role)
         ) {
           router.back();
@@ -43,7 +48,6 @@ const ProtectedRoutes = ({
         }
       }
     };
-
     handleProtectedRoutes();
   }, [auth, pathname]);
 

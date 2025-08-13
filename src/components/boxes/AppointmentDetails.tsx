@@ -85,7 +85,7 @@ const AppointmentDetails = ({ row }: Props) => {
             </Card>
 
             <Card className=" grow-1 text-center" withBorder>
-              <Text size="xl" c="m-orange" fw="bold">
+              <Text size="xl" c="green" fw="bold">
                 &#8358; {convertToCurrency(totalAmt as number)}
               </Text>
               <Text size={"13px"} c="dimmed">

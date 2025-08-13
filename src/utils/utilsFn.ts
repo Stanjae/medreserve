@@ -10,9 +10,9 @@ import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import IsBetween from 'dayjs/plugin/isBetween'
+import IsBetween from "dayjs/plugin/isBetween";
 import { Payment } from "../../types/appwrite";
-import BanksData from '../lib/api/bank-json.json'
+import BanksData from "../lib/api/bank-json.json";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -21,7 +21,7 @@ dayjs.extend(calendar);
 dayjs.extend(relativeTime);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
-dayjs.extend(IsBetween)
+dayjs.extend(IsBetween);
 
 export const parseResponse = (response: string) =>
   response.replace(/[_-]/g, " ");
@@ -253,9 +253,9 @@ export const getFilterByCreatedAt = (value: string) => {
         isTodayAfterDateTime(strong, unit) &&
         !isTodaySameWithDateTime(strong, unit);
     default:
-     return (strong: string, unit: DayUnits) =>
-       isTodayBeforeDateTime(strong, unit) &&
-       !isTodaySameWithDateTime(strong, unit);
+      return (strong: string, unit: DayUnits) =>
+        isTodayBeforeDateTime(strong, unit) &&
+        !isTodaySameWithDateTime(strong, unit);
   }
 };
 
@@ -263,6 +263,23 @@ export const checkIfDateIsBetweenAYear = (dateString: string) => {
   const startDate = `${dayjs().year()}-01-01`;
   const endDate = `${dayjs().add(1, "year").year()}-01-01`;
   return dayjs(dateString).isBetween(startDate, endDate);
-}
+};
 
-export const getBankCodesData = BanksData.map((bank) =>({ label:bank.name, value:bank.code}))
+export const getBankCodesData = BanksData.map((bank) => ({
+  label: bank.name,
+  value: bank.code,
+}));
+
+export const extractPageTitle = (title: string) =>
+  title
+    .split("/")
+    .at(title.split("/").length - 1)
+    ?.replaceAll("-", " ");
+
+export function checkIfValidID(value: string): boolean {
+  const id = "6898bad900185e23a40c"
+  if (value.length == id.length) {
+    return true;
+  }
+  return false;
+}

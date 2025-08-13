@@ -138,3 +138,11 @@ export type cancelAppointmentResponse = {
   slotId: string;
   refundStatus: refundStatus;
 };
+
+export type GetDoctorsMasonryResponse =   {
+  id: string;
+  fullname: string;
+  profilePicture: string;
+  specialization: string;
+  bio:string;
+};

@@ -4,7 +4,7 @@ import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 
 export type MedState = {
-  credentials: AuthCredentials | null;
+  credentials: AuthCredentials | null ;
   weekSchedule: string[] | null;
   dateTime: {
     startTime?: string;

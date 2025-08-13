@@ -3,8 +3,8 @@ import useGetDoctorsFilterQuery from '@/hooks/useGetDoctorsFilterQuery'
 import React, { useEffect } from 'react'
 import BookDoctorCard from '../cards/BookDoctorCard';
 import { toast } from 'sonner';
-import { Loader } from '@mantine/core';
 import CustomPagination from '../pagination/CustomPagination';
+import MedReserveLoader from '../loaders/MedReserveLoader';
 
 const FilterableDoctorList = () => {
   const { data, error, isLoading, isPlaceholderData, isSuccess, isFetching } = useGetDoctorsFilterQuery();
@@ -15,7 +15,7 @@ const FilterableDoctorList = () => {
 
   return (
     <div>
-      {(isLoading || isFetching) && <Loader className="mx-auto" type="bars" />}
+      {(isLoading || isFetching) && <div className="flex items-center justify-center"><MedReserveLoader /></div>}
       {isSuccess &&
         data?.project?.map((item) => <BookDoctorCard item={item} key={item?.$id} />)}
       {!isLoading && (

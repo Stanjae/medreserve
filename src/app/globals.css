@@ -178,3 +178,8 @@ text-align:left;
   background-position:right center;
   background-repeat: no-repeat;
 }
+
+.mason-card:hover .mason-overlay{
+  display:flex !important;
+  opacity: 1 !important;
+}
