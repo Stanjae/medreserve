@@ -79,8 +79,8 @@ const ReviewForm = ({ doctorId }: Props) => {
     });
     };
     if(!credentials?.userId) {
-        <div className=" py-20">
-          <Link className=" text-lightblue-500 text-center text-lg no-underline" href="/auth/login">Login to leave a review</Link>
+        return <div className=" py-20">
+          <Link className=" text-blue-500 text-center text-lg no-underline block" href="/auth/login">Login to leave a review</Link>
       </div>
     }
 
