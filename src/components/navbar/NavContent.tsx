@@ -1,5 +1,5 @@
-'use client';
-import { Avatar, Box, Group } from "@mantine/core";
+"use client";
+import { Avatar, Box, Group, Tooltip } from "@mantine/core";
 import React from "react";
 import TopNavLinks from "./TopNavLinks";
 import { Button } from "@mantine/core";
@@ -22,16 +22,22 @@ const NavContent = ({ py, bg }: { bg: string; py: string }) => {
         <TopNavLinks />
         {/* <ColorChanger/> */}
         <Group className="  hidden lg:flex">
-          <Button
-            component={Link}
-            href={"/book-appointment"}
-            color="m-blue"
-            size="md"
-            variant="filled"
-            className=" hover:bg-primary duration-500  font-extrabold rounded-full"
-          >
-            Book an Appointment
-          </Button>
+          <Tooltip label="Login or Sign-up">
+            <Button
+              component={Link}
+              href={
+                credentials?.userId
+                  ? `/patient/${credentials?.userId}/dashboard/appointments/book-appointment`
+                  : "/auth/login"
+              }
+              color="m-blue"
+              size="md"
+              variant="filled"
+              className=" hover:bg-primary duration-500  font-extrabold rounded-full"
+            >
+              Book an Appointment
+            </Button>
+          </Tooltip>
 
           {!credentials?.userId ? (
             <Button
