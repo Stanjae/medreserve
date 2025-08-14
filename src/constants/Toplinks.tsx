@@ -20,8 +20,8 @@ export const Toplinks = [
     rightIcon: <IconChevronRight size={12} stroke={1.5} />,
   },
   {
-    href: "/about-us1",
-    label: "About Us",
+    href: "/our-doctors",
+    label: "Our Doctors",
     rightIcon: <IconChevronRight size={12} stroke={1.5} />,
   },
   {

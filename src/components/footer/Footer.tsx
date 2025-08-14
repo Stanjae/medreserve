@@ -1,5 +1,5 @@
 
-import { Box, Divider, Grid, Group, NavLink, Text, ThemeIcon } from '@mantine/core'
+import { Box, Divider, Grid, GridCol, Group, NavLink, Text, ThemeIcon } from '@mantine/core'
 import { IconBrandFacebookFilled, IconBrandX, IconBrandYoutubeFilled} from '@tabler/icons-react'
 import Image from 'next/image'
 import React from 'react'
@@ -33,7 +33,7 @@ const Footer = () => {
             <Divider color='m-cyan' my="xl" />
             <Grid className=" mt-12"  gutter={{ xs:30}}  overflow='hidden'>
                 {footerLinks.map((item, index)=>(
-                    <Grid.Col key={index} className=' space-y-2.5' span={{base:12, md:3}}>
+                    <GridCol key={index} className=' space-y-2.5' span={{base:12, md:3}}>
                         
                         <h6 className=" capitalize font-extrabold text-sm leading-[14px] text-cyan-200">{item.title}</h6>
                         <Box py={41} className=' medFooterLinks space-y-4'>
@@ -48,19 +48,11 @@ const Footer = () => {
                             
                         </Box>
                         
-                    </Grid.Col>
+                    </GridCol>
                 ))}
             </Grid>
 
             <Text c="m-gray.3" className=" leading-[30px] text-[14px]">&copy; GFXPARTNER</Text>
-            {/* font-size:
-14px
-letter-spacing:
-0.28px
-line-height:
-30px
-margin:
-0px 0px 10px */}
         </section>
     
     </Box>

@@ -11,6 +11,7 @@ import {
   PaymentDataType,
   RefundAppointmentParams,
   AppointmentStatus,
+  ReviewParams,
 } from "@/types/actions.types";
 import { ROLES } from "@/types/store";
 import { cookies } from "next/headers";
@@ -159,7 +160,7 @@ export async function createPatientAction(data: CreatePatientProfileParams) {
       databaseId: a.$id,
     };
   } catch (err) {
-    return { code: 400, status: "error", message: `${err}`, databaseId: '' };
+    return { code: 400, status: "error", message: `${err}`, databaseId: "" };
   }
 }
 
@@ -438,7 +439,10 @@ export const reschedulePaymentAction = async (
   }
 };
 
-export const createCancellationAction = async (params:RefundAppointmentParams, appointmentStatus: AppointmentStatus) => {
+export const createCancellationAction = async (
+  params: RefundAppointmentParams,
+  appointmentStatus: AppointmentStatus
+) => {
   try {
     const { database } = await createAdminClient();
     const uniqueID = ID.unique();
@@ -447,7 +451,7 @@ export const createCancellationAction = async (params:RefundAppointmentParams, a
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_CANCEL_REFUND_ID!,
       uniqueID, // documentId
       {
-      ...params
+        ...params,
       }
     );
     await database.updateDocument(
@@ -456,13 +460,58 @@ export const createCancellationAction = async (params:RefundAppointmentParams, a
       params.appointmentId,
       {
         cancelRefund: uniqueID,
-        status: appointmentStatus
+        status: appointmentStatus,
       }
     );
     return {
       code: 201,
       status: "success",
       message: "Appointment Paid and Completed successfully",
+    };
+  } catch (err) {
+    return { code: 500, status: "error", message: `${err}` };
+  }
+};
+
+/* reviews */
+
+export const addUpdateReviewAction = async (
+  params:ReviewParams,
+  editMode: boolean
+) => {
+  try {
+    const {_id, ...rest} = params;
+    const { database } = await createAdminClient();
+    const uniqueID = ID.unique();
+    if(!editMode){
+      await database.createDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
+      uniqueID, // documentId
+      {
+        ...rest,
+      }
+      );
+      
+          return {
+            code: 201,
+            status: "success",
+            message: "Review added successfully",
+          };
+    }
+    
+    await database.updateDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
+      _id as string,
+      {
+        ...rest
+      }
+    );
+    return {
+      code: 204,
+      status: "success",
+      message: "Review updated successfully",
     };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };

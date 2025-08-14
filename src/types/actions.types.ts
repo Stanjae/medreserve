@@ -146,3 +146,26 @@ export type GetDoctorsMasonryResponse =   {
   specialization: string;
   bio:string;
 };
+
+
+export type ReviewParams = {
+  doctorId?: string | undefined;
+  rating: number;
+  reviewText: string;
+  type: 'doctor' | 'appointment';
+  patientId: string | null | undefined;
+  appointmentId?: string | undefined;
+  anonymous?: boolean;
+ _id?:string | null | undefined
+}
+
+export type DoctorReviewsResponse = {
+  _id: string;
+  rating: number;
+  reviewText: string;
+  type: ReviewParams['type'];
+  anonymous: boolean;
+  patientPicture: string;
+  patientName: string;
+  patientOccupation: string;
+}

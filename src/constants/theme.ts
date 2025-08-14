@@ -17,22 +17,77 @@ export const theme = createTheme({
     lg: "16px",
     xl: "20px",
   },
-   breakpoints: {
-    xs: '30em', //576px,
-    sm: '48em', // 768px
-    md: '64em', // 992px
-    lg: '74em', // 1200px
-    xl: '90em', // 1408px
+  breakpoints: {
+    xs: "30em", //576px,
+    sm: "48em", // 768px
+    md: "64em", // 992px
+    lg: "74em", // 1200px
+    xl: "90em", // 1408px
   },
   fontFamily: `${manropeSans.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
   primaryColor: "m-orange",
   primaryShade: { light: 6, dark: 9 },
   colors: {
-    "m-gray": ["#f2f4fb", "#e6e6e9", "#cbcbce", "#aeafb3", "#95969c", "#85878f", "#5e616c", "#6a6d77", "#5e616c", "#f2f4fb", ],
-    "m-cyan": ["#e5faff", "#d5eff8", "#b2dded", "#84c7e1", "#62b6d7", "#4bacd1", "#b2dded", "#2b92b8", "#1a82a5", "#3ca7cf", ], 
-    "m-orange": ["#ffe8e6", "#ffd1cd", "#ffa19a", "#ff6e64", "#ff1708", "#ff2818", "#ff594d", "#e40600", "#cc0000", "#b20000", ],
-    "m-blue": [ "#f0f2fa", "#dde0ee", "#b7bedf", "#8f9ad0", "#6d7bc3", "#5867bc", "#283779", "#3e4ea4", "#364593", "#4c5eba", ],
-    "m-background": ["#f2f4fb", "#e6e6e9", "#cbcbce", "#aeafb3", "#95969c", "#85878f", "#ffffff", "#ededed", "#5e616c", "#0a0a0a", ],
+    "m-gray": [
+      "#f2f4fb",
+      "#e6e6e9",
+      "#cbcbce",
+      "#aeafb3",
+      "#95969c",
+      "#85878f",
+      "#5e616c",
+      "#6a6d77",
+      "#5e616c",
+      "#f2f4fb",
+    ],
+    "m-cyan": [
+      "#e5faff",
+      "#d5eff8",
+      "#b2dded",
+      "#84c7e1",
+      "#62b6d7",
+      "#4bacd1",
+      "#b2dded",
+      "#2b92b8",
+      "#1a82a5",
+      "#3ca7cf",
+    ], //#EBF6FA
+    "m-orange": [
+      "#ffe8e6",
+      "#ffd1cd",
+      "#ffa19a",
+      "#ff6e64",
+      "#ff1708",
+      "#ff2818",
+      "#ff594d",
+      "#e40600",
+      "#cc0000",
+      "#b20000",
+    ],
+    "m-blue": [
+      "#f0f2fa",
+      "#dde0ee",
+      "#b7bedf",
+      "#8f9ad0",
+      "#6d7bc3",
+      "#5867bc",
+      "#283779",
+      "#3e4ea4",
+      "#364593",
+      "#4c5eba",
+    ],
+    "m-background": [
+      "#f2f4fb",
+      "#e6e6e9",
+      "#cbcbce",
+      "#aeafb3",
+      "#95969c",
+      "#85878f",
+      "#ffffff",
+      "#ededed",
+      "#5e616c",
+      "#0a0a0a",
+    ],
   },
 
   /*   variantColorResolver: (input) => {

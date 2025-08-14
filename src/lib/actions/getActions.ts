@@ -4,10 +4,12 @@ import { createAdminClient } from "@/appwrite/appwrite";
 import { Query } from "node-appwrite";
 import { Doctor, Payment } from "../../../types/appwrite";
 import {
+  DoctorReviewsResponse,
   getDashboardBarchartAnalyticsType,
   GetDoctorsMasonryResponse,
   getUserAppointmentsResponse,
   getUserPaymentsResponse,
+  ReviewParams,
 } from "@/types/actions.types";
 import {
   checkIfDateIsBetweenAYear,
@@ -540,10 +542,7 @@ export async function getAllDoctors(
   return doctors as GetDoctorsMasonryResponse[];
 }
 
-export async function getDoctorDetails(
-  doctorId: string
-): Promise<Doctor> {
-
+export async function getDoctorDetails(doctorId: string): Promise<Doctor> {
   const { database } = await createAdminClient();
   const response = await database.getDocument(
     process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
@@ -553,4 +552,44 @@ export async function getDoctorDetails(
   if (!response) throw new Error("No doctor found");
 
   return response as Doctor;
+}
+
+export async function getDoctorReviewByPatient(
+  doctorId: string,
+  patientId: string
+):Promise<ReviewParams | null> {
+  const { database } = await createAdminClient();
+  const response = await database.listDocuments(
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
+    [Query.equal("patientId", patientId), Query.equal("doctorId", doctorId)]
+  );
+  if (!response) return null
+
+  const review = response?.documents[0];
+
+  return {_id: review?.$id, rating: review?.rating, reviewText: review?.reviewText,patientId: review?.patientId?.$id, doctorId: review?.doctorId?.$id, type: review?.type, anonymous: review?.anonymous};
+}
+
+export async function getDoctorReviews(
+  doctorId: string
+): Promise<DoctorReviewsResponse[] | null> {
+  const { database } = await createAdminClient();
+  const response = await database.listDocuments(
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
+    [ Query.equal("doctorId", doctorId), Query.equal("type", "doctor")]
+  );
+  if (response.total == 0) return null;
+
+  return response?.documents?.map((review) => ({
+    _id: review?.$id,
+    rating: review?.rating,
+    reviewText: review?.reviewText,
+    type: review?.type,
+    anonymous: review?.anonymous,
+    patientPicture: review?.patientId?.profilePicture,
+    patientName: review?.patientId?.fullname,
+    patientOccupation: review?.patientId?.occupation
+  }));
 }
