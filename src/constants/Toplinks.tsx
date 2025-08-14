@@ -23,22 +23,7 @@ export const Toplinks = [
     href: "/our-doctors",
     label: "Our Doctors",
     rightIcon: <IconChevronRight size={12} stroke={1.5} />,
-  },
-  {
-    href: "/about-us2",
-    label: "About Us",
-    rightIcon: <IconChevronRight size={12} stroke={1.5} />,
-  },
-  {
-    href: "/about-us3",
-    label: "About Us",
-    rightIcon: <IconChevronRight size={12} stroke={1.5} />,
-  },
-  {
-    href: "/about-us4",
-    label: "Help",
-    rightIcon: <IconChevronRight size={12} stroke={1.5} />,
-  },
+  }
 ];
 
 export const footerLinks = [
