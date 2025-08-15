@@ -12,12 +12,14 @@ import { useMedStore } from "@/providers/med-provider";
 
 const BookDoctorCard = ({ item }: { item: Doctor }) => {
     const {setWeekSchedule, setDateTime} = useMedStore(state => state)
-  const total =
-    item?.rating?.length == 0
-      ? 1
-      : item?.rating?.reduce((acc:string, val:string) => Number(acc) + Number(val), 0);
-  const totalCount = !item?.rating?.length ? 1 : item?.rating?.length;
-  const newRating = ((total as number) / totalCount) as number;
+  const ratingTotal =
+    item?.reviewsId?.reduce(
+      (acc, val) => Number(acc) + Number(val?.rating),
+      0
+    ) || 1;
+  const totatlCount = item?.reviewsId?.length || 1;
+  const averageRating = (ratingTotal / totatlCount).toFixed(1) || 0;
+
 
   const searchParams = useSearchParams();
   const isWeekdayOrWeekend = searchParams.get("date")
@@ -52,9 +54,9 @@ const BookDoctorCard = ({ item }: { item: Doctor }) => {
            Dr. {" "} {item?.fullname}
           </Text>
           <div className="flex gap-2 items-center">
-            <Rating readOnly fractions={2} defaultValue={newRating} />
+            <Rating readOnly fractions={2} defaultValue={averageRating as number} />
             <Text>
-              {newRating.toFixed(1)}/({totalCount})
+              {averageRating}/5.0
             </Text>
           </div>
           <Group>
@@ -98,7 +100,7 @@ const BookDoctorCard = ({ item }: { item: Doctor }) => {
           </Group>
           <Button
             component={Link}
-            href={`/doctor/${item?.userId}`}
+            href={`/our-doctors/${item?.$id}`}
             size="md"
             className="pl-0"
             rightSection={<IconArrowRight />}

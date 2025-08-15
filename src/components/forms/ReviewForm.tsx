@@ -26,7 +26,7 @@ const ReviewForm = ({ doctorId }: Props) => {
   const { data } = useCheckPatientHasReviewed(
     credentials?.databaseId as string,
     doctorId
-  );
+    );
 
   const [reviewData, setReviewData] = useState<ReviewParams>({
     rating: 0,
@@ -65,7 +65,7 @@ const ReviewForm = ({ doctorId }: Props) => {
 
   const {
     addReview: { mutateAsync, isPending },
-  } = useHandleReviews(!!data, "doctor");
+  } = useHandleReviews(data ? true : false, "doctor");
 
   const handleChange = (e: string | number | boolean, field: string) => {
     setReviewData({ ...reviewData, [field]: e });

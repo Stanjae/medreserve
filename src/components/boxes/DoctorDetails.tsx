@@ -8,9 +8,10 @@ import { parseResponse } from "@/utils/utilsFn";
 const DoctorDetails = async ({ doctorId }: { doctorId: string }) => {
   const response = await getDoctorDetails(doctorId);
 
-  const rating =
-    response?.rating.reduce((acc, val) => Number(acc) + Number(val), 0) /
-      response?.rating?.length || 0;
+  const ratingTotal = response?.reviewsId?.reduce((acc, val) => Number(acc) + Number(val?.rating), 0) || 1;
+  const totatlCount = response?.reviewsId?.length || 1;
+  const averageRating = (ratingTotal / totatlCount).toFixed(1) || 0;
+
   return (
     <Grid>
       <GridCol pr={82} span={{ xs: 12, md: 7 }}>
@@ -21,9 +22,9 @@ const DoctorDetails = async ({ doctorId }: { doctorId: string }) => {
 
           <div>
             <section className="flex items-center gap-x-4">
-              <Rating value={rating} fractions={2} readOnly />
+              <Rating value={averageRating as number} fractions={2} readOnly />
               <div className=" text-secondary leading-[30px] font-extrabold  tracking-[0.32px]">
-                {Number(rating).toFixed(1)} / 5.0
+                {Number(averageRating).toFixed(1)} / 5.0
               </div>
             </section>
             <Group>

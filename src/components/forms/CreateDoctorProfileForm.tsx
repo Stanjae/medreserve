@@ -145,7 +145,7 @@ const CreateDoctorProfileForm = () => {
     }
     toast.success(response?.message);
     setTimeout(() => {
-      router.push(`/${credentials?.role}/${credentials?.userId}/dashboard`);
+      window.location.replace(`/${credentials?.role}/${credentials?.userId}/dashboard`);
     }, 1000);
   };
 

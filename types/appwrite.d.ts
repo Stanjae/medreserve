@@ -29,6 +29,7 @@ export type Doctor = Models.Document & {
   doctorAvailability: DoctorAvailability | null;
   userId: string;
   rating: string[];
+  reviewsId: Reviews[] | null;
 };
 
 export type Patient = Models.Document & {
@@ -84,4 +85,14 @@ export type Payment = Models.Document & {
   doctorId: Doctor[] | null;
   authorization: string;
   paidOn: string;
+}
+
+export type Reviews = Models.Document & {
+  anonymous: boolean;
+appointmentId : Appointment[] | null;
+doctorId : Doctor[] | null;
+patientId : Patient[] | null;
+rating : number;
+reviewText : string;
+type : "doctor" | "appointment";
 }

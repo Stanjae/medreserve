@@ -17,6 +17,7 @@ import { ROLES } from "@/types/store";
 import { cookies } from "next/headers";
 import { Query } from "node-appwrite";
 import { PaymentFormParams } from "./../../types/actions.types";
+import { revalidatePath } from "next/cache";
 
 export async function checkAuthStatus() {
   try {
@@ -492,7 +493,7 @@ export const addUpdateReviewAction = async (
         ...rest,
       }
       );
-      
+      revalidatePath(`/our-doctors/${params.doctorId}`);
           return {
             code: 201,
             status: "success",
@@ -508,6 +509,7 @@ export const addUpdateReviewAction = async (
         ...rest
       }
     );
+     revalidatePath(`/our-doctors/${params.doctorId}`);
     return {
       code: 204,
       status: "success",

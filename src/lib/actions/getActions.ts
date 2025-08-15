@@ -564,7 +564,7 @@ export async function getDoctorReviewByPatient(
     process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
     [Query.equal("patientId", patientId), Query.equal("doctorId", doctorId)]
   );
-  if (!response) return null
+  if (response.total == 0) return null
 
   const review = response?.documents[0];
 
