@@ -1,0 +1,110 @@
+{
+  "superadmin": [
+    { "label": "Delete User", "value": "delete_user", "status": true },
+    { "label": "Update User", "value": "update_user", "status": true },
+    { "label": "View Users", "value": "view_users", "status": true },
+    { "label": "Verify User", "value": "verify_user", "status": true },
+    { "label": "Suspend User", "value": "suspend_user", "status": true },
+    { "label": "Add User", "value": "add_user", "status": true },
+    { "label": "Delete Role", "value": "delete_role", "status": true },
+    { "label": "Update Role", "value": "update_role", "status": true },
+    { "label": "Add Role", "value": "add_role", "status": true },
+    { "label": "View Roles", "value": "view_roles", "status": true },
+    { "label": "Assign Role", "value": "assign_role", "status": true },
+    {
+      "label": "Create Appointment",
+      "value": "create_appointment",
+      "status": true
+    },
+    {
+      "label": "Update Appointment",
+      "value": "update_appointment",
+      "status": true
+    },
+    {
+      "label": "Delete Appointment",
+      "value": "delete_appointment",
+      "status": true
+    },
+    { "label": "Create Refunds", "value": "create_refunds", "status": true },
+    { "label": "Update Refunds", "value": "update_refunds", "status": true },
+    { "label": "Delete Refunds", "value": "delete_refunds", "status": true },
+    { "label": "View Refunds", "value": "view_refunds", "status": true },
+    { "label": "Create Payment", "value": "create_payment", "status": true },
+    { "label": "Update Payment", "value": "update_payment", "status": true },
+    { "label": "Delete Payment", "value": "delete_payment", "status": true },
+    { "label": "View Payments", "value": "view_payments", "status": true }
+  ],
+  "hospitalAdmin": [
+    { "label": "Delete User", "value": "delete_user", "status": true },
+    { "label": "Update User", "value": "update_user", "status": true },
+    { "label": "View Users", "value": "view_users", "status": true },
+    { "label": "Verify User", "value": "verify_user", "status": true },
+    { "label": "Suspend User", "value": "suspend_user", "status": true },
+    { "label": "Add User", "value": "add_user", "status": false },
+    { "label": "Delete Role", "value": "delete_role", "status": true },
+    { "label": "Update Role", "value": "update_role", "status": true },
+    { "label": "Add Role", "value": "add_role", "status": true },
+    { "label": "View Roles", "value": "view_roles", "status": true },
+    { "label": "Assign Role", "value": "assign_role", "status": true },
+    {
+      "label": "Create Appointment",
+      "value": "create_appointment",
+      "status": true
+    },
+    {
+      "label": "Update Appointment",
+      "value": "update_appointment",
+      "status": true
+    },
+    {
+      "label": "Delete Appointment",
+      "value": "delete_appointment",
+      "status": true
+    },
+    { "label": "Create Refunds", "value": "create_refunds", "status": false },
+    { "label": "Update Refunds", "value": "update_refunds", "status": true },
+    { "label": "Delete Refunds", "value": "delete_refunds", "status": true },
+    { "label": "View Refunds", "value": "view_refunds", "status": true },
+    { "label": "Create Payment", "value": "create_payment", "status": true },
+    { "label": "Update Payment", "value": "update_payment", "status": true },
+    { "label": "Delete Payment", "value": "delete_payment", "status": true },
+    { "label": "View Payments", "value": "view_payments", "status": true }
+  ],
+  "subadmin":[
+    { "label": "Delete User", "value": "delete_user", "status": false },
+    { "label": "Update User", "value": "update_user", "status": true },
+    { "label": "View Users", "value": "view_users", "status": true },
+    { "label": "Verify User", "value": "verify_user", "status": true },
+    { "label": "Suspend User", "value": "suspend_user", "status": true },
+    { "label": "Add User", "value": "add_user", "status": false },
+    { "label": "Delete Role", "value": "delete_role", "status": false },
+    { "label": "Update Role", "value": "update_role", "status": false },
+    { "label": "Add Role", "value": "add_role", "status": false },
+    { "label": "View Roles", "value": "view_roles", "status": true},
+    { "label": "Assign Role", "value": "assign_role", "status": false },
+    {
+      "label": "Create Appointment",
+      "value": "create_appointment",
+      "status": false
+    },
+    {
+      "label": "Update Appointment",
+      "value": "update_appointment",
+      "status": true
+    },
+    {
+      "label": "Delete Appointment",
+      "value": "delete_appointment",
+      "status": false
+    },
+    { "label": "Create Refunds", "value": "create_refunds", "status": false },
+    { "label": "Update Refunds", "value": "update_refunds", "status": true },
+    { "label": "Delete Refunds", "value": "delete_refunds", "status": false },
+    { "label": "View Refunds", "value": "view_refunds", "status": true },
+    { "label": "Create Payment", "value": "create_payment", "status": false },
+    { "label": "Update Payment", "value": "update_payment", "status": true },
+    { "label": "Delete Payment", "value": "delete_payment", "status": false },
+    { "label": "View Payments", "value": "view_payments", "status": true }
+  ]
+}

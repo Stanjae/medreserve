@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
 import DashboardLayout from "@/components/layout/PatientDashboardLayout";
-import { patientDashLinks } from "@/constants/Toplinks";
+import { adminDashLinks, adminSecondaryDashLinks } from "@/constants/Toplinks";
 
 export const metadata: Metadata = {
-  title: "Doctor Dashboard",
+  title: "MedReserve Admin",
   description: "...Getting you the best care",
 };
 
@@ -16,6 +16,6 @@ export default function DoctorLayout({
 }>) {
   
   return (
-   <DashboardLayout role={'doctor'} isSecondarySection={false} secondaryNavigation={[]} navigation={patientDashLinks}>{children}</DashboardLayout>
+   <DashboardLayout role={'admin'} isSecondarySection secondaryNavigation={adminSecondaryDashLinks} navigation={adminDashLinks}>{children}</DashboardLayout>
   );
 }

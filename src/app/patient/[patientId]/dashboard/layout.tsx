@@ -16,6 +16,6 @@ export default function PatientLayout({
 }>) {
   
   return (
-   <DashboardLayout role={'patient'} navigation={patientDashLinks}>{children}</DashboardLayout>
+   <DashboardLayout role={'patient'} isSecondarySection={false} secondaryNavigation={[]} navigation={patientDashLinks}>{children}</DashboardLayout>
   );
 }

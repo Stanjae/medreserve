@@ -13,28 +13,49 @@ import {
   AppointmentStatus,
   ReviewParams,
 } from "@/types/actions.types";
-import { ROLES } from "@/types/store";
+import { AdminPermissions, ROLES } from "@/types/store";
 import { cookies } from "next/headers";
 import { Query } from "node-appwrite";
 import { PaymentFormParams } from "./../../types/actions.types";
 import { revalidatePath } from "next/cache";
+import { generateSecureOTP } from "@/utils/utilsFn";
+import argon2 from "argon2";
 
 export async function checkAuthStatus() {
+  let newRole = null;
   try {
     const { account } = await createSessionClient();
+    const { database } = await createAdminClient();
 
     if (!account) return null;
     // If successful, user is authenticated
     const response = await account.get();
 
+    if (response?.prefs?.subRoleId) {
+      const role = await database.getDocument(
+        process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_ROLES_ID!,
+        response?.prefs?.subRoleId
+      );
+      newRole = role;
+    }
     return {
-      userId: response?.$id,
-      email: response?.email,
-      username: response?.name,
-      role: response?.labels[0],
-      emailVerified: response?.emailVerification,
-      medId: response?.labels[0] == "doctor" ? response?.prefs?.medId : null,
-      databaseId: response?.prefs?.databaseId,
+      credentials: {
+        userId: response?.$id,
+        email: response?.email,
+        username: response?.name,
+        role: response?.labels[0],
+        emailVerified: response?.emailVerification,
+        medId: response?.labels[0] == "doctor" ? response?.prefs?.medId : null,
+        databaseId: response?.prefs?.databaseId,
+        subRoleId: response?.prefs?.subRoleId,
+      },
+      permissions: {
+        type: newRole?.type,
+        permissions: newRole?.permissions,
+        id: newRole?.$id,
+        priority: newRole?.priority,
+      } as AdminPermissions,
     };
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
@@ -115,6 +136,12 @@ export async function loginClientAction(data: PatientLoginParams) {
     const response = await account.createEmailPasswordSession(email, password);
     const result = await users.get(response?.userId);
 
+    if (result?.labels[0] == "admin")
+      return {
+        code: 403,
+        status: "This role is not allowed to login here",
+        message: "Invalid role",
+      };
     (await cookies()).set("my-custom-session", response.secret, {
       path: "/",
       httpOnly: true,
@@ -477,39 +504,39 @@ export const createCancellationAction = async (
 /* reviews */
 
 export const addUpdateReviewAction = async (
-  params:ReviewParams,
+  params: ReviewParams,
   editMode: boolean
 ) => {
   try {
-    const {_id, ...rest} = params;
+    const { _id, ...rest } = params;
     const { database } = await createAdminClient();
     const uniqueID = ID.unique();
-    if(!editMode){
+    if (!editMode) {
       await database.createDocument(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
-      uniqueID, // documentId
-      {
-        ...rest,
-      }
+        process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+        process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
+        uniqueID, // documentId
+        {
+          ...rest,
+        }
       );
       revalidatePath(`/our-doctors/${params.doctorId}`);
-          return {
-            code: 201,
-            status: "success",
-            message: "Review added successfully",
-          };
+      return {
+        code: 201,
+        status: "success",
+        message: "Review added successfully",
+      };
     }
-    
+
     await database.updateDocument(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
       _id as string,
       {
-        ...rest
+        ...rest,
       }
     );
-     revalidatePath(`/our-doctors/${params.doctorId}`);
+    revalidatePath(`/our-doctors/${params.doctorId}`);
     return {
       code: 204,
       status: "success",
@@ -519,3 +546,149 @@ export const addUpdateReviewAction = async (
     return { code: 500, status: "error", message: `${err}` };
   }
 };
+
+///admin actions
+
+export async function verifyPassword(
+  plainPassword: string,
+  hashedPassword: string
+) {
+  try {
+    return await argon2.verify(hashedPassword, plainPassword);
+  } catch (error) {
+    console.error("Password verification error:", error);
+    return false;
+  }
+}
+
+/* export const handleOtpAction = async (params:{email:string, otpCode:string, username:string}) => {
+  try {
+    const response = await fetch('/api/medreserve/send-otp-mail',
+      {
+        method: "POST",
+        body: JSON.stringify(params),
+      }
+    );
+    const data = await response.json();
+    console.log('dragons:', data);
+    return {
+      code: 201,
+      status: "success",
+      data: data,
+    };
+  } catch (err) {
+    console.log('give it up',err);
+    return { code: 500, status: "error", message: `${err}`, data: null };
+  }
+}; */
+
+export async function loginAdminAction(data: PatientLoginParams) {
+  try {
+    const otpCode = generateSecureOTP();
+    const { email, password } = data;
+    const { users } = await createAdminClient();
+
+    const userAccount = await users.list(
+      [Query.equal("email", email)] // queries (optional)
+    );
+
+    if (userAccount?.total == 0) {
+      return {
+        code: 400,
+        status: "Invalid email or password",
+      };
+    }
+    const userDetails = userAccount?.users[0];
+
+    if (userDetails?.labels[0] !== "admin") {
+      return {
+        code: 403,
+        status: "Forbidden Access",
+      };
+    }
+
+    const verify = await verifyPassword(
+      password,
+      userDetails?.password as string
+    );
+
+    if (!verify) {
+      return {
+        code: 400,
+        status: "Invalid password",
+      };
+    }
+
+    const getOldprefs = await users.getPrefs(userDetails?.$id as string);
+
+    await users.updatePrefs(userDetails?.$id as string, {
+      ...getOldprefs,
+      otpCode: otpCode,
+    });
+
+    return {
+      code: 201,
+      status: "success",
+      message: "Login successful. Please enter the OTP sent to your email",
+      credentials: {
+        emailVerification: userDetails?.emailVerification,
+        otpCode,
+        username: userDetails?.name,
+      },
+    };
+  } catch (err) {
+    const error = err as { code: number; type: string; response: string };
+    return { code: error.code, status: error.type, message: error.response };
+  }
+}
+
+export async function handleOTPVerifyAction(
+  data: PatientLoginParams,
+  otpCode: string
+) {
+  try {
+    const { email, password } = data;
+    const { users, account } = await createAdminClient();
+    const response = await account.createEmailPasswordSession(email, password);
+    const result = await users.get(response?.userId);
+
+    if (result?.prefs?.otpCode != otpCode) {
+      return {
+        code: 400,
+        status: "Invalid OTP",
+        message: "Invalid OTP",
+      };
+    }
+    (await cookies()).set("my-custom-session", response.secret, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    });
+
+    const getOldprefs = await users.getPrefs(result?.$id as string);
+
+    await users.updatePrefs(result?.$id as string, {
+      ...getOldprefs,
+      otpCode: "0000",
+    });
+
+    return {
+      credentials: {
+        userId: result?.$id,
+        email: result?.email,
+        username: result?.name,
+        role: result?.labels[0],
+        emailVerified: result?.emailVerification,
+        medId: result?.labels[0] == "doctor" ? result?.prefs?.medId : null,
+        databaseId: result?.prefs?.databaseId,
+      },
+      code: 201,
+      status: "success",
+      message: "Login successful",
+    };
+  } catch (err) {
+    const error = err as { code: number; type: string; response: string };
+    return { code: error.code, status: error.type, message: error.response };
+  }
+}

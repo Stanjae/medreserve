@@ -13,6 +13,7 @@ import {
   Stack,
   Text,
   Button,
+  Divider,
 } from "@mantine/core";
 import MedReserveLogo from "@/components/logo/MedReserveLogo";
 import { JSX } from "react";
@@ -31,21 +32,31 @@ import {
 import useLogout from "@/hooks/useLogout";
 import CustomInput from "../inputs/CustomInput";
 
+type NavList = {
+  label: string;
+  href: string;
+  child: boolean;
+  leftIcon: JSX.Element;
+  sub?: { label: string; href: string }[];
+};
+
+type NavProps = {
+  children: React.ReactNode;
+  role: string;
+  isSecondarySection?: boolean;
+  secondaryNavigation?: NavList[];
+  navigation: NavList[];
+};
+
 export default function DashboardLayout({
   navigation,
   role,
   children,
-}: Readonly<{
-  children: React.ReactNode;
-  role: string;
-  navigation: {
-    label: string;
-    href: string;
-    child: boolean;
-    leftIcon: JSX.Element;
-    sub?: { label: string; href: string }[];
-  }[];
-}>) {
+  isSecondarySection,
+  secondaryNavigation,
+}: Readonly<
+NavProps
+>) {
   const { credentials } = useMedStore((state) => state);
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
@@ -55,6 +66,12 @@ export default function DashboardLayout({
     role,
     credentials?.userId,
     navigation
+  );
+
+  const secondaryNavigationRefined = handleNavLinks(
+    role,
+    credentials?.userId,
+  secondaryNavigation as NavList[]
   );
 
   const { logoutPatient } = useLogout();
@@ -179,7 +196,6 @@ export default function DashboardLayout({
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        Menu
         <Box id="dashNavs">
           {navigationRefined?.map((item, index) => {
             if (!item.child) {
@@ -245,6 +261,77 @@ export default function DashboardLayout({
             }
           })}
         </Box>
+        {isSecondarySection && (
+          <Box id="dashNavs">
+            <Divider my="md" />
+
+            <div>
+              {isSecondarySection && secondaryNavigationRefined?.map((item, index) => {
+                if (!item.child) {
+                  return (
+                    <NavLink
+                      component={Link}
+                      href={item.href}
+                      active={pathname == item.href}
+                      leftSection={item.leftIcon}
+                      label={item.label}
+                      key={index}
+                      styles={{
+                        label: {
+                          fontSize: "17px",
+                          fontWeight: 600,
+                        },
+                      }}
+                    />
+                  );
+                } else {
+                  return (
+                    <NavLink
+                      childrenOffset={28}
+                      component={Link}
+                      href={item.href}
+                      active={pathname.includes(item.href)}
+                      leftSection={item.leftIcon}
+                      label={item.label}
+                      key={index}
+                      styles={{
+                        label: {
+                          fontSize: "17px",
+                          fontWeight: 600,
+                        },
+                      }}
+                    >
+                      {item.sub?.map((lol, opp) => (
+                        <NavLink
+                          active={
+                            lol.href == "index"
+                              ? pathname.endsWith(item.href)
+                              : pathname.includes(lol.href)
+                          }
+                          label={lol.label}
+                          component={Link}
+                          key={opp}
+                          href={
+                            lol.href == "index"
+                              ? item.href
+                              : `${item.href}/${lol.href}`
+                          }
+                          styles={{
+                            label: {
+                              fontSize: "15px",
+                              fontWeight: 500,
+                            },
+                            root: { backgroundColor: "transparent" },
+                          }}
+                        />
+                      ))}
+                    </NavLink>
+                  );
+                }
+              })}
+            </div>
+          </Box>
+        )}
       </AppShell.Navbar>
       <AppShell.Main bg={"#F8F8F8"}>
         <Stack>

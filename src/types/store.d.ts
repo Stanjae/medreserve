@@ -39,6 +39,17 @@ export type AuthCredentials = {
   emailVerified: boolean;
   medId: string | undefined | null;
   databaseId?: string | undefined | null;
+  subRoleId?: string | undefined;
 };
+
+type Permissions = { label: string; value: string; status: boolean };
+
+export type AdminPermissions = {
+  type: 'sub_admin' | 'hospital_admin' | 'super_admin';
+  permissions: Permissions[];
+  id: string;
+  priority: number
+};
+
 
 //export type DoctorCredentials = AuthCredentials & {medId?: string | undefined};

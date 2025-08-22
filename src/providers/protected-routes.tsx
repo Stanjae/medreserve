@@ -1,23 +1,28 @@
 "use client";
 import { userRoles } from "@/constants";
-import { AuthCredentials } from "@/types/store";
+import { AdminPermissions, AuthCredentials } from "@/types/store";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
 import { useMedStore } from "./med-provider";
 import { clearCookies } from "@/lib/actions/actions";
 
+type AuthenticatedRouteProps = {
+  auth: {
+    credentials: AuthCredentials;
+    permissions: AdminPermissions | null;
+  } | null;
+  children: React.ReactNode;
+}
+
 const ProtectedRoutes = ({
   children,
   auth,
-}: {
-  children: React.ReactNode;
-  auth: AuthCredentials | null;
-}) => {
+}: AuthenticatedRouteProps) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const { setAuthCredentials, clearAuthCredentials } = useMedStore(
+  const { setAuthCredentials, clearAuthCredentials, setAdminPermissions, clearAdminPermissions } = useMedStore(
     (state) => state
   );
 
@@ -29,22 +34,24 @@ const ProtectedRoutes = ({
       if (!auth && isProtectedRoute) {
         clearCookies();
         clearAuthCredentials();
+        clearAdminPermissions();
         toast.error("Session expired. Redirecting to login...");
         window.location.replace ("/auth/login");
         return;
       }
 
       if (auth) {
-        setAuthCredentials(auth);
+        setAuthCredentials(auth?.credentials);
+        setAdminPermissions(auth?.permissions);
         if (
           isProtectedRoute &&
-          !pathname.includes(auth?.role)
+          !pathname.includes(auth?.credentials?.role)
         ) {
           router.back();
         }
 
         if (pathname.includes("auth")) {
-          router.push(`/${auth?.role}/${auth?.userId}/dashboard`);
+          router.push(`/${auth?.credentials?.role}/${auth?.credentials?.userId}/dashboard`);
         }
       }
     };

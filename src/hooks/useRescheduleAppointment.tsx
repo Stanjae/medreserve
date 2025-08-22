@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import PdfLayout from "@/components/layout/PdfLayout";
 import RescheduleReceipt, { ExtendedParams } from "@/components/pdfTemplates/RescheduleReceipt";
 import {  reschedulePaymentAction } from "@/lib/actions/actions";

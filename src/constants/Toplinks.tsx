@@ -6,6 +6,7 @@ import {
   IconDashboard,
   IconReportAnalytics,
   IconSearch,
+  IconUsersGroup,
 } from "@tabler/icons-react";
 
 export const Toplinks = [
@@ -111,4 +112,39 @@ export const dashboardShortCutLinks = [
     href: "/patient/userId/dashboard/appointments/book-appointment",
     icon: <IconReportAnalytics size={40} stroke={1.5} color="#fff" />,
   }
+];
+
+
+export const adminDashLinks = [
+  {
+    label: "Dashboard",
+    href: "dashboard",
+    child: false,
+    leftIcon: <IconDashboard size={17} stroke={1.5} />,
+  },
+  {
+    label: "Appointments",
+    href: "appointments",
+    child: true,
+    leftIcon: <IconCalendarBolt size={17} stroke={1.5} />,
+    sub: [
+      { label: "Overview", href: "index" },
+      { label: "Book an Appointment", href: "book-appointment" },
+    ],
+  },
+  {
+    label: "payments",
+    href: "payments",
+    child: false,
+    leftIcon: <IconCoins size={17} stroke={1.5} />,
+  },
+];
+
+export const adminSecondaryDashLinks = [
+  {
+    label: "New Signups",
+    href: "new-signups",
+    child: false,
+    leftIcon: <IconUsersGroup size={17} stroke={1.5} />,
+  },
 ];

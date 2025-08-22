@@ -12,7 +12,6 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import IsBetween from "dayjs/plugin/isBetween";
 import { Payment } from "../../types/appwrite";
-import BanksData from "../lib/api/bank-json.json";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -265,11 +264,6 @@ export const checkIfDateIsBetweenAYear = (dateString: string) => {
   return dayjs(dateString).isBetween(startDate, endDate);
 };
 
-export const getBankCodesData = BanksData.map((bank) => ({
-  label: bank.name,
-  value: bank.code,
-}));
-
 export const extractPageTitle = (title: string) =>
   title
     .split("/")
@@ -283,3 +277,18 @@ export function checkIfValidID(value: string): boolean {
   }
   return false;
 }
+
+export function generateSecureOTP(): string {
+  // Check if we're in a browser or Node.js environment with crypto support
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    return (1000 + (array[0] % 9000)).toString();
+  }
+  
+  // Fallback for older environments
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+export const customPromise = () =>
+  new Promise((resolve) => setTimeout(() => resolve({ name: "Sonner" }), 2000));

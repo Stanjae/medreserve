@@ -34,6 +34,7 @@ export const bloodGroups = [
 export const genderData = ["Male", "Female", "Other"];
 
 export const userRoles = ["patient", "doctor", "admin"];
+export const adminSubRoles = ['hospital_admin', 'super_admin', 'sub_admin'];
 
 export const cadresData = ["consultancy", "residency", "housemanship"];
 

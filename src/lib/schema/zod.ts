@@ -192,6 +192,12 @@ export const PatientLoginSchema = z.object({
   password: passwordSchema,
 });
 
+export const AdminLoginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: passwordSchema,
+  username: z.string().optional()
+});
+
 export const ForgotPasswordSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
 });

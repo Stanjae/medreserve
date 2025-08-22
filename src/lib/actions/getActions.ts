@@ -175,9 +175,9 @@ export async function getPatientAppointmentTable(
 ): Promise<getUserAppointmentsResponse> {
   const { database } = await createAdminClient();
   const response = await database.listDocuments(
-    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
-    [Query.equal("patientId", patientId), Query.orderDesc("$createdAt")]
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID! ,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID! ,
+    [ Query.equal("patientId", [ patientId]) , Query.orderDesc("$createdAt") ]
   );
   let appointRecords;
   const customFn = getFilterByCreatedAt(activeTab);

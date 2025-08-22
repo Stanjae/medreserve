@@ -1,11 +1,12 @@
 // src/stores/counter-store.ts
-import { AuthCredentials } from "@/types/store";
+import { AdminPermissions, AuthCredentials } from "@/types/store";
 import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 
 export type MedState = {
   credentials: AuthCredentials | null ;
   weekSchedule: string[] | null;
+  adminPermissions: AdminPermissions | null;
   dateTime: {
     startTime?: string;
     endTime?: string;
@@ -27,13 +28,17 @@ export type MedActions = {
     minTime: string;
     maxTime: string;
   }) => void;
+  setAdminPermissions: (params: AdminPermissions | null) => void;
+  clearAdminPermissions: () => void;
 };
+
 
 export type MedStore = MedState & MedActions;
 
 export const initMedStore = (): MedState => {
   return {
     credentials: null,
+    adminPermissions: null,
     weekSchedule: [],
     dateTime: {
       startTime: "",
@@ -47,6 +52,7 @@ export const initMedStore = (): MedState => {
 
 export const defaultInitState: MedState = {
   credentials: null,
+  adminPermissions: null,
   weekSchedule: [],
   dateTime: { startTime: "", endTime: "", date: "", minTime: "", maxTime: "" },
 };
@@ -63,6 +69,9 @@ export const createMedStore = (initState: MedState = defaultInitState) => {
           set(() => ({ weekSchedule: paramsWeekSchedule })),
         clearWeekSchedule: () => set(() => ({ weekSchedule: [] })),
         setDateTime: (params) => set(() => ({ dateTime: params })),
+        setAdminPermissions: (params) =>
+          set(() => ({ adminPermissions: params })),
+        clearAdminPermissions: () => set(() => ({ adminPermissions: null }))
       }),
       { name: "med-store" }
     )

@@ -1,4 +1,4 @@
-import { Models } from 'node-appwrite';
+import { Models } from "node-appwrite";
 
 export type Doctor = Models.Document & {
   fullname: string;
@@ -58,13 +58,11 @@ export type Patient = Models.Document & {
   profilePicture: string | null;
   bloodGroup: string | null;
   genotype: string | null;
-}
+};
 
-export type Appointment = Models.Document & {
-}
+export type Appointment = Models.Document & {};
 
-export type Payment = Models.Document & {
-}
+export type Payment = Models.Document & {};
 
 export type DoctorAvailability = Models.Document & {
   doctorId: Doctor[] | null;
@@ -73,7 +71,7 @@ export type DoctorAvailability = Models.Document & {
   weekendEndTime: string | null;
   weekdayStartTime: string;
   weekdayEndTime: string;
-}
+};
 
 export type Payment = Models.Document & {
   metaData: string;
@@ -85,14 +83,14 @@ export type Payment = Models.Document & {
   doctorId: Doctor[] | null;
   authorization: string;
   paidOn: string;
-}
+};
 
 export type Reviews = Models.Document & {
   anonymous: boolean;
-appointmentId : Appointment[] | null;
-doctorId : Doctor[] | null;
-patientId : Patient[] | null;
-rating : number;
-reviewText : string;
-type : "doctor" | "appointment";
-}
+  appointmentId: Appointment[] | null;
+  doctorId: Doctor[] | null;
+  patientId: Patient[] | null;
+  rating: number;
+  reviewText: string;
+  type: "doctor" | "appointment";
+};
