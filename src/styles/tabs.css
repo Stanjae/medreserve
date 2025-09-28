@@ -1,0 +1,10 @@
+.role-tabs:hover tabIcon{
+ transition:all;
+ color:green;
+ background-color:yellow;
+ width:300px;
+}
+
+.opposite-tabs  li .role-tabs:hover {
+  background-color:pink !important;
+}

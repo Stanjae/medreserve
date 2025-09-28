@@ -1,15 +1,18 @@
 "use client";
 import { getAllUsers } from "@/lib/actions/adminActions";
-import { ROLES } from "@/types/store";
+import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
+import { SignupTabsType } from "@/types/actions.types";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
 
-const useGetAllSignUps = () => {
-  const searchParams = useSearchParams();
+const useGetAllSignUps = (searchParams:string |null, dateRange: [string | null, string | null]) => {
+
   return useQuery({
-    queryKey: ["all-signups", searchParams.get("signupTab")],
+    queryKey: [QUERY_KEYS.SIGNUPS.getAllSignups, searchParams, dateRange],
     queryFn: async () =>
-      await getAllUsers((searchParams.get("signupTab") as ROLES) ?? "doctor"),
+      await getAllUsers(
+        (searchParams as SignupTabsType) ?? "pending-doctors",
+        dateRange
+      ),
   });
 };
 

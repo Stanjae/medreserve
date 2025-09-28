@@ -183,3 +183,12 @@ text-align:left;
   display:flex !important;
   opacity: 1 !important;
 }
+
+
+#roleTab:hover .tabIcon{
+ transition:all;
+ transition-duration: 0.2s;
+ transform: translateX(4px);
+ transition-timing-function: ease-in-out;
+
+}

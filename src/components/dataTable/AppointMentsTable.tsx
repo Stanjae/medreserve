@@ -7,7 +7,6 @@ import { columnsAppointment } from "../tables/ColumnsDef";
 import { AppointmentColumnsType } from "@/types/table.types";
 import { useMedStore } from "@/providers/med-provider";
 import useGetPatientAppointmentTable from "@/hooks/tables/useGetPatientAppointmentTable";
-import CustomInput from "../inputs/CustomInput";
 import { appointmentTabsData, appointmentType, cancel_refundStatusFilter } from "@/constants";
 import { ActionIcon, Button, Menu, Paper } from "@mantine/core";
 import { CDropdown } from "../dropdown/CDropdown";
@@ -76,10 +75,11 @@ const AppointMentsTable = () => {
   };
 
   const newTabs = React.useMemo(() => {
-    const safeTabsCount = tabsCount ?? { upcoming: 0, past: 0, today: 0, cancelled:0 };
+    const safeTabsCount = tabsCount ?? { upcoming: 0, past: 0, today: 0, cancelled: 0 };
     return appointmentTabsData.map((item) => ({
       ...item,
       count: safeTabsCount[item.value as keyof typeof safeTabsCount],
+      status: 'unread' as "unread" | "read"
     }));
   }, [tabsCount]);
 
@@ -134,7 +134,7 @@ const AppointMentsTable = () => {
                     modalContent="Are you sure you want to cancel this booking?"
                   />
                 </>
-              ) : cancel_refundStatusFilter.includes( payment.appointmentStatus) ? (
+              ) : cancel_refundStatusFilter.includes(payment.appointmentStatus) ? (
                 <>
                   <Menu.Item
                     color="green.9"
@@ -261,7 +261,7 @@ const AppointMentsTable = () => {
     drawerOpen();
   };
 
-  const filters = [{ label: "All", value: "all" }, ...appointmentType];
+  const filters = [{name:"appointmentType", placeholder:"Filter by type", items:[{ label: "All", value: "all" }, ...appointmentType]}];
   return (
     <Paper p={20} radius="lg" shadow="md">
       <MedReverseTabs tabs={newTabs} />
@@ -296,18 +296,7 @@ const AppointMentsTable = () => {
         total={data?.total as number}
         limit={10}
         isLoading={isLoading}
-        filterComponent={
-          <div className="flex gap-2 justify-end">
-            <CustomInput
-              type="select"
-              placeholder="Filter Status"
-              size="md"
-              radius="xl"
-              data={filters}
-              data-column-id="appointmentType"
-            />
-          </div>
-        }
+        filterList={filters}
       />
     </Paper>
   );

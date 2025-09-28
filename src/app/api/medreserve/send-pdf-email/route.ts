@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const pdfBuffer = Buffer.from(base64Data, "base64");
 
     // Configure your SMTP transporter
-    const transporter = nodemailer.createTransport({
+/*     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "email-smtp.us-east-1.amazonaws.com",
       port: 587,
@@ -35,10 +35,23 @@ export async function POST(request: Request) {
       tls: {
         rejectUnauthorized: false,
       },
+    }); */
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.resend.com",
+      secure: true,
+      port: 465,
+      auth: {
+        user: "resend",
+        pass: process.env.RESEND_API_KEY,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: process.env.RESEND_VERIFIED_DOMAIN_SENDER_EMAIL,
       to: email,
       subject: "Confirmation of Medical Appointment",
       attachments: [

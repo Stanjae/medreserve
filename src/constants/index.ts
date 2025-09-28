@@ -7,6 +7,7 @@ import {
   IconCalendarEvent,
   //IconLoader,
 } from "@tabler/icons-react";
+
 export const IdentificationTypes = [
   "Driver's License",
   "Military ID Card",
@@ -92,6 +93,11 @@ export const appointmentType = [
   { label: "Emergency", value: "emergency" },
 ];
 
+export const signUpFilterType = [
+  { label: "Unverified", value: "unverified" },
+  { label: "Verified", value: "verified" },
+];
+
 export const medicalCourses = [
   {
     label: "Medicine and Surgery (MBBS/MBChB)",
@@ -162,37 +168,7 @@ export const workSchedule = [
   { label: "Sunday", value: "0" },
 ];
 
-export const InitialDoctorProfile = {
-  fullname: "",
-  address: "",
-  bio: "",
-  email: "",
-  phone: "",
-  gender: "",
-  cadre: "",
-  birthDate: "",
-  zipcode: "",
-  experience: 0,
-  medId: "",
-  specialization: "",
-  grade: "",
-  courseOfStudy: "",
-  university: "",
-  yearOfGraduation: "",
-  degree: "",
-  courseDuration: 0,
-  stateOfOrigin: "",
-  lga: "",
-  weekdayStartTime: "",
-  weekdayEndTime: "",
-  weekendStartTime: "",
-  weekendEndTime: "",
-  identificationType: "",
-  identificationNumber: "",
-  identificationDocument: "",
-  profilePicture: "",
-  privacyConsent: false,
-};
+
 
 export const initialPaymentForm = {
   amount: 0,
@@ -264,11 +240,24 @@ export const paymentStatusFilter = [
 ];
 
 export const appointmentTabsData = [
-  { label: "Upcoming", value: "upcoming" },
-  { label: "Today", value: "today" },
-  { label: "Past", value: "past" },
-  { label: "Cancelled", value: "cancelled" },
-  { label: "Refunded", value: "refunded" },
+  { label: "Upcoming", value: "upcoming", status:'unread' },
+  { label: "Today", value: "today", status:'unread' },
+  { label: "Past", value: "past", status:'unread' },
+  { label: "Cancelled", value: "cancelled", status:'unread' },
+  { label: "Refunded", value: "refunded", status:'unread' },
+];
+
+export const newSignupsTabData = [
+  { label: "Pending Verification", value: "pending-doctors", status: "unread" },
+  { label: "Verified Doctors", value: "verified-doctors", status: "read" },
+  { label: "Patients", value: "patient", status: "read" },
+  { label: "Suspended", value: "suspended", status: "unread" },
+];
+
+export const newUsersTabData = [
+  { label: "Doctors", value: "doctor", status: "read" },
+  { label: "Patients", value: "patient", status: "read" },
+  { label: "Staffs", value: "admin", status: "read" },
 ];
 
 export const dashboardMetricsCardInfo = [
@@ -293,6 +282,7 @@ export const appointmentStatusData = [
 ];
 
 export const cancel_refundStatusFilter = ["cancelled", "refunded"];
+export const usersStatusFilter = [{label: "All", value: "all"}, {label: "Active", value: "active"},{ label: "Suspended", value: "suspended"}];
 
 // Status configuration with colors and icons
 export const statusConfig = {
@@ -396,3 +386,8 @@ export const refundTextStatusInfo2 = [
 export const pageHeadersObject = {
   'our-doctors':"Doctor's details"
 }
+
+export const userAccountStatus = [
+  { label: "Active", value: 'active' },
+  { label: "Suspended", value: 'suspended' },
+]

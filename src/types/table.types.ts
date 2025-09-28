@@ -1,6 +1,8 @@
 
+import { ForwardRefExoticComponent, RefAttributes } from "react";
 import { Payment } from "../../types/appwrite";
 import { AppointmentStatus, AppointmentType, PaymentDataType } from "./actions.types";
+import { Icon, IconProps } from "@tabler/icons-react";
 
 export type AppointmentColumnsType = {
   id: string;
@@ -54,3 +56,12 @@ interface ColumnFilter {
   value: unknown;
 }
 export type ColumnFiltersState = ColumnFilter[];
+
+export type NavList = {
+  label: string;
+  href: string;
+  child: boolean;
+  leftIcon: ForwardRefExoticComponent<IconProps & RefAttributes<Icon>>;
+  sub?: { label: string; href: string }[];
+  allowedSubRoles?: string[];
+};

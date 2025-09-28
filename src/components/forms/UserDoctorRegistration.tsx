@@ -39,7 +39,7 @@ const UserDoctorRegistrationForm = () => {
         }
         />
         <div className=' flex items-center gap-x-3'>
-            {loading && <Loader color="blue" size={14} />}
+            {loading && <Loader color="blue" size={14} />} 
             {medInfo && !loading && monitor != '' && <Text component='div' c="m-gray" className="flex text-[14px] items-center gap-x-1">
                 <IconRosetteDiscountCheckFilled color="green" size={14}/>
                 {medInfo?.firstName + ' ' + medInfo?.lastName}

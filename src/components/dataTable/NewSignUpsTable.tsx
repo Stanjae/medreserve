@@ -1,320 +1,229 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { CustomDataTable } from "../tables/CustomDataTable";
+import { CustomDataTable } from "../tables/CustomTableWrapper";
 import { ColumnDef } from "@tanstack/react-table";
-import { columnsAppointment } from "../tables/ColumnsDef";
-import { AppointmentColumnsType } from "@/types/table.types";
-import { useMedStore } from "@/providers/med-provider";
-import CustomInput from "../inputs/CustomInput";
-import { appointmentTabsData, appointmentType, cancel_refundStatusFilter } from "@/constants";
-import { ActionIcon, Button, Menu, Paper } from "@mantine/core";
-import { CDropdown } from "../dropdown/CDropdown";
-import {
-  IconCancel,
-  IconClockPlay,
-  IconCreditCardPay,
-  IconCreditCardRefund,
-  IconDots,
-  IconDownload,
-  IconReceiptRefund,
-} from "@tabler/icons-react";
-import Link from "next/link";
-import {
-  getAMPWAT,
-  getLatestObjectByCreatedAt,
-  isTodayAfterDateTime,
-  isTodayBeforeDateTime,
-  isTodayBeforeOrSameWithDateTime,
-} from "@/utils/utilsFn";
-import GeneratePdfButton from "../boxes/NewPdf";
-import PdfLayout from "../layout/PdfLayout";
-import AppointmentReceipt from "../pdfTemplates/AppointmentReceipt";
-import RescheduleAppointment from "../forms/RescheduleAppointment";
+import { columnsSignups } from "../tables/ColumnsDef";
+import { newSignupsTabData } from "@/constants";
+import { Checkbox, Paper, ScrollArea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import CustomModal from "../modals/CustomModal";
 import MedReverseTabs from "../tabs/MedReverseTabs";
-import useGetPatientsTabsCount from "@/hooks/useGetPatientsTabsCount";
-import MedReverseDrawer from "../drawers/MedReverseDrawer";
-import AppointmentDetails from "../boxes/AppointmentDetails";
-import CustomCancelBtn from "../CButton/CustomCancelBtn";
-import useReserveAppointment from "@/hooks/useReserveAppointment";
-import { useRouter } from "next/navigation";
 import useGetAllSignUps from "@/hooks/tables/useGetAllSignUps";
+import React, { useEffect } from "react";
+import { ModifiedUser } from "../../../types/appwrite";
+import useGetSignUpsTabsCount from "@/hooks/tables/useGetSignUpsTabsCount";
+import NewSignUpDetails from "../boxes/NewSignUpDetails";
+import { capitalizeFirst } from "@/utils/utilsFn";
+import MedReserveModals from "../modals/MedReserveModals";
+import BulkActionWidget from "../CButton/BulkActionWidget";
+import CustomCancelBtn from "../CButton/CustomCancelBtn";
+import useVerifyBlockUser from "@/hooks/useVerifyBlockUser";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const NewSignUpsTable = () => {
-  const { credentials } = useMedStore((state) => state);
+  const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-    const { refetch, data, isLoading } = useGetAllSignUps();
-    
-    console.log(data);
+  useEffect(() => {
+    if (!searchParams.get("activeTab")) {
+      const params = new URLSearchParams();
+      params.set("activeTab", "pending-doctors");
+      router.replace(`${pathname}?${params.toString()}`);
+    }
+  }, []);
 
-/*   const { data: tabsCount } = useGetPatientsTabsCount(
-    credentials?.databaseId as string
+  const {
+    handleBulkVerify: { mutateAsync: mutateBulkVerifyAsync },
+    handleBulkBlock: { mutateAsync: mutateBulkBlockAsync },
+  } = useVerifyBlockUser();
+
+  const [dateRange, setDateRange] = React.useState<
+    [string | null, string | null]
+  >([null, null]);
+
+  const { refetch, data, isLoading } = useGetAllSignUps(
+    searchParams.get("activeTab"),
+    dateRange
   );
 
-  const { cancelAppointment } = useReserveAppointment();
-
-  const [drawerOpened, { open: drawerOpen, close: drawerClose }] =
-    useDisclosure(false);
+  const { data: tabsCount } = useGetSignUpsTabsCount();
 
   const [opened, { open, close }] = useDisclosure(false);
 
-  const [row, setRow] = React.useState<AppointmentColumnsType>();
+  const [row, setRow] = React.useState<ModifiedUser>();
 
-  const handleRescheduleOption = (payload: AppointmentColumnsType) => {
-    setRow(payload);
-    open();
-  };
+  const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
 
-  const cancelAppointmentFn = async (slotId: string) => {
-    const response = await cancelAppointment.mutateAsync(slotId);
-    refetch();
-    refetch();
-    return response;
-  };
+  const [tableInstance, setTableInstance] = React.useState<any>(null);
 
   const newTabs = React.useMemo(() => {
-    const safeTabsCount = tabsCount ?? {
-      upcoming: 0,
-      past: 0,
-      today: 0,
-      cancelled: 0,
-    };
-    return appointmentTabsData.map((item) => ({
+    return newSignupsTabData.map((item) => ({
       ...item,
-      count: safeTabsCount[item.value as keyof typeof safeTabsCount],
+      count: tabsCount?.[item.value as keyof typeof tabsCount] as number,
+      status: item.status as "unread" | "read",
     }));
   }, [tabsCount]);
 
-  const newColumnsAppointment = [
-    ...columnsAppointment,
+  const newColumns: ColumnDef<ModifiedUser, any>[] = [
     {
-      id: "actions",
+      id: "$id",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          indeterminate={
+            table.getIsSomePageRowsSelected() &&
+            !table.getIsAllPageRowsSelected()
+          }
+          onChange={(event) => {
+            table.toggleAllPageRowsSelected(event.currentTarget.checked);
+            setSelectedRows(
+              event.currentTarget.checked
+                ? table.getRowModel().rows.map((row) => row.original.$id)
+                : []
+            );
+          }}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          indeterminate={row.getIsSomeSelected() && !row.getIsSelected()}
+          onChange={(event) => {
+            event.stopPropagation();
+            const isChecked = event.currentTarget.checked;
+            const rowId = row.original.$id;
+
+            row.toggleSelected(event.currentTarget.checked);
+            setSelectedRows((prev) => {
+              if (isChecked) {
+                // Add to selected rows
+                return [...prev, rowId];
+              } else {
+                // Remove from selected rows
+                return prev.filter((id) => id !== rowId);
+              }
+            });
+          }}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
       enableHiding: false,
-      cell: ({ row }: { row: { original: AppointmentColumnsType } }) => {
-        const payment = row.original;
-        const getPaymentId =
-          payment?.paymentId.length > 1
-            ? getLatestObjectByCreatedAt(payment?.paymentId)
-            : payment?.paymentId.find((item) => item.type == "initial-fees");
-        return (
-          <CDropdown
-            props={{
-              styles: { item: { fontSize: 13 } },
-              width: 150,
-              position: "bottom-end",
-            }}
-            trigger={
-              <ActionIcon
-                onClick={(event) => event.stopPropagation()}
-                variant="transparent"
-                aria-label="more options"
-              >
-                <IconDots size={16} />
-              </ActionIcon>
-            }
-          >
-            <Menu.Dropdown>
-              {payment.appointmentStatus == "pending" ? (
-                <>
-                  <Menu.Item
-                    component={Link}
-                    href={`/patient/${payment.patientUserId}/dashboard/appointments/book-appointment/${payment.doctorUserId}/step-2?slotId=${payment.id}`}
-                    leftSection={<IconCreditCardPay size={13} />}
-                  >
-                    Make Payment
-                  </Menu.Item>
-                  <CustomCancelBtn
-                    btnProps={{
-                      size: "md",
-                      color: "red",
-                      variant: "subtle",
-                      leftSection: <IconCancel size={13} />,
-                    }}
-                    btnText="Cancel Booking"
-                    modalHeader="Cancel Booking"
-                    fn={async () => await cancelAppointmentFn(payment.id)}
-                    modalContent="Are you sure you want to cancel this booking?"
-                  />
-                </>
-              ) : cancel_refundStatusFilter.includes(
-                  payment.appointmentStatus
-                ) ? (
-                <>
-                  <Menu.Item
-                    color="green.9"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(
-                        `/patient/${credentials?.userId}/dashboard/appointments/cancel-appointment?slotId=${payment.id}`
-                      );
-                    }}
-                    leftSection={<IconReceiptRefund size={13} />}
-                  >
-                    Check Status
-                  </Menu.Item>
-                </>
-              ) : (
-                <>
-                  {payment.bookingDate &&
-                    isTodayBeforeOrSameWithDateTime(
-                      payment.bookingDate,
-                      "day"
-                    ) && (
-                      <>
-                        <GeneratePdfButton
-                          appointmentDate={payment?.bookingDate}
-                          appointmentTime={getAMPWAT(
-                            `${payment?.bookingDate}T${payment?.startTime}`
-                          )}
-                          doctorName={payment.doctorName}
-                          patientName={
-                            getPaymentId?.metaData &&
-                            JSON.parse(getPaymentId?.metaData)?.fullname
-                          }
-                          email={
-                            getPaymentId?.metaData &&
-                            JSON.parse(getPaymentId?.metaData)?.email
-                          }
-                          trigger={
-                            <Menu.Item
-                              color="green"
-                              leftSection={<IconDownload size={13} />}
-                            >
-                              Get Receipt
-                            </Menu.Item>
-                          }
-                          PdfElement={
-                            <PdfLayout>
-                              <AppointmentReceipt
-                                altTime={getAMPWAT(
-                                  `${payment?.bookingDate}T${payment?.startTime}Z`
-                                )}
-                                altDate={payment?.bookingDate}
-                                response={getPaymentId}
-                                type="appointment"
-                              />
-                            </PdfLayout>
-                          }
-                        />
-                      </>
-                    )}
-                  {/* reschedule 
-                  {payment.bookingDate &&
-                    isTodayBeforeDateTime(payment.bookingDate, "day") && (
-                      <Button
-                        size="md"
-                        color="m-blue"
-                        variant="subtle"
-                        leftSection={<IconClockPlay size={13} />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRescheduleOption(payment);
-                        }}
-                      >
-                        Reschedule
-                      </Button>
-                    )}
-                  {payment.bookingDate &&
-                    isTodayAfterDateTime(payment.bookingDate, "day") &&
-                    payment.didPatientSeeDoctor == false && (
-                      <Menu.Item
-                        color="red"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(
-                            `/patient/${credentials?.userId}/dashboard/appointments/refund?slotId=${payment.id}`
-                          );
-                        }}
-                        leftSection={<IconCreditCardRefund size={13} />}
-                      >
-                        Refund
-                      </Menu.Item>
-                    )}
-                  {payment.bookingDate &&
-                    isTodayBeforeDateTime(payment.bookingDate, "day") &&
-                    payment.didPatientSeeDoctor == false && (
-                      <Menu.Item
-                        color="red"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(
-                            `/patient/${credentials?.userId}/dashboard/appointments/cancel-appointment?slotId=${payment.id}`
-                          );
-                        }}
-                        leftSection={<IconCreditCardRefund size={13} />}
-                      >
-                        Cancel Appointment
-                      </Menu.Item>
-                    )}
-                </>
-              )}
-            </Menu.Dropdown>
-          </CDropdown>
-        );
-      },
     },
+    ...columnsSignups,
   ];
 
-  const columns = React.useMemo<ColumnDef<AppointmentColumnsType, any>[]>(
-    () => newColumnsAppointment,
+  const columns = React.useMemo<ColumnDef<ModifiedUser, any>[]>(
+    () => newColumns,
     []
   );
 
-  const handleRowClick = (row: AppointmentColumnsType) => {
+  const handleRowClick = (row: ModifiedUser) => {
     setRow(row);
-    drawerOpen();
+    open();
   };
-console.log('hunter')
-  const filters = [{ label: "All", value: "all" }, ...appointmentType]; */
+
+  const handleCloseWidget = () => {
+    if (tableInstance) {
+      console.log("tableInstanceRef.current", tableInstance);
+      tableInstance.toggleAllRowsSelected(false);
+    }
+    setSelectedRows([]);
+  };
+
+  const handleBulkVerifyAction = () => {
+    const activeTab = searchParams.get("activeTab");
+    if (selectedRows.length > 0) {
+      mutateBulkVerifyAsync({
+        paramsId: selectedRows,
+        status: activeTab === "pending-doctors",
+      });
+    }
+    handleCloseWidget();
+  };
+
+  const handleBulkSuspendAction = () => {
+    const activeTab = searchParams.get("activeTab");
+    if (selectedRows.length > 0) {
+      mutateBulkBlockAsync({
+        paramsId: selectedRows,
+        status: activeTab === "suspended",
+      });
+    }
+    handleCloseWidget();
+  };
+
   return (
     <Paper p={20} radius="lg" shadow="md">
-     {/*  <MedReverseTabs tabs={newTabs} />
-      <MedReverseDrawer
-        position="right"
-        title="Appointment Details"
-        opened={drawerOpened}
-        onClose={drawerClose}
-      >
-        <AppointmentDetails row={row} />
-      </MedReverseDrawer>
-      <CustomModal
+      <MedReverseTabs tabs={newTabs} />
+      <MedReserveModals
         centered
+        title={row && capitalizeFirst(row?.labels as string) + " Details"}
         closeOnClickOutside={false}
         size={"xl"}
         opened={opened}
         onClose={close}
+        scrollAreaComponent={ScrollArea.Autosize}
+        styles={{
+          body: { padding: "0px" },
+        }}
       >
-        {row && (
-          <RescheduleAppointment
-            handleClose={close}
-            row={row as AppointmentColumnsType}
-          />
-        )}
-      </CustomModal> */}
-{/*       <CustomDataTable
+        {row && <NewSignUpDetails onClose={close} row={row} />}
+      </MedReserveModals>
+
+      <CustomDataTable
         data={data?.project}
+        onTableInstanceChange={setTableInstance}
         columns={columns}
-        placeHolder="Search for appointments..."
+        placeHolder="Search for signups..."
         refetchData={refetch}
         handleRowClick={handleRowClick}
         total={data?.total as number}
         limit={10}
+        setNewDateRange={setDateRange}
         isLoading={isLoading}
-        filterComponent={
-          <div className="flex gap-2 justify-end">
-            <CustomInput
-              type="select"
-              placeholder="Filter Status"
-              size="md"
-              radius="xl"
-              data={filters}
-              data-column-id="appointmentType"
+      />
+
+      <BulkActionWidget
+        opened={selectedRows.length > 0}
+        onClose={handleCloseWidget}
+        docsCount={selectedRows.length}
+        confirmBtn1={
+          searchParams.get("activeTab") !== "suspended" && (
+            <CustomCancelBtn
+              modalHeader="Are you sure?"
+              modalContent={` You are about to ${searchParams.get("activeTab") === "pending-doctors" ? "verify" : "unverify"} ${selectedRows.length} items. This action is irreversible!`}
+              btnText={
+                searchParams.get("activeTab") === "pending-doctors"
+                  ? "Verify"
+                  : "Unverify"
+              }
+              btnProps={{
+                variant: "light",
+                color:
+                  searchParams.get("activeTab") === "pending-doctors"
+                    ? "green"
+                    : "red",
+              }}
+              fn={handleBulkVerifyAction}
             />
-          </div>
+          )
         }
-      /> */}
+        confirmBtn2={
+          <CustomCancelBtn
+            modalHeader="Are you sure?"
+            modalContent={` You are about to ${searchParams.get("activeTab") === "suspended" ? "unblock" : "block"} ${selectedRows.length} items. This action is irreversible!`}
+            btnText={
+              searchParams.get("activeTab") === "suspended"
+                ? "Unblock"
+                : "Block"
+            }
+            btnProps={{ variant: "outline", color: "m-blue" }}
+            fn={handleBulkSuspendAction}
+          />
+        }
+      />
     </Paper>
   );
 };

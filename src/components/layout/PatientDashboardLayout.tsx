@@ -10,13 +10,11 @@ import {
   NavLink,
   Indicator,
   ActionIcon,
-  Stack,
   Text,
   Button,
   Divider,
 } from "@mantine/core";
 import MedReserveLogo from "@/components/logo/MedReserveLogo";
-import { JSX } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { handleNavLinks } from "@/utils/utilsFn";
@@ -31,21 +29,18 @@ import {
 } from "@tabler/icons-react";
 import useLogout from "@/hooks/useLogout";
 import CustomInput from "../inputs/CustomInput";
+import { ROLES } from "@/types/store";
+import { NavList } from "@/types/table.types";
+import HeaderBtns from "../CButton/HeaderBtns";
 
-type NavList = {
-  label: string;
-  href: string;
-  child: boolean;
-  leftIcon: JSX.Element;
-  sub?: { label: string; href: string }[];
-};
+
 
 type NavProps = {
   children: React.ReactNode;
-  role: string;
-  isSecondarySection?: boolean;
-  secondaryNavigation?: NavList[];
+  role: ROLES;
   navigation: NavList[];
+  secondaryNavigation?: NavList[];
+  isSecondarySection?: boolean;
 };
 
 export default function DashboardLayout({
@@ -57,19 +52,21 @@ export default function DashboardLayout({
 }: Readonly<
 NavProps
 >) {
-  const { credentials } = useMedStore((state) => state);
+  const { credentials, adminPermissions } = useMedStore((state) => state);
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
   const pathname = usePathname();
   const navigationRefined = handleNavLinks(
     role,
+    adminPermissions?.type,
     credentials?.userId,
     navigation
   );
 
   const secondaryNavigationRefined = handleNavLinks(
     role,
+    adminPermissions?.type,
     credentials?.userId,
   secondaryNavigation as NavList[]
   );
@@ -198,13 +195,14 @@ NavProps
       <AppShell.Navbar p="md">
         <Box id="dashNavs">
           {navigationRefined?.map((item, index) => {
+            const IconComponent = item.leftIcon;
             if (!item.child) {
               return (
                 <NavLink
                   component={Link}
                   href={item.href}
                   active={pathname == item.href}
-                  leftSection={item.leftIcon}
+                  leftSection={<IconComponent size={17} stroke={1.5} />}
                   label={item.label}
                   key={index}
                   styles={{
@@ -222,7 +220,7 @@ NavProps
                   component={Link}
                   href={item.href}
                   active={pathname.includes(item.href)}
-                  leftSection={item.leftIcon}
+                  leftSection={<IconComponent size={17} stroke={1.5} />}
                   label={item.label}
                   key={index}
                   styles={{
@@ -267,13 +265,14 @@ NavProps
 
             <div>
               {isSecondarySection && secondaryNavigationRefined?.map((item, index) => {
+                const IconComponent = item.leftIcon;
                 if (!item.child) {
                   return (
                     <NavLink
                       component={Link}
                       href={item.href}
                       active={pathname == item.href}
-                      leftSection={item.leftIcon}
+                      leftSection={<IconComponent size={17} stroke={1.5} />}
                       label={item.label}
                       key={index}
                       styles={{
@@ -291,7 +290,7 @@ NavProps
                       component={Link}
                       href={item.href}
                       active={pathname.includes(item.href)}
-                      leftSection={item.leftIcon}
+                      leftSection={<IconComponent size={17} stroke={1.5} />}
                       label={item.label}
                       key={index}
                       styles={{
@@ -334,14 +333,18 @@ NavProps
         )}
       </AppShell.Navbar>
       <AppShell.Main bg={"#F8F8F8"}>
-        <Stack>
-          <Text className=" capitalize font-semibold" fz={"h3"}>
+        <div>
+          <Group justify="space-between" >
+             <Text className=" capitalize font-semibold" fz={"h3"}>
             {pathname
               .split("/")
               .at(pathname.split("/").length - 1)
               ?.replaceAll("-", " ")}
-          </Text>
-        </Stack>
+            </Text>
+            <HeaderBtns/>
+          </Group>
+         
+        </div>
         <Box mt={15}>{children}</Box>
       </AppShell.Main>
     </AppShell>

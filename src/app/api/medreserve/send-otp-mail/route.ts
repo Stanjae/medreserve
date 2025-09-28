@@ -15,13 +15,20 @@ export async function POST(request: Request) {
 
     // Configure your SMTP transporter
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      //host: "email-smtp.us-east-1.amazonaws.com",
-      //port: 587,
-     // secure: true,
+      /*service: "gmail",
+      host: "email-smtp.us-east-1.amazonaws.com",
+      port: 587,
+      secure: true,
       auth: {
         user: process.env.EMAIL_USER, // your email address
         pass: process.env.EMAIL_PASS, // your email password or app password
+      } */
+      host: "smtp.resend.com",
+      secure: true,
+      port: 465,
+      auth: {
+        user: "resend",
+        pass: process.env.RESEND_API_KEY,
       },
       tls: {
         rejectUnauthorized: false,
@@ -29,7 +36,7 @@ export async function POST(request: Request) {
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: process.env.RESEND_VERIFIED_DOMAIN_SENDER_EMAIL, //process.env.EMAIL_USER,
       to: email,
       subject: "MedReserve OTP Verification",
       html: `

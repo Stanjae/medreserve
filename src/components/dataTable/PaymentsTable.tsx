@@ -6,7 +6,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { columnsPayment } from "../tables/ColumnsDef";
 import { PaymentColumnsType } from "@/types/table.types";
 import { useMedStore } from "@/providers/med-provider";
-import CustomInput from "../inputs/CustomInput";
 import { paymentStatusFilter } from "@/constants";
 import { Paper } from "@mantine/core";
 import useGetPatientPaymentsTable from "@/hooks/tables/useGetPatientPaymentsTable";
@@ -29,9 +28,9 @@ const PaymentsTable = () => {
         | "currency"
         | "doctorName"
         | "reference"
-      | "specialization"
-      | "status"
-      |"type";
+        | "specialization"
+        | "status"
+        | "type";
       value: string | number;
       index: number;
       type: "text";
@@ -40,7 +39,9 @@ const PaymentsTable = () => {
     }[]
   >([]);
 
-  const [timelineData, setTimelineData] = React.useState<PaymentColumnsType[] | undefined>();
+  const [timelineData, setTimelineData] = React.useState<
+    PaymentColumnsType[] | undefined
+  >();
   const [activeNo, setActiveNo] = React.useState<number>(0);
 
   const { refetch, data, isLoading } = useGetPatientPaymentsTable(
@@ -52,18 +53,17 @@ const PaymentsTable = () => {
     []
   );
 
-      const newKeys = [
-        "appointmentId",
-        "amount",
-        "doctorName",
-        "reference",
-        "specialization",
-        "type",
-        "status",
-      ] as const;
+  const newKeys = [
+    "appointmentId",
+    "amount",
+    "doctorName",
+    "reference",
+    "specialization",
+    "type",
+    "status",
+  ] as const;
 
   const handeRowClick = (row: PaymentColumnsType) => {
-
     const arrayOfObjects = newKeys.map((key, index) => ({
       key,
       value:
@@ -71,7 +71,7 @@ const PaymentsTable = () => {
           ? convertToCurrency(Number(row[key]))
           : key == "reference"
             ? `#${row[key]}`
-            : parseResponse(row[key]) ,
+            : parseResponse(row[key]),
       index,
       type: "text" as const,
       cols: key == "appointmentId" ? 12 : 6,
@@ -80,15 +80,22 @@ const PaymentsTable = () => {
 
     const timelineArray = data?.project
       .filter((item) => item.appointmentId == row.appointmentId)
-      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-    
-    const index = timelineArray?.findIndex((obj) => obj.reference === row.reference) ?? 0;
-    
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+
+    const index =
+      timelineArray?.findIndex((obj) => obj.reference === row.reference) ?? 0;
+
     setRowData(arrayOfObjects);
     setTimelineData(timelineArray);
     setActiveNo(index);
     open();
   };
+
+  const filters = [{name: "status", placeholder: "Filter by Status", items: paymentStatusFilter   }];
+  
   return (
     <div>
       <MedReverseDrawer
@@ -112,18 +119,7 @@ const PaymentsTable = () => {
           total={data?.total as number}
           limit={10}
           isLoading={isLoading}
-          filterComponent={
-            <div className="flex gap-2 justify-end">
-              <CustomInput
-                type="select"
-                placeholder="Filter Status"
-                size="md"
-                radius="xl"
-                data={paymentStatusFilter}
-                data-column-id="status"
-              />
-            </div>
-          }
+          filterList={filters}
         />
       </Paper>
     </div>

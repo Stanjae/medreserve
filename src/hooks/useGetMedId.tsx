@@ -1,10 +1,10 @@
 'use client'
 import { Doctor, simulateFetchNin } from "@/utils/utilsFn"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useDebouncedCallback } from 'use-debounce';
 
 
-const useGetMedInfo = () => {
+const useGetMedInfo = (searchTerm?:string) => {
   
     const [medInfo, setMedInfo] = useState<Doctor | null | undefined >();
     const [loading, setLoading] = useState(false);
@@ -14,6 +14,8 @@ const useGetMedInfo = () => {
         const medInfo = await simulateFetchNin(search, 2000)
         if(!medInfo?.data) {
             setMedInfo(null);
+             setLoading(false);
+            return
         }
         setMedInfo(medInfo?.data);
         setLoading(false);
@@ -22,6 +24,12 @@ const useGetMedInfo = () => {
     const handleMedIdSearch = useDebouncedCallback(async(term) => {
         await getMedId(term);
     }, 300);
+
+    useEffect(() => {
+        if (searchTerm) {
+           getMedId(searchTerm);
+        }
+      }, [searchTerm]);
     
     return {medInfo, handleMedIdSearch, loading}
 }

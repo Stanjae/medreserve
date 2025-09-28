@@ -5,7 +5,7 @@ import NotificationSetup from "@/components/notifications/NotificationSetup";
 import { useMedStore } from "@/providers/med-provider";
 
 export default function Page() {
-  const [appointmentData, setAppointmentData] = useState({
+  const [appointmentData,] = useState({
     doctorId: "",
     patientId: "", // You'll get this from your auth system
     appointmentDate: "",
@@ -15,7 +15,7 @@ export default function Page() {
     
     const {credentials} = useMedStore(state => state);
 
-  const handleBookAppointment = async (e) => {
+  const handleBookAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {

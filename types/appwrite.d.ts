@@ -1,3 +1,5 @@
+import { Gender } from "@/types/actions.types";
+import { PermissionKeys } from "@/types/store";
 import { Models } from "node-appwrite";
 
 export type Doctor = Models.Document & {
@@ -94,3 +96,50 @@ export type Reviews = Models.Document & {
   reviewText: string;
   type: "doctor" | "appointment";
 };
+
+export type AdminProfile = Models.Document & {
+  fullname: string;
+  userId: string;
+  jobSpecification: string;
+  email: string;
+  phone: string;
+  address: string;
+  gender:Gender
+  birthDate: string;
+  privacyConsent: boolean;
+  profilePicture: string;
+  identificationType: string;
+  identificationNumber: string;
+};
+
+type MaybeUser =
+  | { labels: "patient"; profile: Patient }
+  | { labels: "doctor"; profile: Doctor }
+  | { labels: "admin"; profile: AdminProfile };
+export type ModifiedUser = MaybeUser & {
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
+  name: string;
+  registeredAt: string;
+  status: boolean;
+  email: string;
+  phone: string;
+  emailVerification: boolean;
+  prefs: {
+    terms_and_conditions?: boolean;
+    medId?: string;
+    databaseId?: string;
+    subRoleId?: string;
+    subRole?: string;
+  };
+  accessedAt: string;
+};
+
+export type DefaultRoles = {
+  priority: number;
+  type: PermissionKeys;
+  permissions: string;
+};
+
+export type ModifiedRoles = Models.Document & DefaultRoles;

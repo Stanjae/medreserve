@@ -43,6 +43,7 @@ const CustomCancelBtn = ({
         opened={opened}
         title={modalHeader}
         onClose={close}
+        closeOnClickOutside={false}
         centered
       >
         <Text c="m-gray" size="lg">

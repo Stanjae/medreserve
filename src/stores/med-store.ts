@@ -1,12 +1,13 @@
 // src/stores/counter-store.ts
-import { AdminPermissions, AuthCredentials } from "@/types/store";
+import { AdminPermissions, AuthCredentials, HeaderButtonsType } from "@/types/store";
 import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 
 export type MedState = {
-  credentials: AuthCredentials | null ;
+  credentials: AuthCredentials | null;
   weekSchedule: string[] | null;
   adminPermissions: AdminPermissions | null;
+  pageButtons: HeaderButtonsType[] | null;
   dateTime: {
     startTime?: string;
     endTime?: string;
@@ -30,6 +31,8 @@ export type MedActions = {
   }) => void;
   setAdminPermissions: (params: AdminPermissions | null) => void;
   clearAdminPermissions: () => void;
+  setPageButtons: (params:  HeaderButtonsType[] | null) => void;
+  clearPageButtons: () => void;
 };
 
 
@@ -39,6 +42,7 @@ export const initMedStore = (): MedState => {
   return {
     credentials: null,
     adminPermissions: null,
+    pageButtons:[],
     weekSchedule: [],
     dateTime: {
       startTime: "",
@@ -53,6 +57,7 @@ export const initMedStore = (): MedState => {
 export const defaultInitState: MedState = {
   credentials: null,
   adminPermissions: null,
+  pageButtons:[],
   weekSchedule: [],
   dateTime: { startTime: "", endTime: "", date: "", minTime: "", maxTime: "" },
 };
@@ -71,7 +76,9 @@ export const createMedStore = (initState: MedState = defaultInitState) => {
         setDateTime: (params) => set(() => ({ dateTime: params })),
         setAdminPermissions: (params) =>
           set(() => ({ adminPermissions: params })),
-        clearAdminPermissions: () => set(() => ({ adminPermissions: null }))
+        clearAdminPermissions: () => set(() => ({ adminPermissions: null })),
+        setPageButtons: (params) => set(() => ({ pageButtons: params })),
+        clearPageButtons: () => set(() => ({ pageButtons: null })),
       }),
       { name: "med-store" }
     )

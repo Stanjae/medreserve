@@ -50,9 +50,16 @@ const ProtectedRoutes = ({
           router.back();
         }
 
+        if (isProtectedRoute && !auth?.credentials?.emailVerified) {
+          router.push(
+            `/${auth?.credentials?.role}/${auth?.credentials?.userId}/create-profile`
+          );
+         }
+
         if (pathname.includes("auth")) {
           router.push(`/${auth?.credentials?.role}/${auth?.credentials?.userId}/dashboard`);
         }
+
       }
     };
     handleProtectedRoutes();

@@ -7,36 +7,52 @@ type Props = {
     label: string;
     value: string;
     count: number;
+    status: "unread" | "read";
   }[];
+  tabsGrow?: boolean;
+  justify?: "center" | "flex-start" | "flex-end" | "space-between";
+  tabJustify?: "justify-center" | "flex-start" | "flex-end" | "space-between";
+  defaultActiveTab?: string;
 };
-function MedReverseTabs({ tabs }: Props) {
+function MedReverseTabs({ tabs, tabsGrow = false, justify="flex-start", tabJustify="flex-start", defaultActiveTab }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   return (
     <Tabs
-      value={searchParams.get("activeTab") ?? 'upcoming'}
-          onChange={(value) => router.push(`?activeTab=${value}`)}
-          className="mb-8"
+      value={searchParams.get("activeTab") ?? defaultActiveTab}
+      onChange={(value) => router.push(`?activeTab=${value}`)}
+      className="mb-8"
     >
-      <Tabs.List>
+      <Tabs.List grow={tabsGrow} justify={justify}>
         {tabs?.map((item, index) => (
-          <Tabs.Tab
+          <Tabs.Tab 
             key={index}
-                styles={{
-                tab:{borderBottomWidth:"3px", padding:"10px 30px",  backgroundColor:searchParams.get("activeTab") === item?.value ? "var(--mantine-color-m-gray-0)" :"transparent"} ,
+            styles={{
+              tab: {
+                borderBottomWidth: "3px",
+                padding: "10px 30px",
+                backgroundColor:
+                  searchParams.get("activeTab") === item?.value
+                    ? "var(--mantine-color-m-gray-0)"
+                    : "transparent",
+              },
               tabLabel: {
-               /*  color: "var(--mantine-color-m-blue-6)", */
-                fontSize: "17px",
+                /*  color: "var(--mantine-color-m-blue-6)", */
+                fontSize: "16px",
                 fontWeight: "600",
               },
             }}
             value={item?.value}
           >
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 ${tabJustify}`}>
               {item?.label}{" "}
-              {item?.count > 0 && (
-                <Badge size="sm" color="red" circle>
+              {item.count == 0 ? null : (
+                <Badge
+                  size="sm"
+                  color={item?.status === "unread" ? "red" : "gray"}
+                  circle
+                >
                   {item?.count}
                 </Badge>
               )}

@@ -20,7 +20,8 @@ const useAdminLogin = () => {
       }
 
       const sendOtpVerificationAdmin = await fetch(
-        "/api/medreserve/send-otp-mail",
+        "/api/send",
+        // "/api/medreserve/send-otp-mail"
         {
           method: "POST",
           body: JSON.stringify({

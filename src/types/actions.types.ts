@@ -21,7 +21,7 @@ export type PatientLoginParams = {
   password: string;
 };
 
-type Gender = "Male" | "Female" | "Other";
+export type Gender = "Male" | "Female" | "Other";
 
 export type CreatePatientProfileParams = {
   email: string;
@@ -169,3 +169,104 @@ export type DoctorReviewsResponse = {
   patientName: string;
   patientOccupation: string;
 }
+
+export type SignupTabsType = 'pending-doctors' | 'verified-doctors' | 'patient' | 'suspended';
+
+export type AssignUsersToNewRoleParams = {
+  userId: string;
+  prefs: {[key: string]: string |undefined | null};
+}
+
+export type EditAccountSubSectionType =  {
+    status: "suspended" | "active";
+    email: string;
+    phone: string;
+    username: string;
+    prefs?: {
+        subRoleId?: string | undefined;
+        subRole?: string | undefined;
+    } | undefined;
+}
+
+export type Cadre = "housemanship" | "consultancy" | "residency";
+export type BloodGroupType = "a-positive" | "a-negative" | "b-positive" | "b-negative" | "ab-positive" | "ab-negative" | "o-positive" | "o-negative";
+export type GenotypeType = "AA" | "AS" | "SS";
+
+export type EditUserParams = {
+  accountId: string | undefined;
+  profileId: string| undefined;
+  scheduleId?: string | null;
+  role: string;
+}
+
+
+export type EditUserModified = {
+  account: {
+    email: string;
+    username: string;
+    phone: string;
+    status: "suspended" | "active";
+    password?: string;
+    prefs?: {
+      subRoleId?: string;
+      subRole?: string;
+    };
+    // Additional fields that might be returned from database
+    $id?: string;
+    $createdAt?: string;
+    $updatedAt?: string;
+  };
+  profile: {
+    userId: string;
+    fullname: string;
+    birthDate: string;
+    gender: Gender
+    address: string;
+    privacyConsent: boolean;
+    profilePicture: string;
+    identificationType?: string;
+    identificationNumber?: string;
+    // Role-specific fields will be added based on role
+    // Patient-specific
+    occupation?: string;
+    emergencyContactName?: string;
+    emergencyContactNumber?: string;
+    bloodGroup?: string;
+    genotype?: string;
+    insuranceProvider?: string;
+    insurancePolicyNumber?: string;
+    allergies?: string;
+    currentMedication?: string;
+    familyMedicalHistory?: string;
+    pastMedicalHistory?: string;
+    identificationDocument?: string;
+    // Doctor-specific
+    bio?: string;
+    stateOfOrigin?: string;
+    lga?: string;
+    zipcode?: string;
+    grade?: string;
+    university?: string;
+    courseOfStudy?: string;
+    degree?: string;
+    yearOfGraduation?: string;
+    courseDuration?: number;
+    cadre?: "consultancy" | "residency" | "housemanship";
+    experience?: number;
+    specialization?: string;
+    medId?: string;
+    weekdayStartTime?: string;
+    weekdayEndTime?: string;
+    weekendStartTime?: string;
+    weekendEndTime?: string;
+    workSchedule?: string[];
+    // Admin-specific
+    jobSpecification?: string;
+    // Additional database fields
+    $id?: string;
+    $permissions?: string[];
+    phone?: string;
+    reviewsId?: string;
+    rating?: number;
+  };
+};

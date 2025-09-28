@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-
 import DashboardLayout from "@/components/layout/PatientDashboardLayout";
 import { adminDashLinks, adminSecondaryDashLinks } from "@/constants/Toplinks";
+import { NavList } from "@/types/table.types";
 
 export const metadata: Metadata = {
   title: "MedReserve Admin",
@@ -14,8 +14,14 @@ export default function DoctorLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
   return (
-   <DashboardLayout role={'admin'} isSecondarySection secondaryNavigation={adminSecondaryDashLinks} navigation={adminDashLinks}>{children}</DashboardLayout>
+    <DashboardLayout 
+      role={'admin'} 
+      isSecondarySection 
+      secondaryNavigation={adminSecondaryDashLinks as NavList[]} 
+      navigation={adminDashLinks as NavList[]}
+    >
+      {children}
+    </DashboardLayout>
   );
 }

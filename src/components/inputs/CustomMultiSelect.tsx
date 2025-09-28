@@ -16,7 +16,7 @@ type MultiSelectCheckboxProps = ComboboxProps & PillsInputProps & {
     value: string[];
     label: string;
   setValue: Dispatch<SetStateAction<string[]>>;
-  data: {label:string, value:string}[];
+  data: {label:string, value:string}[] ;
 };
 export function CustomMultiSelectCheckbox(Props: MultiSelectCheckboxProps) {
   const { value, setValue, data, ...rest } = Props;

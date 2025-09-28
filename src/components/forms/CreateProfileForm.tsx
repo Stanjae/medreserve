@@ -31,6 +31,7 @@ import { createPatientAction } from "@/lib/actions/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AuthCredentials } from "@/types/store";
+import { initialPatientProfile } from "@/constants/formInitialValues";
 
 dayjs.extend(customParseFormat);
 
@@ -45,29 +46,7 @@ const CreateProfileForm = () => {
 
   const form = useForm({
     mode: "uncontrolled",
-    initialValues: {
-      fullname: "",
-      address: "",
-      email: "",
-      phone: "",
-      occupation: "",
-      emergencyContactName: "",
-      emergencyContactNumber: "",
-      birthDate: "",
-      bloodGroup: "",
-      genotype: "",
-      insurancePolicyNumber: "",
-      insuranceProvider: "",
-      allergies: "",
-      currentMedication: "",
-      familyMedicalHistory: "",
-      pastMedicalHistory: "",
-      identificationType: "",
-      identificationNumber: "",
-      identificationDocument: "",
-      profilePicture: "",
-      privacyConsent: false,
-    },
+    initialValues:initialPatientProfile,
     validate: (values) => {
       const schema = PatientStepFormValidation[active];
       if (!schema) return {};

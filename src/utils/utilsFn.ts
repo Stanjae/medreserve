@@ -1,4 +1,5 @@
-import { JSX } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ForwardRefExoticComponent, RefAttributes } from "react";
 import doctorsData from "../lib/api/data.json";
 import universitiesData from "../lib/api/universities.json";
 import dayjs from "dayjs";
@@ -12,6 +13,29 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import IsBetween from "dayjs/plugin/isBetween";
 import { Payment } from "../../types/appwrite";
+import { Query } from "node-appwrite";
+import { SignupTabsType } from "@/types/actions.types";
+import {
+  AllPermissions,
+  PermissionHeaderType,
+  PermissionKeys,
+  Permissions,
+  ROLES,
+} from "@/types/store";
+import { Icon, IconProps } from "@tabler/icons-react";
+import {
+  bloodGroups,
+  cadresData,
+  doctorCategories,
+  genderData,
+  genotypes,
+  IdentificationTypes,
+  medicalCourses,
+  schoolGrades,
+  userAccountStatus,
+  workSchedule,
+} from "@/constants";
+import { ComboboxData } from "@mantine/core";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -22,8 +46,13 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(IsBetween);
 
+export const emailTransport = () => {};
+
 export const parseResponse = (response: string) =>
   response.replace(/[_-]/g, " ");
+
+export const stringToSlug = (str: string) =>
+  str.toLowerCase().replace(/[ -]/g, "_");
 
 export const handleFileUpload = async (file: File) => {
   const body = new FormData();
@@ -41,16 +70,29 @@ export const handleFileUpload = async (file: File) => {
 };
 
 export const handleNavLinks = (
-  role: string,
+  role: ROLES,
+  subRole: PermissionKeys | undefined,
   userId: string | undefined,
   navigation: {
     sub?: { label: string; href: string }[];
     child: boolean;
     label: string;
     href: string;
-    leftIcon: JSX.Element;
+    leftIcon: ForwardRefExoticComponent<IconProps & RefAttributes<Icon>>;
+    allowedSubRoles?: string[];
   }[]
 ) => {
+  if (role == "admin" && subRole) {
+    return navigation
+      .filter((item) => item?.allowedSubRoles?.includes(subRole))
+      .map((item) => ({
+        ...item,
+        href:
+          item.href == "dashboard"
+            ? `/${role}/${userId}/dashboard`
+            : `/${role}/${userId}/dashboard/${item.href}`,
+      }));
+  }
   return navigation.map((item) => ({
     ...item,
     href:
@@ -204,9 +246,9 @@ export function getCalendarDateTime(dateTimeString: string) {
     sameDay: "[Today at] h:mm A", // The same day ( Today at 2:30 AM )
     nextDay: "[Tomorrow]", // The next day ( Tomorrow at 2:30 AM )
     nextWeek: "[next week] dddd [by] h:mm A", // The next week ( Sunday at 2:30 AM )
-    lastDay: "[Yesterday]", // The day before ( Yesterday at 2:30 AM )
+    lastDay: "[Yesterday at] h:mm A", // The day before ( Yesterday at 2:30 AM )
     lastWeek: "[Last] dddd", // Last week ( Last Monday at 2:30 AM )
-    sameElse: "DD/MM/YYYY", // Everything else ( 7/10/2011 )
+    sameElse: "DD-MM-YYYY", // Everything else ( 7/10/2011 )
   });
 }
 
@@ -258,6 +300,33 @@ export const getFilterByCreatedAt = (value: string) => {
   }
 };
 
+export const getFilterByNewSignups = (value: SignupTabsType) => {
+  switch (value) {
+    case "pending-doctors":
+      return [
+        Query.contains("labels", "doctor"),
+        Query.equal("status", true),
+        Query.equal("emailVerification", false),
+      ];
+    case "verified-doctors":
+      return [
+        Query.contains("labels", "doctor"),
+        Query.equal("status", true),
+        Query.equal("emailVerification", true),
+      ];
+    case "patient":
+      return [Query.contains("labels", value)];
+    case "suspended":
+      return [Query.equal("status", false)];
+    default:
+      return [
+        Query.contains("labels", "doctor"),
+        Query.equal("status", true),
+        Query.equal("emailVerification", false),
+      ];
+  }
+};
+
 export const checkIfDateIsBetweenAYear = (dateString: string) => {
   const startDate = `${dayjs().year()}-01-01`;
   const endDate = `${dayjs().add(1, "year").year()}-01-01`;
@@ -271,7 +340,7 @@ export const extractPageTitle = (title: string) =>
     ?.replaceAll("-", " ");
 
 export function checkIfValidID(value: string): boolean {
-  const id = "6898bad900185e23a40c"
+  const id = "6898bad900185e23a40c";
   if (value.length == id.length) {
     return true;
   }
@@ -280,15 +349,268 @@ export function checkIfValidID(value: string): boolean {
 
 export function generateSecureOTP(): string {
   // Check if we're in a browser or Node.js environment with crypto support
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
     const array = new Uint32Array(1);
     crypto.getRandomValues(array);
     return (1000 + (array[0] % 9000)).toString();
   }
-  
+
   // Fallback for older environments
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
 export const customPromise = () =>
-  new Promise((resolve) => setTimeout(() => resolve({ name: "Sonner" }), 2000));
+  new Promise((resolve) => setTimeout(() => resolve({ name: "Sonner" }), 1500));
+
+export function capitalizeFirst(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function checkPermission(
+  permissions: AllPermissions,
+  permissionKey: PermissionHeaderType,
+  permissionValue: string
+): boolean {
+  const perm = permissions[permissionKey as PermissionHeaderType]?.find(
+    (perm: Permissions) => perm.value === permissionValue
+  );
+  return perm?.status ?? false;
+}
+
+export const rectifyFields = (
+  form: any,
+  titleSuffix: string,
+  excludeFields: { [key: string]: string[] },
+  fullWidth: { [key: string]: string[] },
+  include = false,
+  universities?: ComboboxData,
+  lgas?: ComboboxData,
+  ngaStates?: ComboboxData,
+  roles?: ComboboxData
+) => {
+  const selects = {
+    gender: genderData,
+    genotype: genotypes,
+    bloodGroup: bloodGroups,
+    identificationType: IdentificationTypes,
+    status: userAccountStatus,
+    university: universities && universities,
+    lga: lgas && lgas,
+    stateOfOrigin: ngaStates && ngaStates,
+    prefs: roles && roles,
+    cadre: cadresData,
+    courseOfStudy: medicalCourses,
+    grade: schoolGrades,
+    specialization: doctorCategories
+  };
+  const checkBox = { privacyConsent: "I agree to the privacy policy" };
+  const numbers = ["phone", "emergencyContactNumber"];
+  const textarea = [
+    "allergies",
+    "bio",
+    "pastMedicalHistory",
+    "currentMedication",
+    "familyMedicalHistory",
+  ];
+  const dates = ["birthDate"];
+  const timerSchedue = [
+    "weekdayStartTime",
+    "weekdayEndTime",
+    "weekendStartTime",
+    "weekendEndTime",
+  ];
+  const workArray = ["workSchedule"];
+  const numberInputs = ['courseDuration', 'experience']
+
+  const newForm = Object.keys(form).map((item) => {
+    return {
+      title: `${capitalizeFirst(item)}  ${titleSuffix}`,
+      value: item,
+      items: Object.keys(form[item as keyof typeof parent])
+        .filter((subItem) =>
+          include
+            ? excludeFields[item as keyof typeof parent]?.includes(subItem)
+            : !excludeFields[item as keyof typeof parent]?.includes(subItem)
+        )
+        .map((subItem) => {
+          if (selects[subItem as keyof typeof selects]) {
+            return {
+              label: capitalizeFirst(subItem),
+              value: subItem,
+              data: selects[subItem as keyof typeof selects],
+              type: "select",
+              radius: 35,
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
+          }
+          if (checkBox[subItem as keyof typeof checkBox]) {
+            return {
+              label: checkBox[subItem as keyof typeof checkBox]
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())
+                .trim(),
+              value: subItem,
+              type: "checkbox",
+              radius: 35,
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
+          }
+          if (workArray.includes(subItem)) {
+            return {
+              label: workArray[0]
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())
+                .trim(),
+              value: subItem,
+              type: "multiSelect",
+              radius: 35,
+              data: workSchedule,
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
+          }
+          if (timerSchedue.includes(subItem)) {
+            return {
+              label: subItem
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())
+                .trim(),
+              value: subItem,
+              type: "timers",
+              radius: 35,
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
+          }
+            if (numberInputs.includes(subItem)) {
+              return {
+                label: subItem
+                  .replace(/([A-Z])/g, " $1")
+                  .replace(/^./, (str) => str.toUpperCase())
+                  .trim(),
+                value: subItem,
+                type: "numberInput",
+                radius: 35,
+                fullWidth:
+                  fullWidth[item as keyof typeof parent]?.includes(subItem),
+              };
+            }
+          if (dates.includes(subItem)) {
+            return {
+              label: subItem
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())
+                .trim(),
+              value: subItem,
+              type: "datepicker",
+              radius: 35,
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
+          }
+          if (numbers.includes(subItem)) {
+            return {
+              label: subItem
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())
+                .trim(),
+              value: subItem,
+              type: "phone_no",
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
+          }
+          if (textarea.includes(subItem)) {
+            return {
+              label: subItem
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())
+                .trim(),
+              value: subItem,
+              type: "textarea",
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
+          }
+           if (subItem === "password") {
+             return {
+               label: subItem
+                 .replace(/([A-Z])/g, " $1")
+                 .replace(/^./, (str) => str.toUpperCase())
+                 .trim(),
+               value: subItem,
+               type: "password",
+               radius: 35,
+               fullWidth:
+                 fullWidth[item as keyof typeof parent]?.includes(subItem),
+             };
+           }
+          return {
+            label: capitalizeFirst(subItem),
+            value: subItem,
+            type: "text",
+            radius: 35,
+            fullWidth:
+              fullWidth[item as keyof typeof parent]?.includes(subItem),
+          };
+        }),
+    };
+  });
+  return newForm;
+};
+
+export const rectifyRightCardFields = (
+  formItems: any,
+  title: string,
+  excludeFields: { [key: string]: string[] },
+  fullWidth: { [key: string]: string[] }
+) => {
+  const selects = {
+    gender: genderData,
+    genotype: genotypes,
+    bloodGroup: bloodGroups,
+    identificationType: IdentificationTypes,
+    status: userAccountStatus,
+  };
+  const items: {
+    label: string;
+    value: string;
+    data?: ComboboxData;
+    type?: string;
+    fullWidth?: boolean;
+  }[] = [];
+
+  Object.entries(excludeFields).forEach(([sectionKey, fieldsToInclude]) => {
+    fieldsToInclude.forEach((fieldKey) => {
+      const fullPath = `${sectionKey}.${fieldKey}`;
+      const label = fieldKey
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (str) => str.toUpperCase())
+        .trim();
+      if (selects[fieldKey as keyof typeof selects]) {
+        items.push({
+          label,
+          value: fullPath,
+          data: selects[fieldKey as keyof typeof selects],
+          type: "select",
+          fullWidth: !fullWidth[fieldKey as keyof typeof fullWidth],
+        });
+      } else {
+        items.push({
+          label,
+          value: fullPath,
+          type: "text",
+          fullWidth: !fullWidth[fieldKey as keyof typeof fullWidth],
+        });
+      }
+    });
+  });
+
+  return {
+    title,
+    value: title.toLowerCase().replace(/\s+/g, ""),
+    items,
+  };
+};

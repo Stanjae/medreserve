@@ -1,6 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import { useDebouncedCallback } from "use-debounce";
 import {
   ColumnDef,
@@ -14,13 +19,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  RankingInfo,
-  rankItem,
-} from "@tanstack/match-sorter-utils";
-import { Flex, Pagination, Skeleton, Space, Table } from "@mantine/core";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
+import { ComboboxData, Flex, Pagination, Skeleton, Space, Table } from "@mantine/core";
 import CustomInput from "../inputs/CustomInput";
 import { IconSearch } from "@tabler/icons-react";
+import CustomDateRangeFilter from "../filters/CustomDateRangeFilter";
 
 declare module "@tanstack/react-table" {
   //add fuzzy filter to the filterFns
@@ -46,22 +49,35 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-// Define a custom fuzzy sort function that will sort by rank if the row has ranking information
+export const fallbackData = [];
 
-type GenericTableProps<T> = {
+export type GenericTableProps<T> = {
   data: T[] | undefined;
   columns: ColumnDef<T, any>[];
   placeHolder: string;
   refetchData?: () => void;
   total: number;
   limit: number;
-  filterComponent:React.JSX.Element;
+  filterList?: { name: string; placeholder: string; items: ComboboxData | undefined }[];
   isLoading?: boolean;
-  handleRowClick?: (row: T ) => void;
+  handleRowClick?: (row: T) => void;
+  onTableInstanceChange?: (instance: any) => void;
+  setNewDateRange?: (dates: [string | null, string | null]) => void;
+  filterComponent?: React.JSX.Element; // Fixed: provide default value properly
 };
 
-export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=[], limit, total, filterComponent, isLoading}: GenericTableProps<T>) {
-
+export function CustomDataTable<T>({
+  handleRowClick,
+  placeHolder,
+  columns,
+  data,// Fixed: provide default value properly
+  limit,
+  total,
+  filterList,
+  isLoading = false, // Fixed: provide default value
+  onTableInstanceChange,
+  setNewDateRange,
+}: GenericTableProps<T>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -69,15 +85,15 @@ export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState({});
 
-  //const refreshData = () => refetchData() //refetch Data(); //stress test
+  // Memoize expensive calculations
+  const totalPages = useMemo(() => Math.ceil(total / limit), [total, limit]);
 
-  const totalPages = Math.ceil(total / limit);
-
+  // Memoize table instance to prevent unnecessary re-renders
   const table = useReactTable({
-    data,
+    data: data  ?? fallbackData, // Ensure data is never undefined
     columns,
     filterFns: {
-      fuzzy: fuzzyFilter, //define as a filter function that can be used in column definitions
+      fuzzy: fuzzyFilter,
     },
     state: {
       columnFilters,
@@ -87,106 +103,91 @@ export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=
     },
     initialState: {
       pagination: {
-        //pageIndex: 2, //custom initial page index
-        pageSize: limit //custom default page size
+        pageSize: limit,
       },
     },
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "fuzzy", //apply fuzzy filter to the global filter (most common use case for fuzzy filter)
+    globalFilterFn: "fuzzy",
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(), //client side filtering
+    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-/*   //apply the fuzzy sort if the fullName column is being filtered
-  React.useEffect(() => {
-    if (table.getState().columnFilters[1]?.id === "doctorName") {
-      if (table.getState().sorting[1]?.id !== "doctorName") {
-        table.setSorting([{ id: "doctorName", desc: false }]);
-      }
-    }
-  }, [table.getState().columnFilters[1]?.id]); */
-
+  // Memoize the search handler to prevent recreation on every render
   const handleSearch = useDebouncedCallback((e) => {
     setGlobalFilter(e);
   }, 300);
 
-/*   const handleFiltersChange = (e: string) => {
-    setColumnFilters(e);
-     /*  if (e == "all" || !e) {
-        table.resetColumnFilters();
-        return;
+
+  const handleFilterChange = (columnId: string, value: string | null) => {
+    setColumnFilters(prev => {
+      const filtered = prev.filter(filter => filter.id !== columnId);
+      if (value && value !== "all" && value !== null && value !== undefined) {
+        filtered.push({ id: columnId, value });
       }
-      table.getColumn("timeFrameStatus")?.setFilterValue(e);
-    
-  }  */
-  const [selectValues, setSelectValues] = useState<
-    Record<number, string | null>
-  >({});
-
-  // Mantine Select onChange passes the new value (string | null)
-  function handleSelectChange(index: number, value: string | null) {
-    setSelectValues((prev) => ({
-      ...prev,
-      [index]: value,
-    }));
-  }
-
-
-  // Clone each Mantine Select child injecting controlled value & onChange
-  const enhancedSelects: ReactNode = React.Children.map(
-    filterComponent.props.children,
-    (child: any, index) => {
-      const opera = child?.props.type as string
-      if (React.isValidElement(child) && opera) {
-        return React.cloneElement(child, {
-          value: selectValues[index] ?? null, // controlled value, default null
-          onChange: (value: string | null) => handleSelectChange(index, value),
-        } as {value:string | null, onChange: (value: string | null) => void});
-      }
-      return child; // pass through non-Select children untouched
-    }
-  );
-
-  const getColumnFiltersFromSelects = (
-    selectValues: Record<number, string | null>,
-    selects: ReactNode
-  ): ColumnFiltersState => {
-    const filters: ColumnFiltersState = [];
-
-    React.Children.forEach(selects, (child: React.ReactNode, index) => {
-      if (
-        React.isValidElement(child) &&
-        selectValues[index] !== null &&
-        selectValues[index] !== undefined &&
-        selectValues[index] !== "all"
-      ) {
-        const child2 = child as {props: { "data-column-id": string }}
-        const columnId = child2.props["data-column-id"] as string | undefined;
-        if (columnId) {
-          filters.push({
-            id: columnId,
-            value: selectValues[index]!,
-          });
-        }
-      }
+      return filtered;
     });
-
-    return filters;
   };
 
+  // Notify parent of table instance changes
   useEffect(() => {
-    const filtersFromSelects = getColumnFiltersFromSelects(
-      selectValues,
-      filterComponent.props.children
-    );
-    console.log("filtersFromSelects", filtersFromSelects);
-    setColumnFilters(filtersFromSelects);
-  }, [selectValues, filterComponent.props.children]);
+    if (onTableInstanceChange) {
+      onTableInstanceChange(table);
+    }
+  }, [table, onTableInstanceChange]);
+
+  // Memoize row click handler
+  const handleTableRowClick = useCallback(
+    (row: T) => {
+      return (event: React.MouseEvent) => {
+        const target = event.target as HTMLElement;
+
+        // Check if clicked element is inside a checkbox container
+        if (
+          target.closest('input[type="checkbox"]') ||
+          target.closest('[role="checkbox"]') ||
+          target.getAttribute("aria-label")?.includes("Select")
+        ) {
+          return;
+        }
+
+        // Check if clicked element has checkbox-related classes (Mantine specific)
+        if (
+          target.classList.contains("mantine-Checkbox-input") ||
+          target.classList.contains("mantine-Checkbox-icon") ||
+          target.classList.contains("mantine-Checkbox-root") ||
+          target.closest(".mantine-Checkbox-root")
+        ) {
+          return;
+        }
+
+        if (handleRowClick) {
+          handleRowClick(row);
+        }
+      };
+    },
+    [handleRowClick]
+  );
+
+  const filterComponent = 
+          <div className="flex gap-2 justify-end">
+            {filterList?.map((opp, index) => (
+              <CustomInput
+                key={index}
+              type="select"
+              placeholder={opp.placeholder}
+              size="md"
+              radius="xl"
+              data={opp.items}
+                data-column-id={opp.name}
+                onChange={(_, option)=> handleFilterChange(opp.name, option.value)}
+            />
+            ))}
+          </div>
 
   return (
     <div className="p-2">
@@ -203,7 +204,16 @@ export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=
           size="md"
           radius="xl"
         />
-        {enhancedSelects}
+        <div className="flex gap-2 items-center">
+         {filterComponent && filterComponent}
+          {setNewDateRange && (
+            <CustomDateRangeFilter
+              setNewDateRange={setNewDateRange}
+              placeholder="Select Date"
+              isLoading={isLoading}
+            />
+          )}
+        </div>
       </Flex>
       <Space h="md" />
       <Table
@@ -212,7 +222,7 @@ export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=
           thead: {
             fontSize: "14.5px",
             fontWeight: "700",
-            color: '#000'//"#283779",
+            color: "#000",
           },
         }}
         striped
@@ -241,21 +251,27 @@ export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=
           ))}
         </Table.Thead>
         <Table.Tbody>
-          {isLoading && (
-            Array(limit).fill('_').map((_, index) => {
-              return (
-                <Table.Tr key={index}>
-                  {Array(columns.length).fill('_').map((_, index) => {
-                    return (
-                      <Table.Td className="c-table-td" key={index}>
-                        <Skeleton height={10} radius="xl"/>
-                      </Table.Td>
-                    );
-                  })}
-                </Table.Tr>
-              );
-            })
-          )}
+          {isLoading &&
+            Array(limit)
+              .fill("_")
+              .map((_, index) => {
+                return (
+                  <Table.Tr key={`skeleton-${index}`}>
+                    {Array(columns.length)
+                      .fill("_")
+                      .map((_, cellIndex) => {
+                        return (
+                          <Table.Td
+                            className="c-table-td"
+                            key={`skeleton-cell-${cellIndex}`}
+                          >
+                            <Skeleton height={10} radius="xl" />
+                          </Table.Td>
+                        );
+                      })}
+                  </Table.Tr>
+                );
+              })}
           {!table.getRowModel().rows?.length && !isLoading ? (
             <Table.Tr>
               <Table.Td colSpan={columns.length} className="h-24 text-center">
@@ -263,9 +279,14 @@ export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=
               </Table.Td>
             </Table.Tr>
           ) : (
+            !isLoading &&
             table?.getRowModel()?.rows?.map((row) => {
               return (
-                <Table.Tr onClick={() => handleRowClick && handleRowClick(row.original)} key={row.id}>
+                <Table.Tr
+                  onClick={handleTableRowClick(row.original)}
+                  key={row.id}
+                  style={{ cursor: handleRowClick ? "pointer" : "default" }}
+                >
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <Table.Td className="c-table-td" key={cell.id}>
@@ -283,81 +304,18 @@ export function CustomDataTable<T>({ handleRowClick, placeHolder, columns, data=
         </Table.Tbody>
       </Table>
       <Space h="lg" />
-      {!isLoading && <Pagination
-        onChange={(val) => table.setPageIndex(val - 1)}
-        total={totalPages}
-        value={table.getState().pagination.pageIndex + 1}
-      />}
-      {/*  <div className="flex items-center gap-2">
-        <button
-          className="border rounded p-1"
-          onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<<"}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<"}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">"}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanNextPage()}
-        >
-          {">>"}
-        </button>
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <input
-            type="number"
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              table.setPageIndex(page);
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-      </div>
-      <div>{table.getPrePaginationRowModel().rows.length} Rows</div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div> */}
+      {!isLoading && (
+        <Pagination
+          onChange={(val) => table.setPageIndex(val - 1)}
+          total={totalPages}
+          value={table.getState().pagination.pageIndex + 1}
+        />
+      )}
     </div>
   );
 }
+
+// Add display name for better debugging
+CustomDataTable.displayName = "CustomDataTable";
+
+export default CustomDataTable;

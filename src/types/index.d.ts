@@ -53,7 +53,8 @@ type CPhoneInput = {
   disabled?: boolean;
   error?: React.ReactNode;
   key?: React.Key | null | undefined;
-  onChange: () => void;
+  onChange: (val?: E164Number | undefined) => void;
+  value?: string;
 };
 
 type CCheckBox = CheckboxProps & {
@@ -87,3 +88,27 @@ export type GETADDBYPARAMS =
   | "millisecond";
 
 export type DayUnits = "second" | "minute" | "hour" | "day" | "date" | "week" | "month" | "year";
+
+export interface UseModalsStackReturnType<T extends string> {
+  // Current opened state of each modal
+  state: Record<T, boolean>;
+
+  // Opens modal with the given id
+  open: (id: T) => void;
+
+  // Closes modal with the given id
+  close: (id: T) => void;
+
+  // Toggles modal with the given id
+  toggle: (id: T) => void;
+
+  // Closes all modals within the stack
+  closeAll: () => void;
+
+  // Returns props for modal with the given id
+  register: (id: T) => {
+    opened: boolean;
+    onClose: () => void;
+    stackId: T;
+  };
+}

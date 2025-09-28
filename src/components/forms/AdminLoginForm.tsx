@@ -33,8 +33,6 @@ const AdminLoginForm = () => {
       form.initialize(token);
     }
   }, []);
-    
-    console.log('depravity:',hash);
 
   return (
     <div>

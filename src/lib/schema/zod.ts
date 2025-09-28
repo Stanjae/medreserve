@@ -4,6 +4,7 @@ import {
   refundStatus,
   refundType,
 } from "@/constants";
+import { ROLES } from "@/types/store";
 import { isTodayAfterDateTime } from "@/utils/utilsFn";
 import { z } from "zod";
 
@@ -195,7 +196,7 @@ export const PatientLoginSchema = z.object({
 export const AdminLoginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: passwordSchema,
-  username: z.string().optional()
+  username: z.string().optional(),
 });
 
 export const ForgotPasswordSchema = z.object({
@@ -307,5 +308,181 @@ export const RefundSchema = z.object({
   status: z.enum(refundStatus as [string, ...string[]]),
   bankCode: z.string().nonempty("Bank code is required"),
   bankName: z.string().nonempty("Bank name is required"),
-  bankAccountNumber: z.string().nonempty("Bank account number is required").max(10, "Bank account number must be 10 digits"),
+  bankAccountNumber: z
+    .string()
+    .nonempty("Bank account number is required")
+    .max(10, "Bank account number must be 10 digits"),
 });
+
+//EDIT PROFILES
+
+export const accountSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  username: z
+    .string()
+    .min(3, { message: "Username must be at least 3 characters" })
+    .max(20, { message: "Username must be at most 20 characters" }),
+  phone: z
+    .string()
+    .refine((phone) => /^\+\d{10,15}$/.test(phone), "Invalid phone number"),
+  status: z.enum(["suspended", "active"]).default("active"),
+  prefs: z
+    .object({
+      subRoleId: z.string().optional(),
+      subRole: z.string().optional(),
+    })
+    .optional(),
+});
+
+export const InitialPatientFormValidation = z.object({
+  userId: z.string(),
+  fullname: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be at most 50 characters"),
+  birthDate: z.coerce.string(),
+  gender: z.enum(["Male", "Female", "Other"]),
+  address: z
+    .string()
+    .min(5, "Address must be at least 5 characters")
+    .max(500, "Address must be at most 500 characters"),
+  occupation: z
+    .string()
+    .min(2, "Occupation must be at least 2 characters")
+    .max(500, "Occupation must be at most 500 characters"),
+  emergencyContactName: z
+    .string()
+    .min(2, "Contact name must be at least 2 characters")
+    .max(50, "Contact name must be at most 50 characters"),
+  emergencyContactNumber: z
+    .string()
+    .refine(
+      (emergencyContactNumber: string) =>
+        /^\+\d{10,15}$/.test(emergencyContactNumber),
+      "Invalid phone number"
+    ),
+  bloodGroup: z.enum([
+    "a-positive",
+    "a-negative",
+    "b-positive",
+    "b-negative",
+    "ab-positive",
+    "ab-negative",
+    "o-positive",
+    "o-negative",
+  ]),
+  genotype: z.enum(["AA", "AS", "SS"]),
+  insuranceProvider: z
+    .string()
+    .min(2, "Insurance name must be at least 2 characters")
+    .max(50, "Insurance name must be at most 50 characters"),
+  insurancePolicyNumber: z
+    .string()
+    .min(2, "Policy number must be at least 2 characters")
+    .max(50, "Policy number must be at most 50 characters"),
+  allergies: z.string().optional(),
+  currentMedication: z.string().optional(),
+  familyMedicalHistory: z.string().optional(),
+  pastMedicalHistory: z.string().optional(),
+  identificationType: z.string().optional(),
+  identificationNumber: z.string().optional(),
+  identificationDocument: z.string().url(),
+  profilePicture: z.string().url(),
+  privacyConsent: z.boolean().default(false),
+});
+
+export const InitialDoctorFormValidation = z.object({
+  userId: z.string(),
+  fullname: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be at most 50 characters"),
+  birthDate: z.coerce.string(),
+  gender: z.enum(["Male", "Female", "Other"]),
+  address: z
+    .string()
+    .min(5, "Address must be at least 5 characters")
+    .max(500, "Address must be at most 500 characters"),
+  bio: z
+    .string()
+    .min(2, "Bio must be at least 2 characters")
+    .max(500, "Bio must be at most 500 characters"), // Fixed typo: "5 00" -> "500"
+  stateOfOrigin: z.string().min(1, "State of origin is required"), // Changed from .nonempty() which is deprecated
+  lga: z.string().min(1, "LGA of origin is required"), // Fixed capitalization and deprecated method
+  zipcode: z.string().optional(),
+  grade: z.string().optional(),
+  university: z.string().min(1, "University is required"),
+  courseOfStudy: z.string().min(1, "Course of study is required"),
+  degree: z.string().optional(),
+  yearOfGraduation: z.string().min(1, "Year of graduation is required"),
+  courseDuration: z.number().nonnegative("Course duration is required"),
+  cadre: z.enum(["consultancy", "residency", "housemanship"]),
+  experience: z.number().nonnegative("Experience is required"),
+  specialization: z.string().min(1, "Specialization is required"),
+  medId: z.string().optional(),
+  identificationType: z.string().min(1, "Identification type is required"),
+  identificationNumber: z.string().min(1, "Identification number is required"),
+  identificationDocument: z.string().url().optional(),
+  profilePicture: z.string().url(),
+  privacyConsent: z.boolean().default(false),
+  weekdayStartTime: z.string().optional(),
+  weekdayEndTime: z.string(),
+  weekendStartTime: z.string().optional(), // Made optional to match initialScheduleSchema
+  weekendEndTime: z.string().optional(), // Made optional for consistency
+  workSchedule: z.array(z.string()),
+});
+
+export const initialScheduleSchema = z.object({
+  weekdayStartTime: z.string(),
+  weekdayEndTime: z.string(),
+  weekendStartTime: z.string().optional(),
+  weekendEndTime: z.string().optional(),
+  workSchedule: z.array(z.string()),
+});
+
+export const initialAdminProfileSchema = z.object({
+  userId: z.string(),
+  fullname: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be at most 50 characters"),
+  jobSpecification: z
+    .string()
+    .min(2, "Job specification must be at least 2 characters")
+    .max(50, "Job specification must be at most 50 characters"), // Fixed typo: "specificatio" -> "specification"
+  address: z
+    .string()
+    .min(5, "Address must be at least 5 characters")
+    .max(500, "Address must be at most 500 characters"),
+  gender: z.enum(["Male", "Female", "Other"]),
+  birthDate: z.coerce.string(),
+  privacyConsent: z.boolean().default(false),
+  profilePicture: z.string().url().optional(),
+  identificationType: z.string().min(1, "Identification type is required"),
+  identificationNumber: z.string().min(1, "Identification number is required"),
+});
+
+export const userSchema = (role: ROLES, userId?: string) => {
+  const profileSchema =
+    role === "patient"
+      ? InitialPatientFormValidation
+      : role === "admin"
+        ? initialAdminProfileSchema
+        : InitialDoctorFormValidation;
+  
+  
+  let accountSchemaWithPassword = accountSchema
+
+  if (!userId) {
+    accountSchemaWithPassword = accountSchema.extend({
+      password: passwordSchema,
+    });
+  }
+
+  return z.object({
+    account: accountSchemaWithPassword,
+    profile: profileSchema,
+  });
+};
+
+export type UserModified = z.infer<ReturnType<typeof userSchema>>;
