@@ -13,7 +13,7 @@ import { ComboboxData, Paper } from "@mantine/core";
 import React, { useCallback, useEffect, useState } from "react";
 import MedReserveFormFields from "./Formfields.tsx/MedReserveFormFields";
 import { useHash } from "@/hooks/useHash";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 import { useFetchRolesrForEdit } from "@/hooks/form/useFetchUserForEdit";
 import { toast } from "sonner";
 import { EditUserModified } from "@/types/actions.types";

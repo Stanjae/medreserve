@@ -29,11 +29,9 @@ import {
 } from "@tabler/icons-react";
 import useLogout from "@/hooks/useLogout";
 import CustomInput from "../inputs/CustomInput";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 import { NavList } from "@/types/table.types";
 import HeaderBtns from "../CButton/HeaderBtns";
-
-
 
 type NavProps = {
   children: React.ReactNode;
@@ -49,9 +47,7 @@ export default function DashboardLayout({
   children,
   isSecondarySection,
   secondaryNavigation,
-}: Readonly<
-NavProps
->) {
+}: Readonly<NavProps>) {
   const { credentials, adminPermissions } = useMedStore((state) => state);
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
@@ -68,7 +64,7 @@ NavProps
     role,
     adminPermissions?.type,
     credentials?.userId,
-  secondaryNavigation as NavList[]
+    secondaryNavigation as NavList[]
   );
 
   const { logoutPatient } = useLogout();
@@ -264,86 +260,86 @@ NavProps
             <Divider my="md" />
 
             <div>
-              {isSecondarySection && secondaryNavigationRefined?.map((item, index) => {
-                const IconComponent = item.leftIcon;
-                if (!item.child) {
-                  return (
-                    <NavLink
-                      component={Link}
-                      href={item.href}
-                      active={pathname == item.href}
-                      leftSection={<IconComponent size={17} stroke={1.5} />}
-                      label={item.label}
-                      key={index}
-                      styles={{
-                        label: {
-                          fontSize: "17px",
-                          fontWeight: 600,
-                        },
-                      }}
-                    />
-                  );
-                } else {
-                  return (
-                    <NavLink
-                      childrenOffset={28}
-                      component={Link}
-                      href={item.href}
-                      active={pathname.includes(item.href)}
-                      leftSection={<IconComponent size={17} stroke={1.5} />}
-                      label={item.label}
-                      key={index}
-                      styles={{
-                        label: {
-                          fontSize: "17px",
-                          fontWeight: 600,
-                        },
-                      }}
-                    >
-                      {item.sub?.map((lol, opp) => (
-                        <NavLink
-                          active={
-                            lol.href == "index"
-                              ? pathname.endsWith(item.href)
-                              : pathname.includes(lol.href)
-                          }
-                          label={lol.label}
-                          component={Link}
-                          key={opp}
-                          href={
-                            lol.href == "index"
-                              ? item.href
-                              : `${item.href}/${lol.href}`
-                          }
-                          styles={{
-                            label: {
-                              fontSize: "15px",
-                              fontWeight: 500,
-                            },
-                            root: { backgroundColor: "transparent" },
-                          }}
-                        />
-                      ))}
-                    </NavLink>
-                  );
-                }
-              })}
+              {isSecondarySection &&
+                secondaryNavigationRefined?.map((item, index) => {
+                  const IconComponent = item.leftIcon;
+                  if (!item.child) {
+                    return (
+                      <NavLink
+                        component={Link}
+                        href={item.href}
+                        active={pathname == item.href}
+                        leftSection={<IconComponent size={17} stroke={1.5} />}
+                        label={item.label}
+                        key={index}
+                        styles={{
+                          label: {
+                            fontSize: "17px",
+                            fontWeight: 600,
+                          },
+                        }}
+                      />
+                    );
+                  } else {
+                    return (
+                      <NavLink
+                        childrenOffset={28}
+                        component={Link}
+                        href={item.href}
+                        active={pathname.includes(item.href)}
+                        leftSection={<IconComponent size={17} stroke={1.5} />}
+                        label={item.label}
+                        key={index}
+                        styles={{
+                          label: {
+                            fontSize: "17px",
+                            fontWeight: 600,
+                          },
+                        }}
+                      >
+                        {item.sub?.map((lol, opp) => (
+                          <NavLink
+                            active={
+                              lol.href == "index"
+                                ? pathname.endsWith(item.href)
+                                : pathname.includes(lol.href)
+                            }
+                            label={lol.label}
+                            component={Link}
+                            key={opp}
+                            href={
+                              lol.href == "index"
+                                ? item.href
+                                : `${item.href}/${lol.href}`
+                            }
+                            styles={{
+                              label: {
+                                fontSize: "15px",
+                                fontWeight: 500,
+                              },
+                              root: { backgroundColor: "transparent" },
+                            }}
+                          />
+                        ))}
+                      </NavLink>
+                    );
+                  }
+                })}
             </div>
           </Box>
         )}
       </AppShell.Navbar>
       <AppShell.Main bg={"#F8F8F8"}>
         <div>
-          <Group justify="space-between" >
-             <Text className=" capitalize font-semibold" fz={"h3"}>
-            {pathname
-              .split("/")
-              .at(pathname.split("/").length - 1)
-              ?.replaceAll("-", " ")}
+          <Group justify="space-between">
+            <Text className=" capitalize font-semibold" fz={"h3"}>
+              {pathname
+                .split("/")
+                .at(pathname.split("/").length - 1)
+                ?.replaceAll("-", " ")}
             </Text>
-            <HeaderBtns/>
+            <HeaderBtns />
           </Group>
-         
         </div>
         <Box mt={15}>{children}</Box>
       </AppShell.Main>

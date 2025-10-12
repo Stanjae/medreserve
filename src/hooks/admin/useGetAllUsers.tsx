@@ -1,7 +1,7 @@
-'use client'
-import { getSpecificRoleUsersAndProfilesAction } from "@/lib/actions/adminActions";
+"use client";
+import { getSpecificRoleUsersAndProfilesAction } from "@/lib/actions/adminGetActions";
 import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 import { useQuery } from "@tanstack/react-query";
 
 const useGetAllUsers = (
@@ -10,8 +10,9 @@ const useGetAllUsers = (
 ) => {
   return useQuery({
     queryKey: [QUERY_KEYS.USERS.getAllUsers, role, dateRange],
-    queryFn: async () => await getSpecificRoleUsersAndProfilesAction(role, dateRange),
+    queryFn: async () =>
+      await getSpecificRoleUsersAndProfilesAction(role, dateRange),
   });
 };
 
-export default useGetAllUsers
+export default useGetAllUsers;

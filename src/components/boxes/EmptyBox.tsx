@@ -7,7 +7,7 @@ type EmptyStateProps = {
   icon?: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<Icon>>;
   iconColor?: string;
   iconSize?: number;
-  Button: React.ReactNode;
+  Button?: React.ReactNode;
   minHeight?: number;
   showPaper?: boolean;
 };

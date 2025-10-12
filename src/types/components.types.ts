@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ButtonProps,
   CheckboxProps,
@@ -6,7 +7,12 @@ import {
   TextareaProps,
   TextInputProps,
 } from "@mantine/core";
-import { DateInputProps, DateInputStylesNames, TimePickerProps } from "@mantine/dates";
+import {
+  DateInputProps,
+  DateInputStylesNames,
+  DateStringValue,
+  TimePickerProps,
+} from "@mantine/dates";
 
 type CTextInput = {
   type: "text";
@@ -30,7 +36,7 @@ type CTimepicker = TimePickerProps & {
 type CFileInput = {
   type: "fileInput";
   setFile: React.Dispatch<React.SetStateAction<File | null>>;
-  file: File | null | StaticImageData;
+  file: File | null;
   allowPicture?: boolean;
   label?: string;
 };
@@ -53,7 +59,7 @@ type CPhoneInput = {
   disabled?: boolean;
   error?: React.ReactNode;
   key?: React.Key | null | undefined;
-  onChange: (val?: E164Number | undefined) => void;
+  onChange: (val?: any) => void;
   value?: string;
 };
 
@@ -69,25 +75,20 @@ type CSelect = SelectProps & {
 type CTextInput2 = CTextInput | CPassword;
 type CTimeAndDate = CTimepicker | CDateInput;
 
-export type INPUTFORMPROPS = CTextInput2 | CTimeAndDate | CTextarea | CFileInput | CPhoneInput | CCheckBox | CSelect;
+export type INPUTFORMPROPS =
+  | CTextInput2
+  | CTimeAndDate
+  | CTextarea
+  | CFileInput
+  | CPhoneInput
+  | CCheckBox
+  | CSelect;
 
 export type CUSTOMSUBMITBTNPROPS = ButtonProps & {
   text: string;
   type?: "submit" | "button" | "reset";
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
-
-export type GETADDBYPARAMS =
-  | "day"
-  | "week"
-  | "month"
-  | "year"
-  | "hour"
-  | "minute"
-  | "second"
-  | "millisecond";
-
-export type DayUnits = "second" | "minute" | "hour" | "day" | "date" | "week" | "month" | "year";
 
 export interface UseModalsStackReturnType<T extends string> {
   // Current opened state of each modal

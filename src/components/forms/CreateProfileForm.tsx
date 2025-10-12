@@ -30,7 +30,7 @@ import { IconRosetteDiscountCheckFilled } from "@tabler/icons-react";
 import { createPatientAction } from "@/lib/actions/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { AuthCredentials } from "@/types/store";
+import { AuthCredentials } from "@/types/store.types";
 import { initialPatientProfile } from "@/constants/formInitialValues";
 
 dayjs.extend(customParseFormat);
@@ -46,7 +46,7 @@ const CreateProfileForm = () => {
 
   const form = useForm({
     mode: "uncontrolled",
-    initialValues:initialPatientProfile,
+    initialValues: initialPatientProfile,
     validate: (values) => {
       const schema = PatientStepFormValidation[active];
       if (!schema) return {};
@@ -107,7 +107,10 @@ const CreateProfileForm = () => {
       toast.error(response?.message);
       return;
     }
-    setAuthCredentials({...credentials as AuthCredentials, databaseId: response?.databaseId});
+    setAuthCredentials({
+      ...(credentials as AuthCredentials),
+      databaseId: response?.databaseId,
+    });
     toast.success(response?.message);
     setTimeout(() => {
       window.location.replace(`/patient/${credentials?.userId}/dashboard`);

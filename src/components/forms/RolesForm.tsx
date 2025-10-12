@@ -13,7 +13,7 @@ import {
   Paper,
   Text,
 } from "@mantine/core";
-import { AllPermissions, PermissionKeys } from "@/types/store";
+import { AllPermissions, PermissionKeys } from "@/types/store.types";
 import { DefaultRoles, ModifiedRoles } from "../../../types/appwrite";
 import { parseResponse, stringToSlug } from "@/utils/utilsFn";
 import DefaultPermissons from "../../lib/api/roles.json";
@@ -26,7 +26,12 @@ type RoleFormProps = {
   setAllData: React.Dispatch<React.SetStateAction<DefaultRoles | undefined>>;
 };
 
-const RolesForm = ({ objectKeys, data, isEdited, setAllData }: RoleFormProps) => {
+const RolesForm = ({
+  objectKeys,
+  data,
+  isEdited,
+  setAllData,
+}: RoleFormProps) => {
   const [defaultOpen, setDefaultOpen] = useState<string[]>();
   const [selectedPermissions, setSelectedPermissions] =
     useState<AllPermissions>({});
@@ -48,20 +53,17 @@ const RolesForm = ({ objectKeys, data, isEdited, setAllData }: RoleFormProps) =>
       setPermissionType("");
       setPriority(0);
     };
-  }, [
-    isEdited,
-    data,
-  ]);
-    
-   useEffect(() => {
-        if( selectedPermissions && permissionType && priority){
-            setAllData({
-                type: stringToSlug(permissionType) as PermissionKeys,
-                priority: priority as number,
-                permissions: JSON.stringify(selectedPermissions)
-            })
-        }
-    },[selectedPermissions, permissionType, priority, setAllData]);
+  }, [isEdited, data]);
+
+  useEffect(() => {
+    if (selectedPermissions && permissionType && priority) {
+      setAllData({
+        type: stringToSlug(permissionType) as PermissionKeys,
+        priority: priority as number,
+        permissions: JSON.stringify(selectedPermissions),
+      });
+    }
+  }, [selectedPermissions, permissionType, priority, setAllData]);
 
   const handlePermissionItemChange = (
     sectionName: string,
@@ -114,8 +116,8 @@ const RolesForm = ({ objectKeys, data, isEdited, setAllData }: RoleFormProps) =>
             <CustomInput
               type="text"
               label="Give this role a name"
-                          size="md"
-                          max={20}
+              size="md"
+              max={20}
               value={parseResponse(permissionType)}
               onChange={(e) => setPermissionType(e.target.value)}
             />
@@ -167,7 +169,8 @@ const RolesForm = ({ objectKeys, data, isEdited, setAllData }: RoleFormProps) =>
               onChange={setDefaultOpen}
             >
               {objectKeys?.map((itemy, index) => {
-                const newRef = selectedPermissions && selectedPermissions?.[itemy];
+                const newRef =
+                  selectedPermissions && selectedPermissions?.[itemy];
                 const total = newRef?.length ?? 0;
                 const checkedCount =
                   newRef?.filter((item) => item.status).length ?? 0;
@@ -195,32 +198,33 @@ const RolesForm = ({ objectKeys, data, isEdited, setAllData }: RoleFormProps) =>
                     </Accordion.Control>
                     <Accordion.Panel>
                       <ul className="flex flex-wrap gap-2">
-                        {selectedPermissions &&selectedPermissions?.[itemy]?.map(
-                          (
-                            item: {
-                              label: string;
-                              status: boolean;
-                              value: string;
-                            },
-                            index: number
-                          ) => (
-                            <li key={index} className=" w-[45%]  grow">
-                              <Checkbox
-                                color="m-blue"
-                                size="sm"
-                                checked={item?.status}
-                                label={item?.label}
-                                onChange={(e) =>
-                                  handlePermissionItemChange(
-                                    itemy,
-                                    item?.value,
-                                    e.currentTarget.checked
-                                  )
-                                }
-                              />
-                            </li>
-                          )
-                        )}
+                        {selectedPermissions &&
+                          selectedPermissions?.[itemy]?.map(
+                            (
+                              item: {
+                                label: string;
+                                status: boolean;
+                                value: string;
+                              },
+                              index: number
+                            ) => (
+                              <li key={index} className=" w-[45%]  grow">
+                                <Checkbox
+                                  color="m-blue"
+                                  size="sm"
+                                  checked={item?.status}
+                                  label={item?.label}
+                                  onChange={(e) =>
+                                    handlePermissionItemChange(
+                                      itemy,
+                                      item?.value,
+                                      e.currentTarget.checked
+                                    )
+                                  }
+                                />
+                              </li>
+                            )
+                          )}
                       </ul>
                     </Accordion.Panel>
                   </Accordion.Item>

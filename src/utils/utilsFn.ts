@@ -4,7 +4,6 @@ import doctorsData from "../lib/api/data.json";
 import universitiesData from "../lib/api/universities.json";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { DayUnits, GETADDBYPARAMS } from "@/types";
 import calendar from "dayjs/plugin/calendar";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -21,7 +20,7 @@ import {
   PermissionKeys,
   Permissions,
   ROLES,
-} from "@/types/store";
+} from "@/types/store.types";
 import { Icon, IconProps } from "@tabler/icons-react";
 import {
   bloodGroups,
@@ -36,6 +35,7 @@ import {
   workSchedule,
 } from "@/constants";
 import { ComboboxData } from "@mantine/core";
+import { DayUnits, GETADDBYPARAMS } from "@/types";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -46,7 +46,6 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(IsBetween);
 
-export const emailTransport = () => {};
 
 export const parseResponse = (response: string) =>
   response.replace(/[_-]/g, " ");
@@ -401,7 +400,7 @@ export const rectifyFields = (
     cadre: cadresData,
     courseOfStudy: medicalCourses,
     grade: schoolGrades,
-    specialization: doctorCategories
+    specialization: doctorCategories,
   };
   const checkBox = { privacyConsent: "I agree to the privacy policy" };
   const numbers = ["phone", "emergencyContactNumber"];
@@ -420,7 +419,7 @@ export const rectifyFields = (
     "weekendEndTime",
   ];
   const workArray = ["workSchedule"];
-  const numberInputs = ['courseDuration', 'experience']
+  const numberInputs = ["courseDuration", "experience"];
 
   const newForm = Object.keys(form).map((item) => {
     return {
@@ -484,19 +483,19 @@ export const rectifyFields = (
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
           }
-            if (numberInputs.includes(subItem)) {
-              return {
-                label: subItem
-                  .replace(/([A-Z])/g, " $1")
-                  .replace(/^./, (str) => str.toUpperCase())
-                  .trim(),
-                value: subItem,
-                type: "numberInput",
-                radius: 35,
-                fullWidth:
-                  fullWidth[item as keyof typeof parent]?.includes(subItem),
-              };
-            }
+          if (numberInputs.includes(subItem)) {
+            return {
+              label: subItem
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())
+                .trim(),
+              value: subItem,
+              type: "numberInput",
+              radius: 35,
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
+          }
           if (dates.includes(subItem)) {
             return {
               label: subItem
@@ -534,19 +533,19 @@ export const rectifyFields = (
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
           }
-           if (subItem === "password") {
-             return {
-               label: subItem
-                 .replace(/([A-Z])/g, " $1")
-                 .replace(/^./, (str) => str.toUpperCase())
-                 .trim(),
-               value: subItem,
-               type: "password",
-               radius: 35,
-               fullWidth:
-                 fullWidth[item as keyof typeof parent]?.includes(subItem),
-             };
-           }
+          if (subItem === "password") {
+            return {
+              label: subItem
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())
+                .trim(),
+              value: subItem,
+              type: "password",
+              radius: 35,
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
+          }
           return {
             label: capitalizeFirst(subItem),
             value: subItem,
@@ -614,3 +613,21 @@ export const rectifyRightCardFields = (
     items,
   };
 };
+
+export const timeStringtoHoursAndMinutes = (time: string) =>
+  dayjs(time, "HH:mm:ss").format("HH:mm");
+
+
+export const getAppointmentLocation = (location: string) => {
+  let locationName;
+  if (location.endsWith('ist')) {
+    locationName = location.replace('ist', 'y');
+  }else if(location.endsWith('on')) {
+    locationName = location.replace('on', 'ry');
+  }else {
+    locationName = location;
+  }
+  locationName = parseResponse(locationName);
+
+  return `Room A, ${capitalizeFirst(locationName)} Wing`
+}

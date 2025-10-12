@@ -12,11 +12,7 @@ const CustomCancelBtn = ({
   btnProps,
   loading,
 }: {
-  fn?: () => Promise<{
-    code: number;
-    status: string;
-    message: string;
-  }> | void;
+  fn?: () =>  void;
   modalContent: string;
   btnProps?: ButtonProps;
   modalHeader: string;

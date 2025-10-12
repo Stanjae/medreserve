@@ -10,15 +10,11 @@ import {
   rectifyFields,
   rectifyRightCardFields,
 } from "@/utils/utilsFn";
-import {
-  ComboboxData,
-  LoadingOverlay,
-  Paper,
-} from "@mantine/core";
+import { ComboboxData, LoadingOverlay, Paper } from "@mantine/core";
 import React, { useCallback, useEffect, useState } from "react";
 import MedReserveFormFields from "./Formfields.tsx/MedReserveFormFields";
 import { useHash } from "@/hooks/useHash";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 import {
   useFetchUserForEdit,
   useFetchRolesrForEdit,
@@ -50,7 +46,10 @@ const EditUserForm = ({ userId }: Props) => {
   const { form, loadData, saveChanges, hasChanges, isLoading, reset } =
     useMedReserveForm<EditUserModified>({
       initialValues: userFormInitials(hash as ROLES, userId as string),
-      schema: userSchema(hash as ROLES, userId as string) as z.ZodSchema<EditUserModified>,
+      schema: userSchema(
+        hash as ROLES,
+        userId as string
+      ) as z.ZodSchema<EditUserModified>,
       ignoreFields: [
         "$id",
         "account.$id",
@@ -165,27 +164,27 @@ const EditUserForm = ({ userId }: Props) => {
 
   const handleSubmit = async () => {
     await saveChanges(async (changes) => {
-        return await mutateAsync({
-          ...changes,
-          accountId: data?.account?.$id,
-          profileId: data?.profile?.$id,
-          scheduleId: hash === "doctor" ? data?.profile?.scheduleId : null,
-          role: hash,
-        } as EditUserModified & EditUserParams);
+      return await mutateAsync({
+        ...changes,
+        accountId: data?.account?.$id,
+        profileId: data?.profile?.$id,
+        scheduleId: hash === "doctor" ? data?.profile?.scheduleId : null,
+        role: hash,
+      } as EditUserModified & EditUserParams);
     });
   };
 
   const handleDelete = async () => {
-   const response =  await deleteMutateAsync({
+    const response = await deleteMutateAsync({
       accountId: data?.account?.$id,
       profileId: data?.profile?.$id,
       scheduleId: hash === "doctor" ? data?.profile?.scheduleId : null,
       role: hash,
-   })
+    });
     if (response.code === 200) {
       router.push(`/admin/${credentials?.userId}/dashboard/users`);
-     }
-   }
+    }
+  };
 
   const leftCard = rectifyFields(
     userEditFormArrange(hash as ROLES, userId as string),
@@ -195,7 +194,7 @@ const EditUserForm = ({ userId }: Props) => {
       profile: ["profilePicture", "identificationDocument", "userId"],
     },
     {
-      account:  ["username"],
+      account: ["username"],
       profile: ["address"],
       schedule: ["workSchedule"],
     },

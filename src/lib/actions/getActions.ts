@@ -218,6 +218,7 @@ export async function getPatientAppointmentTable(
     weekendEndTime: slot.doctorId.doctorAvailability.weekendEndTime,
     weekendStartTime: slot.doctorId.doctorAvailability.weekendStartTime,
     notes: slot.notes,
+    reason: slot.reason,
     patientPhone: slot.patientId.phone,
     patientFullname: slot.patientId.fullname,
     patientAddress: slot.patientId.address,

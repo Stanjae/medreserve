@@ -1,7 +1,6 @@
 "use client";
 import { accountClient, ID } from "@/appwrite/client";
-import { ROLES } from "@/types/store";
-
+import { ROLES } from "@/types/store.types";
 
 // 1. REQUEST PERMISSION AND SUBSCRIBE USER
 export async function requestNotificationPermission() {
@@ -64,8 +63,8 @@ async function saveSubscription(
       userType,
       subscription: JSON.stringify(subscription),
       isActive: true,
-      };
-      
+    };
+
     await database.createDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DATABASE_KEY!,
       process.env.NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_NOTIFICATION_ID!,
@@ -82,11 +81,11 @@ async function saveSubscription(
 
 // 4. SEND NOTIFICATION FUNCTION
 export async function sendNotification(
-  recipientId:string,
-  title:string,
+  recipientId: string,
+  title: string,
   body,
   data = {},
-  userType:ROLES
+  userType: ROLES
 ) {
   try {
     const payload = {
@@ -104,7 +103,7 @@ export async function sendNotification(
       "send-push-notification", // Function ID
       JSON.stringify(payload), // Data to send
       false, // Async execution
-      "/send-push-notification", // Path (optional)
+      "/send-push-notification" // Path (optional)
     );
 
     console.log("Notification function executed:", execution);
@@ -202,7 +201,7 @@ export async function notifyAppointmentRescheduled(appointmentData) {
       appointmentId: appointmentData.id,
       action: "view_appointment",
     },
-    'patient'
+    "patient"
   );
 
   // Notify doctor
@@ -214,11 +213,10 @@ export async function notifyAppointmentRescheduled(appointmentData) {
       type: "appointment_rescheduled",
       appointmentId: appointmentData.id,
       action: "view_appointment",
-    }, 'doctor'
+    },
+    "doctor"
   );
 }
-
-
 
 // 6. UTILITY FUNCTIONS
 
@@ -255,63 +253,73 @@ export async function unsubscribeUser(userId: string) {
   }
 }
 // When appointment is cancelled
-export async function notifyAppointmentCancelled(appointmentData, cancelledBy = 'admin') {
-  const { patientId, doctorId, appointmentDate, appointmentTime, reason, doctorName, patientName } = appointmentData;
-  
+export async function notifyAppointmentCancelled(
+  appointmentData,
+  cancelledBy = "admin"
+) {
+  const {
+    patientId,
+    doctorId,
+    appointmentDate,
+    appointmentTime,
+    reason,
+    doctorName,
+    patientName,
+  } = appointmentData;
+
   try {
     // Notify patient
     await sendNotification(
       patientId,
-      'Appointment Cancelled ❌',
-      `Your appointment with Dr. ${doctorName} on ${appointmentDate} at ${appointmentTime} has been cancelled. ${reason || ''}`,
+      "Appointment Cancelled ❌",
+      `Your appointment with Dr. ${doctorName} on ${appointmentDate} at ${appointmentTime} has been cancelled. ${reason || ""}`,
       {
-        type: 'appointment_cancelled',
+        type: "appointment_cancelled",
         appointmentId: appointmentData.id,
         doctorId,
         reason,
         cancelledBy,
-        action: 'book_new_appointment'
+        action: "book_new_appointment",
       },
-      'patient'
+      "patient"
     );
 
     // Notify doctor (if cancelled by admin)
-    if (cancelledBy === 'admin') {
+    if (cancelledBy === "admin") {
       await sendNotification(
         doctorId,
-        'Appointment Cancelled',
+        "Appointment Cancelled",
         `Appointment with ${patientName} on ${appointmentDate} at ${appointmentTime} has been cancelled by admin`,
         {
-          type: 'appointment_cancelled',
+          type: "appointment_cancelled",
           appointmentId: appointmentData.id,
           patientId,
           reason,
           cancelledBy,
-          action: 'view_schedule'
+          action: "view_schedule",
         },
-        'doctor'
+        "doctor"
       );
     }
 
     // Notify admin (if cancelled by doctor or patient)
-    if (cancelledBy !== 'admin') {
+    if (cancelledBy !== "admin") {
       await sendNotification(
-        'admin',
-        'Appointment Cancelled by ' + cancelledBy,
+        "admin",
+        "Appointment Cancelled by " + cancelledBy,
         `${patientName}'s appointment with Dr. ${doctorName} has been cancelled`,
         {
-          type: 'admin_notification',
+          type: "admin_notification",
           appointmentId: appointmentData.id,
           cancelledBy,
           reason,
-          action: 'manage_appointments'
+          action: "manage_appointments",
         },
-        'admin'
+        "admin"
       );
     }
-
   } catch (error) {
-    console.error('Error sending cancellation notifications:', error);
+    console.error("Error sending cancellation notifications:", error);
     throw error;
   }
 }

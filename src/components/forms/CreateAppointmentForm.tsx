@@ -63,7 +63,7 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
       bookingDate: "",
       startTime: "",
       endTime: "",
-      notes: "",
+      reason: "",
       status: "pending",
       appointmentType: "consultancy",
     },
@@ -279,8 +279,8 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
                 withAsterisk
                 placeholder="What may be your reason for booking an Appointment"
                 styles={{ input: { width: "100%" } }}
-                {...form.getInputProps("notes")}
-                key={form.key("notes")}
+                {...form.getInputProps("reason")}
+                key={form.key("reason")}
                 radius={15}
                 type="textarea"
                 label="Reason for Appointment"

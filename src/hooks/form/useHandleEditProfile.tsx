@@ -1,33 +1,37 @@
-'use client'
-import { createUserProfileAction, deleteUserProfileAction, updateUserProfileAction } from "@/lib/actions/adminActions";
+"use client";
+import {
+  createUserProfileAction,
+  deleteUserProfileAction,
+  updateUserProfileAction,
+} from "@/lib/actions/adminActions";
 import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
 import { EditUserModified, EditUserParams } from "@/types/actions.types";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-type newTypes = EditUserModified & EditUserParams
+type newTypes = EditUserModified & EditUserParams;
 
-type createParamsType = EditUserModified & {role:ROLES}
+type createParamsType = EditUserModified & { role: ROLES };
 
 const useHandleEditProfile = () => {
   const queryClient = useQueryClient();
 
-const updateProfile = useMutation({
-  mutationFn: async (params: newTypes) =>
-    await updateUserProfileAction(params),
-  onSettled: (data) => {
-    if (data?.code == 200) {
-      toast.success(data?.message);
-    } else {
-      toast.error(data?.message);
-    }
-    queryClient.invalidateQueries({
-      queryKey: [QUERY_KEYS.USERS.fetchUserForEdit],
-    });
-  },
-});
-  
+  const updateProfile = useMutation({
+    mutationFn: async (params: newTypes) =>
+      await updateUserProfileAction(params),
+    onSettled: (data) => {
+      if (data?.code == 200) {
+        toast.success(data?.message);
+      } else {
+        toast.error(data?.message);
+      }
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.USERS.fetchUserForEdit],
+      });
+    },
+  });
+
   const createProfile = useMutation({
     mutationFn: async (params: createParamsType) =>
       await createUserProfileAction(params),
@@ -57,8 +61,8 @@ const updateProfile = useMutation({
       });
     },
   });
-    
-    return {updateProfile, createProfile, deleteProfile}
-}
 
-export default useHandleEditProfile
+  return { updateProfile, createProfile, deleteProfile };
+};
+
+export default useHandleEditProfile;

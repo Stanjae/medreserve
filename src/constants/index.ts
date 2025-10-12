@@ -5,7 +5,6 @@ import {
   IconCurrencyDollar,
   IconCircleCheck,
   IconCalendarEvent,
-  //IconLoader,
 } from "@tabler/icons-react";
 
 export const IdentificationTypes = [
@@ -35,7 +34,7 @@ export const bloodGroups = [
 export const genderData = ["Male", "Female", "Other"];
 
 export const userRoles = ["patient", "doctor", "admin"];
-export const adminSubRoles = ['hospital_admin', 'super_admin', 'sub_admin'];
+export const adminSubRoles = ["hospital_admin", "super_admin", "sub_admin"];
 
 export const cadresData = ["consultancy", "residency", "housemanship"];
 
@@ -87,7 +86,7 @@ export const doctorCategories = [
   },
 ];
 
-export const appointmentType = [
+export const appointmentTypeData = [
   { label: "Consultation", value: "consultation" },
   { label: "Follow up", value: "follow-up" },
   { label: "Emergency", value: "emergency" },
@@ -168,7 +167,22 @@ export const workSchedule = [
   { label: "Sunday", value: "0" },
 ];
 
+export const monthsOfYear = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
+export const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export const initialPaymentForm = {
   amount: 0,
@@ -240,11 +254,11 @@ export const paymentStatusFilter = [
 ];
 
 export const appointmentTabsData = [
-  { label: "Upcoming", value: "upcoming", status:'unread' },
-  { label: "Today", value: "today", status:'unread' },
-  { label: "Past", value: "past", status:'unread' },
-  { label: "Cancelled", value: "cancelled", status:'unread' },
-  { label: "Refunded", value: "refunded", status:'unread' },
+  { label: "Upcoming", value: "upcoming", status: "unread" },
+  { label: "Today", value: "today", status: "unread" },
+  { label: "Past", value: "past", status: "unread" },
+  { label: "Cancelled", value: "cancelled", status: "unread" },
+  { label: "Refunded", value: "refunded", status: "unread" },
 ];
 
 export const newSignupsTabData = [
@@ -281,8 +295,18 @@ export const appointmentStatusData = [
   "rescheduled",
 ];
 
+export const RolesColor = {
+  patient: " cyan",
+  admin: "violet",
+  doctor: " blue",
+};
+
 export const cancel_refundStatusFilter = ["cancelled", "refunded"];
-export const usersStatusFilter = [{label: "All", value: "all"}, {label: "Active", value: "active"},{ label: "Suspended", value: "suspended"}];
+export const usersStatusFilter = [
+  { label: "All", value: "all" },
+  { label: "Active", value: "active" },
+  { label: "Suspended", value: "suspended" },
+];
 
 // Status configuration with colors and icons
 export const statusConfig = {
@@ -348,17 +372,17 @@ export const refundTextStatusInfo = [
   {
     title: "Processing Cancellation",
     subtitle: "Please wait while we process your request...",
-    status:'initialized'
+    status: "initialized",
   },
   {
     title: "Processing Refund",
     subtitle: "Initiating refund to your original payment method...",
-    status:"pending"
+    status: "pending",
   },
   {
     title: "Refund Completed",
     subtitle: "Your refund has been processed successfully",
-    status:"success"
+    status: "success",
   },
 ];
 
@@ -366,28 +390,28 @@ export const refundTextStatusInfo2 = [
   {
     title: "Processing Refund",
     subtitle: "Initiating refund to your original payment method...",
-    status:"pending"
+    status: "pending",
   },
   {
     title: "Refund Completed",
     subtitle: "Your refund has been processed successfully",
-    status:"success"
+    status: "success",
   },
 ];
 
- export const refundReasons = [
-    { value: "medical_emergency", label: "Medical Emergency" },
-    { value: "family_emergency", label: "Family Emergency" },
-    { value: "transportation", label: "Transportation Issues" },
-    { value: "hospitalization", label: "Hospitalization" },
-    { value: "other", label: "Other (requires approval)" },
+export const refundReasons = [
+  { value: "medical_emergency", label: "Medical Emergency" },
+  { value: "family_emergency", label: "Family Emergency" },
+  { value: "transportation", label: "Transportation Issues" },
+  { value: "hospitalization", label: "Hospitalization" },
+  { value: "other", label: "Other (requires approval)" },
 ];
-  
+
 export const pageHeadersObject = {
-  'our-doctors':"Doctor's details"
-}
+  "our-doctors": "Doctor's details",
+};
 
 export const userAccountStatus = [
-  { label: "Active", value: 'active' },
-  { label: "Suspended", value: 'suspended' },
-]
+  { label: "Active", value: "active" },
+  { label: "Suspended", value: "suspended" },
+];  

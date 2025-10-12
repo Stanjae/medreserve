@@ -13,13 +13,14 @@ import {
   AppointmentStatus,
   ReviewParams,
 } from "@/types/actions.types";
-import { AdminPermissions, ROLES } from "@/types/store";
+import { AdminPermissions, ROLES } from "@/types/store.types";
 import { cookies } from "next/headers";
 import { Query } from "node-appwrite";
 import { PaymentFormParams } from "./../../types/actions.types";
 import { revalidatePath } from "next/cache";
 import { generateSecureOTP } from "@/utils/utilsFn";
 import argon2 from "argon2";
+import { History } from "../../../types/appwrite";
 
 export async function checkAuthStatus() {
   let newRole = null;
@@ -117,6 +118,7 @@ export async function registerClientAction(
 }
 export const clearCookies = async () =>
   (await cookies()).delete("my-custom-session");
+
 export async function signOut() {
   try {
     const { account } = await createSessionClient();
@@ -452,7 +454,7 @@ export const reschedulePaymentAction = async (
         bookingDate: data.bookingDate,
         startTime: data.startTime,
         endTime: data.endTime,
-        notes: data.notes,
+        reason: data.reason,
         status: data.appointmentStatus,
       }
     );
@@ -692,3 +694,18 @@ export async function handleOTPVerifyAction(
     return { code: error.code, status: error.type, message: error.response };
   }
 }
+
+export const createHistory = async (data: History) => {
+  try {
+    const { database } = await createAdminClient();
+    await database.createDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_HISTORY_ID!,
+      ID.unique(),
+      data
+    );
+    return { code: 201, status: "success" };
+  } catch (err) {
+    return { code: 500, status: "error", message: `${err}` };
+  }
+};

@@ -5,7 +5,7 @@ import { parseResponse } from "@/utils/utilsFn";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useMedStore } from "@/providers/med-provider";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 
 const useRegistration = () => {
   const router = useRouter();

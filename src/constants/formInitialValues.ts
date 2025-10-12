@@ -5,7 +5,7 @@ import {
   Gender,
   GenotypeType,
 } from "@/types/actions.types";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 
 export const InitialDoctorProfile = {
   fullname: "",
@@ -86,7 +86,7 @@ export const initialUsers = {
 
 export const EditInitialDoctorProfile = {
   fullname: "",
-  userId:"",
+  userId: "",
   gender: "Male" as Gender,
   address: "",
   bio: "",
@@ -161,7 +161,10 @@ export const EditInitialPatientProfile = {
   };
 }; */
 
-export const userFormInitials = (role: ROLES, userId?: string): EditUserModified => {
+export const userFormInitials = (
+  role: ROLES,
+  userId?: string
+): EditUserModified => {
   const baseUser: EditUserModified = {
     account: {
       email: "",
@@ -234,37 +237,35 @@ export const userFormInitials = (role: ROLES, userId?: string): EditUserModified
   }
 
   if (!userId) {
-    baseUser.account = { ...baseUser.account, password: "" }
-  };
+    baseUser.account = { ...baseUser.account, password: "" };
+  }
 
   return baseUser;
 };
-
-
 
 export const userEditFormArrange = (role: ROLES, userId?: string) => {
   let newAccount: EditUserModified["account"] =
     role == "admin"
       ? {
-        ...initialUsers, prefs: 
-        {}
-      }
+          ...initialUsers,
+          prefs: {},
+        }
       : { ...initialUsers };
-  if(!userId){
-    newAccount = { ...newAccount, password: "" }
+  if (!userId) {
+    newAccount = { ...newAccount, password: "" };
   }
   const newProfile =
     role == "admin"
       ? initialAdminProfile
       : role == "patient"
         ? EditInitialPatientProfile
-        : EditInitialDoctorProfile
-  
-  if (role == 'doctor') {
+        : EditInitialDoctorProfile;
+
+  if (role == "doctor") {
     return {
       account: newAccount,
       profile: newProfile,
-      schedule: EditSchedule
+      schedule: EditSchedule,
     };
   }
 

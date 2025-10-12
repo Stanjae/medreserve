@@ -1,6 +1,6 @@
 "use client";
 import { userRoles } from "@/constants";
-import { AdminPermissions, AuthCredentials } from "@/types/store";
+import { AdminPermissions, AuthCredentials } from "@/types/store.types";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
@@ -13,18 +13,18 @@ type AuthenticatedRouteProps = {
     permissions: AdminPermissions | null;
   } | null;
   children: React.ReactNode;
-}
+};
 
-const ProtectedRoutes = ({
-  children,
-  auth,
-}: AuthenticatedRouteProps) => {
+const ProtectedRoutes = ({ children, auth }: AuthenticatedRouteProps) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const { setAuthCredentials, clearAuthCredentials, setAdminPermissions, clearAdminPermissions } = useMedStore(
-    (state) => state
-  );
+  const {
+    setAuthCredentials,
+    clearAuthCredentials,
+    setAdminPermissions,
+    clearAdminPermissions,
+  } = useMedStore((state) => state);
 
   useEffect(() => {
     const handleProtectedRoutes = async () => {
@@ -36,17 +36,14 @@ const ProtectedRoutes = ({
         clearAuthCredentials();
         clearAdminPermissions();
         toast.error("Session expired. Redirecting to login...");
-        window.location.replace ("/auth/login");
+        window.location.replace("/auth/login");
         return;
       }
 
       if (auth) {
         setAuthCredentials(auth?.credentials);
         setAdminPermissions(auth?.permissions);
-        if (
-          isProtectedRoute &&
-          !pathname.includes(auth?.credentials?.role)
-        ) {
+        if (isProtectedRoute && !pathname.includes(auth?.credentials?.role)) {
           router.back();
         }
 
@@ -54,16 +51,25 @@ const ProtectedRoutes = ({
           router.push(
             `/${auth?.credentials?.role}/${auth?.credentials?.userId}/create-profile`
           );
-         }
-
-        if (pathname.includes("auth")) {
-          router.push(`/${auth?.credentials?.role}/${auth?.credentials?.userId}/dashboard`);
         }
 
+        if (pathname.includes("auth")) {
+          router.push(
+            `/${auth?.credentials?.role}/${auth?.credentials?.userId}/dashboard`
+          );
+        }
       }
     };
     handleProtectedRoutes();
-  }, [auth, pathname]);
+  }, [
+    auth,
+    pathname,
+    setAuthCredentials,
+    setAdminPermissions,
+    router,
+    clearAuthCredentials,
+    clearAdminPermissions,
+  ]);
 
   return <div>{children}</div>;
 };

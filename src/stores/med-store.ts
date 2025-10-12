@@ -1,5 +1,8 @@
-// src/stores/counter-store.ts
-import { AdminPermissions, AuthCredentials, HeaderButtonsType } from "@/types/store";
+import {
+  AdminPermissions,
+  AuthCredentials,
+  HeaderButtonsType,
+} from "@/types";
 import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 
@@ -31,10 +34,9 @@ export type MedActions = {
   }) => void;
   setAdminPermissions: (params: AdminPermissions | null) => void;
   clearAdminPermissions: () => void;
-  setPageButtons: (params:  HeaderButtonsType[] | null) => void;
+  setPageButtons: (params: HeaderButtonsType[] | null) => void;
   clearPageButtons: () => void;
 };
-
 
 export type MedStore = MedState & MedActions;
 
@@ -42,7 +44,7 @@ export const initMedStore = (): MedState => {
   return {
     credentials: null,
     adminPermissions: null,
-    pageButtons:[],
+    pageButtons: [],
     weekSchedule: [],
     dateTime: {
       startTime: "",
@@ -57,7 +59,7 @@ export const initMedStore = (): MedState => {
 export const defaultInitState: MedState = {
   credentials: null,
   adminPermissions: null,
-  pageButtons:[],
+  pageButtons: [],
   weekSchedule: [],
   dateTime: { startTime: "", endTime: "", date: "", minTime: "", maxTime: "" },
 };

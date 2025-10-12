@@ -50,7 +50,7 @@ const RescheduleAppointment = ({ row, handleClose }: { row: AppointmentColumnsTy
       bookingDate: row?.bookingDate,
       startTime: row?.startTime,
       endTime: "",
-      notes: row?.notes as string,
+      reason: row?.reason as string,
       fullname: row?.patientFullname as string,
       email: row?.patientEmail as string,
       address: row?.patientAddress as string,
@@ -213,8 +213,8 @@ const RescheduleAppointment = ({ row, handleClose }: { row: AppointmentColumnsTy
                   withAsterisk
                   placeholder="What may be your reason for booking an Appointment"
                   styles={{ input: { width: "100%" } }}
-                  {...form.getInputProps("notes")}
-                  key={form.key("notes")}
+                  {...form.getInputProps("reason")}
+                  key={form.key("reason")}
                   radius={15}
                   type="textarea"
                   label="Reason for Appointment"

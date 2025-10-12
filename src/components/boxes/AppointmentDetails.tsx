@@ -168,7 +168,7 @@ const AppointmentDetails = ({ row }: Props) => {
 
             <Group justify="space-between">
               <Text c="m-gray">Reason</Text>
-              <Text tt="capitalize">{row?.notes}</Text>
+              <Text tt="capitalize">{row?.reason}</Text>
             </Group>
 
             <Group justify="space-between">

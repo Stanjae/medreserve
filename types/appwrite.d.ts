@@ -1,5 +1,5 @@
 import { Gender } from "@/types/actions.types";
-import { PermissionKeys } from "@/types/store";
+import { PermissionKeys } from "@/types/store.types";
 import { Models } from "node-appwrite";
 
 export type Doctor = Models.Document & {
@@ -104,7 +104,7 @@ export type AdminProfile = Models.Document & {
   email: string;
   phone: string;
   address: string;
-  gender:Gender
+  gender: Gender;
   birthDate: string;
   privacyConsent: boolean;
   profilePicture: string;
@@ -143,3 +143,13 @@ export type DefaultRoles = {
 };
 
 export type ModifiedRoles = Models.Document & DefaultRoles;
+
+export type History = {
+  action: "create" | "update" | "delete";
+  description: string;
+  relatedEntityType: string;
+  userId: string;
+  relatedEntityId: string;
+};
+
+export type ModifiedHistory = Models.Document & History;

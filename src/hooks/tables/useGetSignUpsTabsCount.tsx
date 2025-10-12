@@ -1,12 +1,12 @@
 "use client";
-import { newSignupsTabCountAction } from "@/lib/actions/adminActions";
+import { getNewSignupsTabCountAction } from "@/lib/actions/adminGetActions";
 import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
 import { useQuery } from "@tanstack/react-query";
 
 const useGetSignUpsTabsCount = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.SIGNUPS.signupsTabsCount],
-    queryFn: async () => await newSignupsTabCountAction()
+    queryFn: async () => await getNewSignupsTabCountAction()
   });
 };
 

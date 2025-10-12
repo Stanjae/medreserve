@@ -27,6 +27,7 @@ export type AppointmentColumnsType = {
   weekendEndTime: string;
   weekendStartTime: string;
   createdAt?: string;
+  reason?: string;
   notes?: string;
   patientPhone?: string;
   patientFullname?: string;

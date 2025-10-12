@@ -1,5 +1,5 @@
 "use client";
-import { getAllUsers } from "@/lib/actions/adminActions";
+import { getAllUsers } from "@/lib/actions/adminGetActions";
 import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
 import { SignupTabsType } from "@/types/actions.types";
 import { useQuery } from "@tanstack/react-query";

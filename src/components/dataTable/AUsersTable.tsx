@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import MedReverseTabs from "../tabs/MedReverseTabs";
 import useGetUsersCountTabs from "@/hooks/admin/useGetUsersCountTabs";
 import useGetAllUsers from "@/hooks/admin/useGetAllUsers";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 import { CustomDataTable } from "../tables/CustomTableWrapper";
 import { ModifiedUser } from "../../../types/appwrite";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -28,14 +28,17 @@ const AUsersTable = () => {
     null,
   ]);
   const [opened, { open, close }] = useDisclosure(false);
-  const [selectedRowIds, setSelectedRowIds] = useState<Record<string, string | null>>({});
+  const [selectedRowIds, setSelectedRowIds] = useState<
+    Record<string, string | null>
+  >({});
   const { data: usersCount } = useGetUsersCountTabs();
   const { data, isLoading, refetch } = useGetAllUsers(
     (searchParams.get("activeTab") as ROLES) ?? defaultActiveTab,
     dateRange
   );
 
-  const { deleteProfile: { mutateAsync },
+  const {
+    deleteProfile: { mutateAsync },
   } = useHandleEditProfile();
 
   const handleRowClick = (row: ModifiedUser) => {
@@ -46,11 +49,11 @@ const AUsersTable = () => {
     const { accountId, profileId, scheduleId } = selectedRowIds;
     if (!accountId || !profileId) return;
     await mutateAsync({
-         accountId,
-         profileId,
-         scheduleId,
-         role: (searchParams.get("activeTab") as ROLES) ?? defaultActiveTab,
-       });
+      accountId,
+      profileId,
+      scheduleId,
+      role: (searchParams.get("activeTab") as ROLES) ?? defaultActiveTab,
+    });
   };
 
   const newTabs = useMemo(() => {
@@ -71,7 +74,6 @@ const AUsersTable = () => {
     open();
     setSelectedRowIds({ accountId, profileId, scheduleId });
   };
-   
 
   const newActionsColumns = {
     id: "actions",
@@ -96,7 +98,22 @@ const AUsersTable = () => {
           }
         >
           <Menu.Dropdown>
-            <Button size="sm" leftSection={< IconTrash size={ 13} />}  color="red" onClick={(event) => handleOpen(event, item.$id, item.profile.$id, item.profile.doctorAvailability?.$id)}  variant= "subtle">Delete User</Button>
+            <Button
+              size="sm"
+              leftSection={<IconTrash size={13} />}
+              color="red"
+              onClick={(event) =>
+                handleOpen(
+                  event,
+                  item.$id,
+                  item.profile.$id,
+                  item.profile.doctorAvailability?.$id
+                )
+              }
+              variant="subtle"
+            >
+              Delete User
+            </Button>
           </Menu.Dropdown>
         </CDropdown>
       );
@@ -104,9 +121,12 @@ const AUsersTable = () => {
   };
 
   const columns = useMemo<ColumnDef<ModifiedUser, any>[]>(() => {
-    return [...ColumnsUsersFn(
+    return [
+      ...ColumnsUsersFn(
         (searchParams.get("activeTab") as ROLES) ?? defaultActiveTab
-      ), newActionsColumns];
+      ),
+      newActionsColumns,
+    ];
   }, []);
 
   return (

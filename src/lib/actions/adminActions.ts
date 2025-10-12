@@ -5,118 +5,12 @@ import {
   AssignUsersToNewRoleParams,
   EditUserModified,
   EditUserParams,
-  SignupTabsType,
 } from "@/types/actions.types";
-import { getFilterByNewSignups } from "@/utils/utilsFn";
 import { ID, Query } from "node-appwrite";
-import {
-  AdminProfile,
-  DefaultRoles,
-  Doctor,
-  ModifiedRoles,
-  ModifiedUser,
-  Patient,
-} from "../../../types/appwrite";
-import { ROLES } from "@/types/store";
-import { userRoles } from "@/constants";
-
-export async function getAllUsers(
-  tab: SignupTabsType,
-  dateRange: [string | null, string | null]
-): Promise<{ project: ModifiedUser[]; total: number }> {
-  try {
-    const { users, database } = await createAdminClient();
-    const filterFn = getFilterByNewSignups(tab);
-
-    if (dateRange[0] && dateRange[1]) {
-      filterFn.push(Query.between("$createdAt", dateRange[0], dateRange[1]));
-    }
-    const result = await users.list([
-      ...filterFn,
-      Query.orderDesc("$createdAt"),
-    ]);
-    const doctorProfiles = await database.listDocuments(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_ID!
-    );
-
-    const patientProfiles = await database.listDocuments(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PATIENT_ID!
-    );
-    if (
-      result.total == 0 &&
-      doctorProfiles.total == 0 &&
-      patientProfiles.total == 0
-    )
-      return { project: [], total: 0 };
-
-    const usersList: ModifiedUser[] = result.users?.map((user) => {
-      const doctor = doctorProfiles.documents.find(
-        (doc) => doc.$id === user.prefs?.databaseId
-      ) as Doctor | undefined;
-      const patient = patientProfiles.documents.find(
-        (doc) => doc.$id === user.prefs?.databaseId
-      ) as Patient | undefined;
-      const labels = user.labels[0] as "admin" | "doctor" | "patient";
-      const profile: Doctor | Patient | null | undefined =
-        labels === "admin" ? null : labels === "doctor" ? doctor : patient;
-
-      return {
-        $id: user.$id,
-        email: user.email,
-        name: user.name,
-        labels,
-        status: user.status,
-        prefs: user.prefs,
-        $createdAt: user?.$createdAt,
-        accessedAt: user.accessedAt,
-        profile,
-        registeredAt: user?.registration,
-        phone: user?.phone,
-        emailVerification: user?.emailVerification,
-        $updatedAt: user?.$updatedAt,
-      } as ModifiedUser;
-    });
-
-    return { project: usersList, total: usersList.length };
-  } catch (error) {
-    console.log(error);
-    return { project: [], total: 0 };
-  }
-}
-
-export const newSignupsTabCountAction = async () => {
-  try {
-    const { users } = await createAdminClient();
-    const unverifiedDoctors = await users.list([
-      Query.contains("labels", "doctor"),
-      Query.equal("emailVerification", false),
-      Query.equal("status", true),
-    ]);
-
-    const patientsCount = await users.list([
-      Query.contains("labels", "patient"),
-    ]);
-
-    const verifiedDoctors = await users.list([
-      Query.contains("labels", "doctor"),
-      Query.equal("emailVerification", true),
-      Query.equal("status", true),
-    ]);
-
-    const suspendedUsers = await users.list([Query.equal("status", false)]);
-
-    return {
-      "pending-doctors": unverifiedDoctors.total,
-      patient: patientsCount.total,
-      "verified-doctors": verifiedDoctors.total,
-      suspended: suspendedUsers.total,
-    };
-  } catch (e) {
-    console.log("err", e);
-  }
-};
+import { DefaultRoles, ModifiedRoles } from "../../../types/appwrite";
+import { ROLES } from "@/types/store.types";
+import { createHistory } from "./actions";
+import { updateAppointmentAdminParams } from "@/types";
 
 export async function updateUserStatusAction(
   userId: string,
@@ -200,22 +94,6 @@ export async function updateUserBulkVerificationAction(
     return { code: 500, message: err?.message || "An error occurred." };
   }
 }
-
-//roles and permissons
-export const getAllRolesAction = async (): Promise<ModifiedRoles[]> => {
-  try {
-    const { database } = await createAdminClient();
-    const response = await database.listDocuments(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_ROLES_ID!
-    );
-    return response.documents as ModifiedRoles[];
-  } catch (error) {
-    console.log(error);
-    return [];
-  }
-};
-
 export const updateRoleAction = async (role: ModifiedRoles) => {
   try {
     const { database } = await createAdminClient();
@@ -265,17 +143,6 @@ export const deleteRoleAction = async (roleId: string) => {
   }
 };
 
-export const getUsersByRoleAction = async (role: ROLES) => {
-  try {
-    const { users } = await createAdminClient();
-    const response = await users.list([Query.contains("labels", role)]);
-    return response.users;
-  } catch (error) {
-    console.log(error);
-    return [];
-  }
-};
-
 export const bulkAssignUsersToNewRoleAction = async (
   roles: AssignUsersToNewRoleParams[]
 ) => {
@@ -289,193 +156,6 @@ export const bulkAssignUsersToNewRoleAction = async (
     const err = error as { message: string };
     console.log(err);
     return { code: 500, message: err?.message || "An error occurred." };
-  }
-};
-
-//USERS
-
-export const getSpecificRoleUsersAndProfilesAction = async (
-  role: ROLES,
-  dateRange: [string | null, string | null]
-): Promise<{ project: ModifiedUser[]; total: number }> => {
-  try {
-    const collectionId =
-      role == "doctor"
-        ? process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_ID!
-        : role == "patient"
-          ? process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PATIENT_ID!
-          : process.env
-              .NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_ADMIN_PROFILE_ID!;
-    const { users, database } = await createAdminClient();
-    const filters = [
-      Query.contains("labels", role),
-      Query.equal("emailVerification", true),
-      Query.orderDesc("$createdAt"),
-    ];
-    if (dateRange[0] && dateRange[1]) {
-      filters.push(Query.between("$createdAt", dateRange[0], dateRange[1]));
-    }
-    const response = await users.list(filters);
-
-    const profile = await database.listDocuments(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      collectionId
-    );
-
-    if (response.total == 0 && profile.total == 0)
-      return { project: [], total: 0 };
-
-    const usersList: ModifiedUser[] = response.users?.map((user) => {
-      const newProfile = profile.documents.find(
-        (item) => item.$id === user.prefs?.databaseId
-      );
-      const labels = user.labels[0] as "admin" | "doctor" | "patient";
-
-      return {
-        $id: user.$id,
-        email: user.email,
-        name: user.name,
-        labels,
-        status: user.status,
-        prefs: user.prefs,
-        $createdAt: user?.$createdAt,
-        accessedAt: user.accessedAt,
-        profile: newProfile,
-        registeredAt: user?.registration,
-        phone: user?.phone,
-        emailVerification: user?.emailVerification,
-        $updatedAt: user?.$updatedAt,
-      } as ModifiedUser;
-    });
-
-    return { project: usersList, total: usersList.length };
-  } catch (error) {
-    console.log(error);
-    return { project: [], total: 0 };
-  }
-};
-
-export const getSpecificRoleUsersAndProfilesCountAction = async (): Promise<{
-  doctor: number;
-  patient: number;
-  admin: number;
-}> => {
-  try {
-    const { users } = await createAdminClient();
-    const response = await users.list([Query.equal("emailVerification", true)]);
-
-    if (response.total == 0) return { doctor: 0, patient: 0, admin: 0 };
-
-    const doctor = response.users?.filter((user) =>
-      user.labels.includes("doctor")
-    ).length;
-    const patient = response.users?.filter((user) =>
-      user.labels.includes("patient")
-    ).length;
-    const admin = response.users?.filter((user) =>
-      user.labels.includes("admin")
-    ).length;
-
-    return { doctor, patient, admin };
-  } catch (error) {
-    console.log(error);
-    return { doctor: 0, patient: 0, admin: 0 };
-  }
-};
-
-//edit users
-
-export const getUserForEditAction = async (role: ROLES, userId: string) => {
-  try {
-    if (!userRoles.includes(role)) {
-      throw new Error("Invalid role");
-    }
-    const collectionId =
-      role == "doctor"
-        ? process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_ID!
-        : role == "patient"
-          ? process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PATIENT_ID!
-          : process.env
-              .NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_ADMIN_PROFILE_ID!;
-    const { users, database } = await createAdminClient();
-    const response = await users.get(userId);
-
-    const profile = await database.listDocuments(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      collectionId,
-      [Query.equal("userId", userId)]
-    );
-
-    const newProfile = profile.documents[0] as unknown as
-      | Doctor
-      | Patient
-      | AdminProfile;
-
-    const account = {
-      $id: response.$id,
-      email: response.email,
-      labels: response.labels[0],
-      phone: response.phone || "",
-      username: response.name,
-      status: response.status ? "active" : "suspended",
-      prefs: {
-        subRoleId: response.prefs?.subRoleId || undefined,
-        subRole: response.prefs?.subRole || undefined,
-      },
-    };
-
-    const emptyProfile = {
-      $id: newProfile?.$id,
-      fullname: newProfile?.fullname,
-      address: newProfile?.address,
-      bio: newProfile?.bio,
-      userId: newProfile?.userId,
-      gender: newProfile?.gender,
-      cadre: newProfile?.cadre,
-      birthDate: newProfile?.birthDate,
-      zipcode: newProfile?.zipcode,
-      experience: newProfile?.experience,
-      medId: newProfile?.medId,
-      jobSpecification: newProfile?.jobSpecification,
-      specialization: newProfile?.specialization,
-      grade: newProfile?.grade,
-      courseOfStudy: newProfile?.courseOfStudy,
-      university: newProfile?.university,
-      yearOfGraduation: newProfile?.yearOfGraduation,
-      degree: newProfile?.degree,
-      courseDuration: newProfile?.courseDuration,
-      stateOfOrigin: newProfile?.stateOfOrigin,
-      lga: newProfile?.lga,
-      identificationType: newProfile?.identificationType,
-      identificationNumber: newProfile?.identificationNumber,
-      identificationDocument: newProfile?.identificationDocument,
-      profilePicture: newProfile?.profilePicture,
-      privacyConsent: newProfile?.privacyConsent,
-      weekdayStartTime: newProfile?.doctorAvailability?.weekdayStartTime,
-      weekdayEndTime: newProfile?.doctorAvailability?.weekdayEndTime,
-      weekendStartTime: newProfile?.doctorAvailability?.weekendStartTime,
-      weekendEndTime: newProfile?.doctorAvailability?.weekendEndTime,
-      workSchedule: newProfile?.doctorAvailability?.workSchedule,
-      scheduleId: newProfile?.doctorAvailability?.$id,
-      occupation: newProfile?.occupation,
-      emergencyContactName: newProfile?.emergencyContactName,
-      emergencyContactNumber: newProfile?.emergencyContactNumber,
-      bloodGroup: newProfile?.bloodGroup,
-      genotype: newProfile?.genotype,
-      insurancePolicyNumber: newProfile?.insurancePolicyNumber,
-      insuranceProvider: newProfile?.insuranceProvider,
-      allergies: newProfile?.allergies,
-      currentMedication: newProfile?.currentMedication,
-      familyMedicalHistory: newProfile?.familyMedicalHistory,
-      pastMedicalHistory: newProfile?.pastMedicalHistory,
-    };
-
-    return { account, profile: emptyProfile };
-  } catch (error) {
-    /*     const err = error as { message: string };
-    console.log(err);
-    return { code: 500, message: err?.message || "An error occurred." }; */
-    throw new Error(error as string);
   }
 };
 
@@ -677,10 +357,16 @@ export const createUserProfileAction = async (
       databaseId: createdProfile.$id,
     };
 
-    const newPrefs = role === "admin" ? {...defaultPrefs,
-      subRoleId: account.prefs?.subRoleId || "",
-      subRole: account.prefs?.subRole || "",  
-    } : role === "doctor" ? {...defaultPrefs, medId: profile.medId} : {...defaultPrefs};
+    const newPrefs =
+      role === "admin"
+        ? {
+            ...defaultPrefs,
+            subRoleId: account.prefs?.subRoleId || "",
+            subRole: account.prefs?.subRole || "",
+          }
+        : role === "doctor"
+          ? { ...defaultPrefs, medId: profile.medId }
+          : { ...defaultPrefs };
 
     const status = account.status === "active" ? true : false;
 
@@ -723,9 +409,7 @@ export const createUserProfileAction = async (
   }
 };
 
-export const deleteUserProfileAction = async (
-  params: EditUserParams
-) => {
+export const deleteUserProfileAction = async (params: EditUserParams) => {
   try {
     const { role, accountId, profileId, scheduleId } = params;
 
@@ -735,11 +419,11 @@ export const deleteUserProfileAction = async (
         : role == "patient"
           ? process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PATIENT_ID!
           : process.env
-            .NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_ADMIN_PROFILE_ID!;
-    
+              .NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_ADMIN_PROFILE_ID!;
+
     const { database, users } = await createAdminClient();
 
-    if(accountId){
+    if (accountId) {
       await users.delete(accountId);
     }
 
@@ -769,19 +453,60 @@ export const deleteUserProfileAction = async (
   }
 };
 
-export const getAllUserRolesAction = async () => {
+export async function updateAdminAppointmentAction(
+  uniqueID: string,
+  userId: string,
+  data: updateAppointmentAdminParams
+) {
   try {
     const { database } = await createAdminClient();
-    const response = await database.listDocuments(
+    await database.updateDocument(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_ROLES_ID!
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      uniqueID,
+      data
     );
-    return response.documents.map((item) => ({
-      label: item.type,
-      value: item.$id,
-    }));
-  } catch (error) {
-    console.log(error);
-    return [];
+    await createHistory({
+      action: "update",
+      relatedEntityType: "appointments",
+      relatedEntityId: uniqueID,
+      description: `Appointment was ${data?.bookingDate ? "rescheduled" : "updated"} by`,
+      userId,
+    });
+    return {
+      code: 200,
+      status: "success",
+      message: `Appointment ${data?.bookingDate ? "rescheduled" : "updated"} successfully`,
+    };
+  } catch (err) {
+    return { code: 500, status: "error", message: `${err}` };
   }
-};
+}
+
+export async function deleteAdminAppointmentAction(
+  uniqueID: string,
+  userId: string
+) {
+  try {
+    const { database } = await createAdminClient();
+    await database.deleteDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      uniqueID
+    );
+    await createHistory({
+      action: "delete",
+      relatedEntityType: "appointments",
+      relatedEntityId: uniqueID,
+      description: "Appointment was deleted by",
+      userId,
+    });
+    return {
+      code: 200,
+      status: "success",
+      message: "Appointment deleted successfully",
+    };
+  } catch (err) {
+    return { code: 500, status: "error", message: `${err}` };
+  }
+}

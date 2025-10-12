@@ -1,31 +1,33 @@
-'use client';
+'use client'
 import {
   IconCalendarBolt,
+  IconCalendarTime,
   IconCalendarWeek,
-  IconChevronRight,
   IconCoins,
   IconDashboard,
+  IconHome,
   IconLicense,
   IconReportAnalytics,
   IconSearch,
+  IconStethoscope,
   IconUsersGroup,
 } from "@tabler/icons-react";
 
-export const Toplinks = [
+export const toplinks = [
   {
     href: "/",
     label: "Home",
-    rightIcon: <IconChevronRight size={12} stroke={1.5} />,
+    rightIcon: IconHome
   },
   {
     href: "/about",
     label: "About Us",
-    rightIcon: <IconChevronRight size={12} stroke={1.5} />,
+    rightIcon: IconStethoscope
   },
   {
     href: "/our-doctors",
     label: "Our Doctors",
-    rightIcon: <IconChevronRight size={12} stroke={1.5} />,
+    rightIcon: IconUsersGroup
   }
 ];
 
@@ -94,25 +96,25 @@ export const dashboardShortCutLinks = [
     title: "Book Appointment",
     description: "Schedule a new appointment with your preferred doctor",
     href: "/patient/userId/dashboard/appointments/book-appointment",
-    icon: <IconCalendarWeek size={40} stroke={1.5} color="#fff" />,
+    icon: IconCalendarWeek
   },
   {
     title: "Find Doctors",
     description: "Search for specialists in your area",
     href: "/patient/userId/dashboard/appointments/book-appointment",
-    icon: <IconSearch size={40} stroke={1.5} color="#fff" />,
+    icon: IconSearch,
   },
     {
     title: "View Records",
     description: "Access your complete medical history",
     href: "/patient/userId/dashboard/appointments/book-appointment",
-    icon: <IconReportAnalytics size={40} stroke={1.5} color="#fff" />,
+    icon: IconReportAnalytics,
   },
       {
     title: "Prescriptions",
     description: "Manage your medications and refills",
     href: "/patient/userId/dashboard/appointments/book-appointment",
-    icon: <IconReportAnalytics size={40} stroke={1.5} color="#fff" />,
+    icon: IconReportAnalytics,
   }
 ];
 
@@ -131,6 +133,17 @@ export const adminDashLinks = [
     child: false,
     leftIcon: IconUsersGroup,
     allowedSubRoles: ["super_admin", "hospital_admin", "sub_admin"],
+  },
+  {
+    label: "Appointments",
+    href: "appointments",
+    child: true,
+    leftIcon: IconCalendarTime,
+    allowedSubRoles: ["super_admin", "hospital_admin", "sub_admin"],
+    sub: [
+      { label: "Calendar", href: "index" },
+      { label: "Find Appointments", href: "find-appointments" },
+    ],
   },
   {
     label: "payments",

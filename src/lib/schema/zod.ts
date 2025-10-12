@@ -1,10 +1,10 @@
 import {
   appointmentStatusData,
-  appointmentType,
+  appointmentTypeData,
   refundStatus,
   refundType,
 } from "@/constants";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 import { isTodayAfterDateTime } from "@/utils/utilsFn";
 import { z } from "zod";
 
@@ -214,10 +214,10 @@ export const CreateBookingSchema = z
     bookingDate: z.coerce.string(),
     startTime: z.string(),
     endTime: z.string(),
-    notes: z.string().nonempty("Notes is required"),
+    reason: z.string().nonempty("Reasons for appointment is required"),
     status: z.enum(appointmentStatusData as [string, ...string[]]),
     appointmentType: z.enum(
-      appointmentType.map((type) => type.value) as [string, ...string[]]
+      appointmentTypeData.map((type) => type.value) as [string, ...string[]]
     ),
   })
   .refine(
@@ -240,7 +240,7 @@ export const UpdateBookingSchema = z
     startTime: z.string(),
     endTime: z.string(),
     appointmentStatus: z.enum(appointmentStatusData as [string, ...string[]]),
-    notes: z.string().nonempty("Notes is required"),
+    reason: z.string().nonempty("Reasons for appointment is required"),
     slotId: z.string().nonempty("Slot ID is required"),
     address: z.string().nonempty("Address is required"),
     fullname: z.string().nonempty("Full name is required"),
@@ -469,9 +469,8 @@ export const userSchema = (role: ROLES, userId?: string) => {
       : role === "admin"
         ? initialAdminProfileSchema
         : InitialDoctorFormValidation;
-  
-  
-  let accountSchemaWithPassword = accountSchema
+
+  let accountSchemaWithPassword = accountSchema;
 
   if (!userId) {
     accountSchemaWithPassword = accountSchema.extend({

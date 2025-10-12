@@ -20,7 +20,7 @@ import AppointmentTableHoverCard from "../cards/AppointmentTableHoverCard";
 import { statusConfig } from "@/constants";
 import { ModifiedUser } from "../../../types/appwrite";
 import dayjs from "dayjs";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 
 export type Payment = {
   id: string;
@@ -438,153 +438,138 @@ export const columnsSignups: ColumnDef<ModifiedUser, any>[] = [
 
 //users tables
 export const ColumnsUsersFn = (role: ROLES) => {
-   const columnsUsers: ColumnDef<ModifiedUser, any>[] = [
-     {
-       accessorFn: (row) => row.profile?.fullname ?? "-",
-       id: "fullname",
-       cell: ({ row }) => (
-         <p className="capitalize hover:underline">
-           {row?.original.labels == "doctor" ? "Dr." : ""}{" "}
-           {row.getValue("fullname")}
-         </p>
-       ),
-       filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
-       header: ({ column }) => {
-         return (
-           <Button
-             variant="transparent"
-             className=" pl-0 text-[14.5px] font-bold text-black"
-             onClick={() =>
-               column.toggleSorting(column.getIsSorted() === "asc")
-             }
-           >
-             Fullname
-             <IconArrowsUpDown size={13} />
-           </Button>
-         );
-       },
-     },
+  const columnsUsers: ColumnDef<ModifiedUser, any>[] = [
+    {
+      accessorFn: (row) => row.profile?.fullname ?? "-",
+      id: "fullname",
+      cell: ({ row }) => (
+        <p className="capitalize hover:underline">
+          {row?.original.labels == "doctor" ? "Dr." : ""}{" "}
+          {row.getValue("fullname")}
+        </p>
+      ),
+      filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="transparent"
+            className=" pl-0 text-[14.5px] font-bold text-black"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Fullname
+            <IconArrowsUpDown size={13} />
+          </Button>
+        );
+      },
+    },
 
-     {
-       accessorKey: "name",
-       id: "name",
-       cell: ({ row }) => (
-         <p className="capitalize hover:underline">{row.getValue("name")}</p>
-       ),
-       filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
-       header: ({ column }) => {
-         return (
-           <Button
-             variant="transparent"
-             className=" pl-0 text-[14.5px] font-bold text-black"
-             onClick={() =>
-               column.toggleSorting(column.getIsSorted() === "asc")
-             }
-           >
-             Username
-             <IconArrowsUpDown size={13} />
-           </Button>
-         );
-       },
-     },
-     {
-       accessorKey: "email",
-       id: "email",
-       header: "Email",
-       cell: (info) => info.getValue() || "N/A",
-       filterFn: "fuzzy", //using our custom fuzzy filter function
-       // filterFn: fuzzyFilter, //or just define with the function
-       sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
-     },
-     {
-       accessorFn: (row) => (row.status ? "Active" : " Suspended"),
-       id: "status",
-       header: "Status",
-       cell: (info) => (
-         <Badge
-           variant="outline"
-           color={info.row?.original?.status ? "green" : "red"}
-         >
-           {info.getValue()}
-         </Badge>
-       ),
-       filterFn: "fuzzy", //using our custom fuzzy filter function
-       // filterFn: fuzzyFilter, //or just define with the function
-       sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
-     },
-     {
-       accessorFn: (row) => row.accessedAt && getCalendarDateTime(row.accessedAt),
-       id: "date",
-       header: ({ column }) => {
-         return (
-           <Button
-             variant="transparent"
-             className=" pl-0 text-[14.5px] font-bold text-black"
-             onClick={() =>
-               column.toggleSorting(column.getIsSorted() === "asc")
-             }
-           >
-             Last Active
-             <IconArrowsUpDown size={13} />
-           </Button>
-         );
-       },
-       cell: (info) => (info.getValue() ? info.getValue() : "N/A"),
-       //filterFn: "fuzzy", //using our custom fuzzy filter function
-       // filterFn: dateRangeFilter,
-       sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
-     },
-     
-   ];
-  if (role == 'doctor') {
-    columnsUsers.splice(
-      columnsUsers.length - 1,
-      0,
-      {
-        accessorFn: (row) => row.prefs?.medId || "N/A",
-        id: "medical_Id",
-        cell: ({ row }) => row.getValue("medical_Id"),
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="transparent"
-              className=" pl-0 text-[14.5px] font-bold text-black"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              Medical ID
-              <IconArrowsUpDown size={13} />
-            </Button>
-          );
-        },
-        filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
-      }
-    );
+    {
+      accessorKey: "name",
+      id: "name",
+      cell: ({ row }) => (
+        <p className="capitalize hover:underline">{row.getValue("name")}</p>
+      ),
+      filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="transparent"
+            className=" pl-0 text-[14.5px] font-bold text-black"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Username
+            <IconArrowsUpDown size={13} />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "email",
+      id: "email",
+      header: "Email",
+      cell: (info) => info.getValue() || "N/A",
+      filterFn: "fuzzy", //using our custom fuzzy filter function
+      // filterFn: fuzzyFilter, //or just define with the function
+      sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+    },
+    {
+      accessorFn: (row) => (row.status ? "Active" : " Suspended"),
+      id: "status",
+      header: "Status",
+      cell: (info) => (
+        <Badge
+          variant="outline"
+          color={info.row?.original?.status ? "green" : "red"}
+        >
+          {info.getValue()}
+        </Badge>
+      ),
+      filterFn: "fuzzy", //using our custom fuzzy filter function
+      // filterFn: fuzzyFilter, //or just define with the function
+      sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+    },
+    {
+      accessorFn: (row) =>
+        row.accessedAt && getCalendarDateTime(row.accessedAt),
+      id: "date",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="transparent"
+            className=" pl-0 text-[14.5px] font-bold text-black"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Last Active
+            <IconArrowsUpDown size={13} />
+          </Button>
+        );
+      },
+      cell: (info) => (info.getValue() ? info.getValue() : "N/A"),
+      //filterFn: "fuzzy", //using our custom fuzzy filter function
+      // filterFn: dateRangeFilter,
+      sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+    },
+  ];
+  if (role == "doctor") {
+    columnsUsers.splice(columnsUsers.length - 1, 0, {
+      accessorFn: (row) => row.prefs?.medId || "N/A",
+      id: "medical_Id",
+      cell: ({ row }) => row.getValue("medical_Id"),
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="transparent"
+            className=" pl-0 text-[14.5px] font-bold text-black"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Medical ID
+            <IconArrowsUpDown size={13} />
+          </Button>
+        );
+      },
+      filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
+    });
   }
 
-  if (role == 'admin') {
-    columnsUsers.splice(
-      columnsUsers.length - 1,
-      0,
-      {
-        accessorFn: (row) => row.prefs?.subRole ? parseResponse(row.prefs?.subRole) : "N/A",
-        id: "subrole",
-        cell: ({ row }) => row.getValue("subrole"),
-        header: () => {
-          return (
-            <Button
-              variant="transparent"
-              className=" pl-0 text-[14.5px] font-bold text-black"
-            >
-              Admin Role
-            </Button>
-          );
-        },
-        filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
-      }
-    );
+  if (role == "admin") {
+    columnsUsers.splice(columnsUsers.length - 1, 0, {
+      accessorFn: (row) =>
+        row.prefs?.subRole ? parseResponse(row.prefs?.subRole) : "N/A",
+      id: "subrole",
+      cell: ({ row }) => row.getValue("subrole"),
+      header: () => {
+        return (
+          <Button
+            variant="transparent"
+            className=" pl-0 text-[14.5px] font-bold text-black"
+          >
+            Admin Role
+          </Button>
+        );
+      },
+      filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
+    });
   }
 
-  return columnsUsers
-}
+  return columnsUsers;
+};

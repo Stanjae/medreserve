@@ -5,7 +5,7 @@ import SubmitBtn from "@/components/CButton/SubmitBtn";
 import { DropzoneWrapper } from "@/components/dropzone/Dropzone";
 import CustomInput from "@/components/inputs/CustomInput";
 import useGetMedInfo from "@/hooks/useGetMedId";
-import { ROLES } from "@/types/store";
+import { ROLES } from "@/types/store.types";
 import { capitalizeFirst } from "@/utils/utilsFn";
 import {
   ActionIcon,
@@ -73,7 +73,7 @@ type Props = {
   file: string | File | null;
   setFile: React.Dispatch<React.SetStateAction<string | File | null>>;
   documentFile: string | File | null;
-  setDocumentFile: React.Dispatch<React.SetStateAction<string |File | null>>;
+  setDocumentFile: React.Dispatch<React.SetStateAction<string | File | null>>;
 };
 
 const MedReserveFormFields = ({
@@ -112,10 +112,7 @@ const MedReserveFormFields = ({
   }, [medInfo]);
   return (
     <div>
-      <Grid
-        overflow="hidden"
-        gutter={{ md: 24, base: 10 }}
-      >
+      <Grid overflow="hidden" gutter={{ md: 24, base: 10 }}>
         <GridCol span={{ base: 12, md: 8 }} className="space-y-4">
           {leftCard.map((item, index) => (
             <Fieldset key={index} legend={item.title} className="space-y-3">

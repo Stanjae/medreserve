@@ -12,4 +12,11 @@ export const QUERY_KEYS = {
     getAllUsers: "all-users",
     fetchUserForEdit: "fetch-user-for-edit",
   },
+  APPOINTMENTS: {
+    getMonthYearAppointments: "appointments-month-year",
+    searchForAppointments: "search-for-appointments-by-id",
+  },
+  HISTORY: {
+    getAllHistory: "all-history",
+  }
 };

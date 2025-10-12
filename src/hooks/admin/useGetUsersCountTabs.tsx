@@ -1,6 +1,5 @@
 'use client'
-
-import { getSpecificRoleUsersAndProfilesCountAction } from "@/lib/actions/adminActions";
+import { getSpecificRoleUsersAndProfilesCountAction } from "@/lib/actions/adminGetActions";
 import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
 import { useQuery } from "@tanstack/react-query";
 
