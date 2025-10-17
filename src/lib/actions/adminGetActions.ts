@@ -472,7 +472,7 @@ export const getAppointmentsSearchAndFilterAction = async (
     ];
 
     if (appointmentId) {
-      queryFilter.push(Query.equal("$id", appointmentId));
+      queryFilter.push(Query.search("$id", appointmentId));
     }
 
     if (bookingDate) {
