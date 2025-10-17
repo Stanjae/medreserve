@@ -7,7 +7,7 @@ import { columnsAppointment } from "../tables/ColumnsDef";
 import { AppointmentColumnsType } from "@/types/table.types";
 import { useMedStore } from "@/providers/med-provider";
 import useGetPatientAppointmentTable from "@/hooks/tables/useGetPatientAppointmentTable";
-import { appointmentTabsData, appointmentType, cancel_refundStatusFilter } from "@/constants";
+import { appointmentTabsData, appointmentTypeData, cancel_refundStatusFilter } from "@/constants";
 import { ActionIcon, Button, Menu, Paper } from "@mantine/core";
 import { CDropdown } from "../dropdown/CDropdown";
 import {
@@ -261,7 +261,7 @@ const AppointMentsTable = () => {
     drawerOpen();
   };
 
-  const filters = [{name:"appointmentType", placeholder:"Filter by type", items:[{ label: "All", value: "all" }, ...appointmentType]}];
+  const filters = [{name:"appointmentType", placeholder:"Filter by type", items:[{ label: "All", value: "all" }, ...appointmentTypeData]}];
   return (
     <Paper p={20} radius="lg" shadow="md">
       <MedReverseTabs tabs={newTabs} />
