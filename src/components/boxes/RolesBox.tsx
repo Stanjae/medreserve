@@ -135,7 +135,7 @@ const RolesBox = () => {
     close();
   };
 
-  const resolvedPermissions = defaultkeys?.map((item, index) => {
+  const resolvedPermissions = defaultkeys?.map((item: string, index: number) => {
     const newRef = data?.[active]?.permissions[item];
     const total = newRef.length;
     const newActive = newRef.filter(
