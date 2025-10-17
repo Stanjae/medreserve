@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 type Props = {
-  pageType: 'content' | 'page'
+  pageType?: 'content' | 'page'
   errorCode?: '404' | '500'
 }
 
