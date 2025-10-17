@@ -8,7 +8,7 @@ type EmptyStateProps = {
   iconColor?: string;
   iconSize?: number;
   Button?: React.ReactNode;
-  minHeight?: number;
+  minHeight?: string;
   showPaper?: boolean;
 };
 
@@ -19,7 +19,7 @@ const EmptyState = ({
   iconColor = "#6b7280",
   iconSize = 48,
   Button,
-  minHeight = 200,
+  minHeight = '200px',
   showPaper = true,
 }:EmptyStateProps) => {
 
@@ -30,7 +30,7 @@ const EmptyState = ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: `${minHeight}px`,
+    minHeight: `${minHeight}`,
     padding: showPaper ? "2rem" : "1rem",
     ...(showPaper && {
       backgroundColor: "#ffffff",

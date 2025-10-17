@@ -2,13 +2,13 @@
 import { Badge, Divider, Group, Indicator, Paper } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import React, { useState } from "react";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../../inputs/CustomInput";
 import { getAllAppointmentsActionWithinYearAndMonthResponse } from "@/types";
 import { timeStringtoHoursAndMinutes } from "@/utils/utilsFn";
 import { daysOfWeek, monthsOfYear, statusConfig } from "@/constants";
-import CustomModal from "../modals/CustomModal";
+import CustomModal from "../../modals/CustomModal";
 import { useDisclosure } from "@mantine/hooks";
-import AppointmentDetailCard from "../cards/AppointmentDetailCard";
+import AppointmentDetailCard from "../../cards/AppointmentDetailCard";
 
 type Props = {
   currentDate: Date;
@@ -168,7 +168,7 @@ const MedReserveCalendar = ({ currentDate, setCurrentDate, data }: Props) => {
                         const IconDay = statusOfAppointment.icon;
                         return (
                           <Badge
-                                leftSection={<IconDay className="w-4 h-4" />}
+                            leftSection={<IconDay className="w-4 h-4" />}
                             className="cursor-pointer"
                             fullWidth
                             color={statusOfAppointment.color}
@@ -203,7 +203,13 @@ const MedReserveCalendar = ({ currentDate, setCurrentDate, data }: Props) => {
           </p>
         </div>
       </Paper>
-      <CustomModal size={'lg'} opened={opened} onClose={close} title="Appointment Details"centered >
+      <CustomModal
+        size={"lg"}
+        opened={opened}
+        onClose={close}
+        title="Appointment Details"
+        centered
+      >
         <AppointmentDetailCard data={selectedAppointment} onClose={close} />
       </CustomModal>
     </div>

@@ -11,7 +11,6 @@ import {
   Button,
   Divider,
   Indicator,
-  MenuDivider,
   MenuDropdown,
   MenuItem,
 } from "@mantine/core";
@@ -25,7 +24,6 @@ import {
   IconMapPin,
   IconPhone,
   IconStethoscope,
-  IconTrash,
   IconUser,
 } from "@tabler/icons-react";
 import { CDropdown } from "../dropdown/CDropdown";
@@ -90,10 +88,6 @@ const SearchAppointmentCard = ({ appointment }: Props) => {
                 href={`${absolutePathname}${appointment.$id}/reschedule`}
               >
                 Reschedule
-              </MenuItem>
-              <MenuDivider />
-              <MenuItem color="red" leftSection={<IconTrash size={16} />}>
-                Cancel Appointment
               </MenuItem>
             </MenuDropdown>
           </CDropdown>

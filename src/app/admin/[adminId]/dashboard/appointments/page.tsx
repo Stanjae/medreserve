@@ -1,4 +1,4 @@
-import AdminAppointmentsBox from "@/components/boxes/AdminAppointmentsBox";
+import AdminAppointmentsBox from "@/components/boxes/AdminCalendarBox";
 const Page = () => {
   return (
     <div>

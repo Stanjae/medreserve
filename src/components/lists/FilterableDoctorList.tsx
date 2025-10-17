@@ -5,6 +5,7 @@ import BookDoctorCard from '../cards/BookDoctorCard';
 import { toast } from 'sonner';
 import CustomPagination from '../pagination/CustomPagination';
 import MedReserveLoader from '../loaders/MedReserveLoader';
+import EmptyState from '../boxes/EmptyBox';
 
 const FilterableDoctorList = () => {
   const { data, error, isLoading, isPlaceholderData, isSuccess, isFetching } = useGetDoctorsFilterQuery();
@@ -12,6 +13,8 @@ const FilterableDoctorList = () => {
   useEffect(() => {
     if (error) toast.error(error?.message);
   }, [error]);
+
+    if(data?.project?.length === 0) return <EmptyState minHeight="50vh" showPaper={false} title="No appointments found" description="Be the first to schdule an appointment" />
 
   return (
     <div>

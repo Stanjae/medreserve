@@ -15,8 +15,10 @@ import { userRoles } from "@/constants";
 import {
   getAllAppointmentsActionWithinYearAndMonthResponse,
   ModifiedHistoryResponseForAppointments,
+  searchAppointmentDetailsResponse,
   searchAppointmentsResponse,
 } from "@/types";
+import { getDocumentHistory } from "./getActions";
 export async function getAllUsers(
   tab: SignupTabsType,
   dateRange: [string | null, string | null]
@@ -404,19 +406,12 @@ export const getUserForEditAction = async (role: ROLES, userId: string) => {
   }
 };
 
-export const getDocumentHistory = async (
+export const getAppointmentDocumentHistory = async (
   documentId: string
 ): Promise<ModifiedHistoryResponseForAppointments[]> => {
   try {
-    const { database, users } = await createAdminClient();
-    const response = await database.listDocuments(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_HISTORY_ID!,
-      [
-        Query.equal("relatedEntityId", documentId),
-        Query.orderDesc("$createdAt"),
-      ]
-    );
+    const { users } = await createAdminClient();
+  const response = await getDocumentHistory(documentId);
     const result = response.documents.map(async (item) => {
       const user = await users.get(item.userId);
       return {
@@ -435,7 +430,6 @@ export const getDocumentHistory = async (
   }
 };
 
-//appointments
 export const getAppointmentsSearchAndFilterAction = async (
   appointmentId: string | null | undefined,
   bookingDate: string,
@@ -499,6 +493,49 @@ export const getAppointmentsSearchAndFilterAction = async (
       total: response.total,
       hasMore: response?.total > LIMIT * page,
     };
+  } catch (err) {
+    throw new Error(`${err}`);
+  }
+};
+
+export const getAppointmentDetailsAction = async (appointmentId: string) => {
+  try {
+     const selectFields = Query.select([
+       "$id",
+       "bookingDate",
+       "status",
+       "patientId.fullname",
+       "patientId.profilePicture",
+       "patientId.phone",
+       "patientId.email",
+       "patientId.userId",
+       "patientId.gender",
+       "patientId.birthDate",
+       "patientId.bloodGroup",
+       "patientId.address",
+       "startTime",
+       "endTime",
+       "doctorId.fullname",
+       "doctorId.profilePicture",
+       "doctorId.specialization",
+       "doctorId.userId",
+       "doctorId.email",
+       "doctorId.phone",
+       "reason",
+       "appointmentType",
+       "didPatientSeeDoctor",
+       "paymentId.*"
+     ]);
+    const { database } = await createAdminClient();
+    const response = await database.getDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      appointmentId,
+      [selectFields]
+    );
+
+    const historyResponse = await getAppointmentDocumentHistory(appointmentId);
+    return {...response, history: historyResponse} as unknown as searchAppointmentDetailsResponse;
   } catch (err) {
     throw new Error(`${err}`);
   }

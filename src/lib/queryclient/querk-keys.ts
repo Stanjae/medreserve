@@ -15,8 +15,9 @@ export const QUERY_KEYS = {
   APPOINTMENTS: {
     getMonthYearAppointments: "appointments-month-year",
     searchForAppointments: "search-for-appointments-by-id",
+    getAdminAppointmentDetail: "get-admin-appointment-detail",
   },
   HISTORY: {
     getAllHistory: "all-history",
-  }
+  },
 };

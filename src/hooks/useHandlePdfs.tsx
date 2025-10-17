@@ -5,16 +5,14 @@ import JSZip from "jszip";
 import { JSX } from "react";
 import { toast } from "sonner";
 
-const GeneratePdfButton = ({
+const useHandlePdfs = ({
   PdfElement,
   email,
   patientName,
   doctorName,
   appointmentDate,
   appointmentTime,
-  trigger,
 }: {
-  trigger: JSX.Element;
   patientName: string;
   doctorName: string;
   appointmentDate: string;
@@ -22,27 +20,26 @@ const GeneratePdfButton = ({
   email: string;
   PdfElement: JSX.Element;
 }) => {
-  const generatePdf = async () => {
+  const generatePdf = async (fileType:'pdf'|'zip', fileName: string) => {
     try {
       const pdfBlobs = await generatePdfBlob();
-      await createAndDownloadZip(pdfBlobs);
-      await sendPdfEmail(pdfBlobs);
+      await createAndDownloadZip(pdfBlobs, fileType, fileName);
     } catch (error) {
       console.error("Error generating PDFs:", error);
     }
   };
 
-  const generatePdfBlob = async () => {
+  async function generatePdfBlob() {
     const blob = await pdf(PdfElement).toBlob();
     return blob;
   };
 
-  async function sendPdfEmail(newBlob: Blob) {
+  async function sendPdfEmail(endpoint: string) {
     try {
-      // Convert Blob to base64 string
-      const base64 = await blobToBase64(newBlob);
+       const pdfBlobs = await generatePdfBlob();
+      const base64 = await blobToBase64(pdfBlobs);
 
-      const response = await fetch("/api/medreserve/send-pdf-email", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -73,25 +70,22 @@ const GeneratePdfButton = ({
       reader.readAsDataURL(blob);
     });
 
-  async function createAndDownloadZip(pdfBlobs: Blob) {
+  async function createAndDownloadZip(pdfBlobs: Blob, fileType:'pdf'|'zip', fileName: string) {
     const zip = new JSZip();
     const agent_name = "Medreserve"; // This can be dynamic for different PDFs.
     const blob = pdfBlobs;
     zip.file(`${agent_name}-${Date.now()}.pdf`, blob);
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    saveAs(zipBlob, "receipt.zip");
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      if (fileType === 'pdf') {
+        saveAs(blob, `${fileName}.pdf`);
+      } else {
+           saveAs(zipBlob, `${fileName}.zip`);
+      }
+   
   }
 
-  return (
-    <div
-      onClick={(e) => {
-        e.stopPropagation();
-        generatePdf();
-      }}
-    >
-      {trigger}
-    </div>
-  );
+  return { generatePdf, sendPdfEmail };
+
 };
 
-export default GeneratePdfButton;
+export default useHandlePdfs;

@@ -1,4 +1,4 @@
-import MedReserveBreadCrumbs from "@/components/breadcrumbs/MedReserveBreadCrumbs";
+import MedReserveBreadCrumbs from "@/components/atoms/breadcrumbs/MedReserveBreadCrumbs";
 import Footer from "@/components/footer/Footer";
 import PageHeaders from "@/components/headers/PageHeaders";
 import MainNavbar from "@/components/navbar/MainNavbar";

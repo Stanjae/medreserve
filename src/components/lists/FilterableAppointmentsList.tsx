@@ -22,7 +22,7 @@ const FilterableAppointmentList = () => {
       </div>
     );
   
-  if(data?.project?.length === 0) return <EmptyState title="No appointments found" description="No appointments found" />
+  if(data?.project?.length === 0) return <EmptyState minHeight="50vh" showPaper={false} title="No appointments found" description="Be the first to look for an appointment" />
   
   return (
     <div className="space-y-7">

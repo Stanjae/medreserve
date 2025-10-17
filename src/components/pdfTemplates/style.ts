@@ -118,4 +118,28 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
+
+  //for details page
+  infoCard: {
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    border: "1px solid #e5e7eb",
+    padding: "16px",
+  },
+  infoCardFlex: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "16px",
+  },
+  infoCardTitle: {
+    fontSize: "16px",
+    fontWeight: 600,
+    lineHeight: "24px",
+    color: "#283779",
+  },
 });
+
+
+
+

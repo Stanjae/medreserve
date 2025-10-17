@@ -31,9 +31,9 @@ import { parseResponse } from "@/utils/utilsFn";
 import Link from "next/link";
 import { useMedStore } from "@/providers/med-provider";
 import useHandleAppointmentsByAdmin from "@/hooks/admin/useHandleAppointmentsByAdmin";
-import useGetDocumentHistory from "@/hooks/admin/useGetDocumentHistory";
 import MedReserveLoader from "../loaders/MedReserveLoader";
 import dayjs from "dayjs";
+import useGetAppointmentDocumentsHistory from "@/hooks/admin/useGetDocumentHistory";
 
 type Props = {
   data: getAllAppointmentsActionWithinYearAndMonthResponse | null;
@@ -65,7 +65,7 @@ export default function AppointmentDetailCard({ data, onClose }: Props) {
     },
   } = useHandleAppointmentsByAdmin();
 
-  const { data: historyData, isLoading } = useGetDocumentHistory(
+  const { data: historyData, isLoading } = useGetAppointmentDocumentsHistory(
     data?.id as string
   );
 
@@ -413,7 +413,7 @@ export default function AppointmentDetailCard({ data, onClose }: Props) {
               leftSection={<IconLink size={14} />}
               variant="light"
               component={Link}
-              href={`/admin/${credentials?.userId}/dashboard/appointments/${data?.id}`}
+              href={`/admin/${credentials?.userId}/dashboard/appointments/${data?.id}/details`}
             >
               View More
             </Button>

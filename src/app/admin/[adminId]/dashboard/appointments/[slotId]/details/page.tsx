@@ -1,13 +1,12 @@
-import AppoinmentDetailPage from "@/components/boxes/AppoinmentDetailPage";
+import AppoinmentDetailPage from "@/components/boxes/AdminAppoinmentDetailPage";
 
-export const dynamic = "force-dynamic";
-
-const page = () => {
+const Page = async({ params }: { params: Promise<{ slotId: string }> }) => {
+    const { slotId } = await params;
   return (
     <div>
-      <AppoinmentDetailPage />
+          <AppoinmentDetailPage slotId={slotId} />
     </div>
   );
 };
 
-export default page;
+export default Page;

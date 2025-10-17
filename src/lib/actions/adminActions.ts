@@ -10,7 +10,7 @@ import { ID, Query } from "node-appwrite";
 import { DefaultRoles, ModifiedRoles } from "../../../types/appwrite";
 import { ROLES } from "@/types/store.types";
 import { createHistory } from "./actions";
-import { updateAppointmentAdminParams } from "@/types";
+import { cancellationActionData, TpatientCheckinActionData, updateAppointmentAdminParams } from "@/types";
 
 export async function updateUserStatusAction(
   userId: string,
@@ -505,6 +505,69 @@ export async function deleteAdminAppointmentAction(
       code: 200,
       status: "success",
       message: "Appointment deleted successfully",
+    };
+  } catch (err) {
+    return { code: 500, status: "error", message: `${err}` };
+  }
+};
+
+
+export async function cancelAdminAppointmentAction(
+  uniqueID: string,
+  userId: string,
+  data: cancellationActionData
+) {
+  try {
+    const { database } = await createAdminClient();
+    await database.updateDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      uniqueID,
+      data
+    );
+    await createHistory({
+      action: "update",
+      relatedEntityType: "appointments",
+      relatedEntityId: uniqueID,
+      description: `Appointment was cancelled by`,
+      userId,
+    });
+    return {
+      code: 200,
+      status: "success",
+      message: `Appointment cancelled successfully`,
+    };
+  } catch (err) {
+    return { code: 500, status: "error", message: `${err}` };
+  }
+}
+
+
+export async function patientCheckinForAppointmentAction(
+  uniqueID: string,
+  userId: string,
+  data: TpatientCheckinActionData
+) {
+  try {
+    const { database } = await createAdminClient();
+    await database.updateDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      uniqueID,
+      data
+    );
+    await createHistory({
+      action: "update",
+      relatedEntityType: "appointments",
+      relatedEntityId: uniqueID,
+      description: `Patient was cheked in by`,
+      userId,
+    });
+    return {
+      code: 200,
+      didPatientSeeDoctor: data.didPatientSeeDoctor,
+      status: "success",
+      message: `Patient ${data.didPatientSeeDoctor ? '' : 'did not'} checked in successfully for the appointment`,
     };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };

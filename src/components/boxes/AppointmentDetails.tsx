@@ -1,5 +1,5 @@
 "use client";
-import { cancel_refundStatusFilter, refundTextStatusInfo,   refundTextStatusInfo2,   statusConfig } from "@/constants";
+import { cancel_refundStatusFilter, durationOfVisit, refundTextStatusInfo,   refundTextStatusInfo2,   statusConfig } from "@/constants";
 import { AppointmentColumnsType } from "@/types/table.types";
 import {
   checkDateTimeDifferenceFromNow,
@@ -163,7 +163,7 @@ const AppointmentDetails = ({ row }: Props) => {
 
             <Group justify="space-between">
               <Text c="m-gray">Duration</Text>
-              <Text>1 H</Text>
+              <Text>{ durationOfVisit}</Text>
             </Group>
 
             <Group justify="space-between">

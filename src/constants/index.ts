@@ -415,3 +415,5 @@ export const userAccountStatus = [
   { label: "Active", value: "active" },
   { label: "Suspended", value: "suspended" },
 ];  
+
+export const durationOfVisit = "1 hour";

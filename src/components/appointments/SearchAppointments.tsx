@@ -75,7 +75,6 @@ const SearchAppointments = () => {
             onChange={(event) => setAppointmentId(event.currentTarget.value)}
             placeholder="Search by ID"
             styles={{
-              //root: { flexShrink: 1, flexBasis: "0%", flexGrow: 1, width:'100%' },
               input: {
                 border: "1px solid cyan",
               },

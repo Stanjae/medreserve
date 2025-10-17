@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import MedReserveCalendar from "../calendar/MedReserveCalendar";
+import MedReserveCalendar from "../organisms/calendar/MedReserveCalendar";
 import useGetMonthYearAppointments from "@/hooks/admin/useGetMonthYearAppointments";
 import { LoadingOverlay } from "@mantine/core";
 

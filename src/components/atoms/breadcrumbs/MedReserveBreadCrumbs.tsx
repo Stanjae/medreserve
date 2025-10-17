@@ -9,10 +9,12 @@ const MedReserveBreadCrumbs = () => {
 
   const newbreadCrumbs = pathname.split("/").map((slug, index, array) => {
     const href = "/" + array.slice(1, index + 1).join("/");
-
-
     return (
-      <Anchor href={href} key={index} className={` ${href == pathname ? "text-primary" : "text-secondary"} text-sm font-bold leading-[17.5px] capitalize no-underline`}>
+      <Anchor
+        href={href}
+        key={index}
+        className={` ${href == pathname ? "text-primary" : "text-secondary"} text-sm font-bold leading-[17.5px] capitalize no-underline`}
+      >
         {slug == "" ? "Home" : slug.replace("/", "")}
       </Anchor>
     );

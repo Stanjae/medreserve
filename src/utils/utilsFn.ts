@@ -46,7 +46,6 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(IsBetween);
 
-
 export const parseResponse = (response: string) =>
   response.replace(/[_-]/g, " ");
 
@@ -257,8 +256,12 @@ export function getAMPWAT(timeString: string) {
   return formatted;
 }
 
-export const getTimeFromNow = (dateTimeString: string) =>
-  dayjs(dateTimeString).fromNow();
+export const getTimeFromNow = (dateTimeString: string, status = false) => {
+  if (status) {
+    return dayjs(dateTimeString).fromNow(status);
+  }
+  return dayjs(dateTimeString).fromNow();
+};
 
 export function convertToCurrency(amount: number): string {
   const formatter = new Intl.NumberFormat("en-US", {
@@ -617,17 +620,23 @@ export const rectifyRightCardFields = (
 export const timeStringtoHoursAndMinutes = (time: string) =>
   dayjs(time, "HH:mm:ss").format("HH:mm");
 
-
 export const getAppointmentLocation = (location: string) => {
   let locationName;
-  if (location.endsWith('ist')) {
-    locationName = location.replace('ist', 'y');
-  }else if(location.endsWith('on')) {
-    locationName = location.replace('on', 'ry');
-  }else {
+  if (location.endsWith("ist")) {
+    locationName = location.replace("ist", "y");
+  } else if (location.endsWith("on")) {
+    locationName = location.replace("on", "ry");
+  } else {
     locationName = location;
   }
   locationName = parseResponse(locationName);
 
-  return `Room A, ${capitalizeFirst(locationName)} Wing`
+  return `Room A, ${capitalizeFirst(locationName)} Wing`;
+};
+
+export function formatCurrency(amount: number, currency = "NGN") {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: currency,
+  }).format(amount);
 }

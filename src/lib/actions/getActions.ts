@@ -2,7 +2,7 @@
 "use server";
 import { createAdminClient } from "@/appwrite/appwrite";
 import { Query } from "node-appwrite";
-import { Doctor, Payment } from "../../../types/appwrite";
+import { Doctor, ModifiedHistory, Payment } from "../../../types/appwrite";
 import {
   DoctorReviewsResponse,
   getDashboardBarchartAnalyticsType,
@@ -593,4 +593,23 @@ export async function getDoctorReviews(
     patientName: review?.patientId?.fullname,
     patientOccupation: review?.patientId?.occupation
   }));
+}
+
+export const getDocumentHistory = async (
+  documentId: string
+): Promise<{documents:ModifiedHistory[], total: number}> => {
+  try {
+    const { database} = await createAdminClient();
+    const response = await database.listDocuments(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_HISTORY_ID!,
+      [
+        Query.equal("relatedEntityId", documentId),
+        Query.orderDesc("$createdAt"),
+      ])
+    return response as {documents:ModifiedHistory[], total: number};
+    }catch (error) {
+    console.log(error);
+    return {documents: [], total: 0};
+  }
 }

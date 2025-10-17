@@ -1,4 +1,6 @@
+import { Payment } from "../../types/appwrite";
 import { AppointmentStatus } from "./actions.types";
+import { ModifiedHistoryResponseForAppointments } from "./history.types";
 
 export type getAllAppointmentsActionWithinYearAndMonthResponse = {
   startTime: string;
@@ -46,5 +48,50 @@ export type searchAppointmentsResponse = updateAppointmentAdminParams & {
     email: string;
   };
   reason: string;
-  appointmentType: string;  
-}
+  appointmentType: string;
+};
+
+export type searchAppointmentDetailsResponse = updateAppointmentAdminParams & {
+  $id: string;
+  $createdAt: string;
+  doctorId: {
+    fullname: string;
+    profilePicture: string;
+    userId: string;
+    specialization: string;
+    phone: string;
+    email: string;
+  };
+  patientId: {
+    fullname: string;
+    profilePicture: string;
+    userId: string;
+    phone: string;
+    email: string;
+    gender: string;
+    birthDate: string;
+    bloodGroup: string;
+    address: string;
+  };
+  reason: string;
+  didPatientSeeDoctor: boolean;
+  appointmentType: string;
+  paymentId: Payment[];
+  history: ModifiedHistoryResponseForAppointments[]
+};
+
+export type cancellationActionParams = {
+  appointmentId: string;
+  userId: string;
+  data:cancellationActionData
+};
+
+export type cancellationActionData = {
+  reasonForCancellationByAdmin: string;
+  status: AppointmentStatus
+};
+
+export type TpatientCheckinActionData = {
+ didPatientSeeDoctor: boolean;
+};
+
