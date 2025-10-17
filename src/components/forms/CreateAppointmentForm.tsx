@@ -36,7 +36,7 @@ import useCheckIfUserBookedASlot from "@/hooks/useCheckIfUserBookedASlot";
 import Link from "next/link";
 import CustomCancelBtn from "../CButton/CustomCancelBtn";
 import dayjs from "dayjs";
-import { appointmentType } from "@/constants";
+import { appointmentTypeData } from "@/constants";
 
 export const scaleY = {
   in: { opacity: 1, transform: "scaleY(1)" },
@@ -264,7 +264,7 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
                   size="md"
                   radius={35}
                   type="select"
-                  data={appointmentType}
+                  data={appointmentTypeData}
                   placeholder="Select Type of Appointment"
                   label="Type of Appointment"
                   key={form.key("appointmentType")}
