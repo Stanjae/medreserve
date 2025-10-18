@@ -58,7 +58,7 @@ const CustomInput = (props: INPUTFORMPROPS) => {
 
           {props.file && (
             <Text size="sm" className=" truncate" ta="center" mt="sm">
-              Picked file: {props?.file?.name}
+              Picked file: {props.file instanceof File ? props?.file?.name : ''}
             </Text>
           )}
         </div>

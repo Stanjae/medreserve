@@ -69,7 +69,7 @@ const EditUserForm = ({ userId }: Props) => {
     deleteProfile: { mutateAsync: deleteMutateAsync },
   } = useHandleEditProfile();
 
-  const [file, setFile] = useState<File | string | null>(null);
+  const [file, setFile] = useState<File | null | string>(null);
   const [documentFile, setDocumentFile] = useState<File | string | null>(null);
   const {
     data,

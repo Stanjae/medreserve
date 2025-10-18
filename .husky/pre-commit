@@ -1,0 +1,15 @@
+echo "🔍 Running pre-commit checks..."
+
+# Run lint-staged (tests only affected files)
+npx lint-staged
+
+# Optional: Type checking
+echo "📝 Type checking..."
+npx tsc --noEmit
+
+if [ $? -eq 0 ]; then
+  echo "✅ All checks passed!"
+else
+  echo "❌ Pre-commit checks failed!"
+  exit 1
+fi

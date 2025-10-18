@@ -36,7 +36,7 @@ type CTimepicker = TimePickerProps & {
 type CFileInput = {
   type: "fileInput";
   setFile: React.Dispatch<React.SetStateAction<File | null>>;
-  file: File | null;
+  file: File | null | string;
   allowPicture?: boolean;
   label?: string;
 };

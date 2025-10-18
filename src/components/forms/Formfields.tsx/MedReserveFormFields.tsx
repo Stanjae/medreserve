@@ -70,7 +70,7 @@ type Props = {
   submitBtnLoading: boolean;
   submitBtnAction: () => void;
   handleDeleteUser?: () => void;
-  file: string | File | null;
+  file: File | string |null;
   setFile: React.Dispatch<React.SetStateAction<string | File | null>>;
   documentFile: string | File | null;
   setDocumentFile: React.Dispatch<React.SetStateAction<string | File | null>>;

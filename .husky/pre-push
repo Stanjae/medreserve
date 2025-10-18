@@ -1,0 +1,11 @@
+
+echo "🧪 Running full test suite before push..."
+
+npm test -- --ci
+
+if [ $? -eq 0 ]; then
+  echo "✅ All tests passed! Pushing..."
+else
+  echo "❌ Tests failed! Fix them before pushing."
+  exit 1
+fi
