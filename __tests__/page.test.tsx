@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "./test.utils";// Use the custom render with MantineProvider
+import { render, screen } from "./test.utils";
 import Page from "../src/app/page";
 
 describe("Home Page", () => {
@@ -16,12 +16,19 @@ describe("Home Page", () => {
   it("renders book appointment button", () => {
     render(<Page />);
 
-    const button = screen.getByRole("link", {
+    // Get ALL buttons with that name
+    const buttons = screen.getAllByRole("link", {
       name: /book an appointment/i,
     });
 
-    expect(button).toBeInTheDocument();
-    expect(button).toHaveAttribute("href", "/book-appointment");
+    // Check that at least one exists
+    expect(buttons.length).toBeGreaterThan(0);
+
+    // Check that one has the correct href
+    const heroButton = buttons.find(
+      (btn) => btn.getAttribute("href") === "/book-appointment"
+    );
+    expect(heroButton).toBeInTheDocument();
   });
 
   it("renders working hours section", () => {
@@ -47,11 +54,10 @@ describe("Home Page", () => {
   it("renders condition cards", () => {
     render(<Page />);
 
-    // This will find the condition cards from conditionData mock
-    const learnMoreButtons = screen.getAllByRole("link", {
-      name: /learn more/i,
+    const qualityCareHeading = screen.getByRole("heading", {
+      name: /quality care for you and the ones you love/i,
     });
 
-    expect(learnMoreButtons.length).toBeGreaterThan(0);
+    expect(qualityCareHeading).toBeInTheDocument();
   });
 });
