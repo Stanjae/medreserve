@@ -45,7 +45,7 @@ export const initialPatientProfile = {
   phone: "",
   occupation: "",
   address: "",
-  gender: "",
+  gender: "" as Gender,
   emergencyContactName: "",
   emergencyContactNumber: "",
   birthDate: "",
