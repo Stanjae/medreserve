@@ -43,7 +43,7 @@ const useCancelAppointment = (status?: refundStatus | undefined) => {
         toast.error(response.message);
         return;
       }
-      toast.success("Appointment cancellation successful!");
+      toast.success(response.message);
       setShowProcessing(true);
       await simulateProcessing();
     } catch (error) {

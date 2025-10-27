@@ -496,7 +496,7 @@ export const createCancellationAction = async (
     return {
       code: 201,
       status: "success",
-      message: "Appointment Paid and Completed successfully",
+      message: "Appointment cancellation successful!",
     };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };
