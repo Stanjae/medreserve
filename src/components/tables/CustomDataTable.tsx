@@ -1,11 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+ 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, {
-  useEffect,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import {
   ColumnDef,
@@ -20,10 +16,17 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
-import { ComboboxData, Flex, Pagination, Skeleton, Space, Table } from "@mantine/core";
-import CustomInput from "../inputs/CustomInput";
+import {
+  ComboboxData,
+  Flex,
+  Pagination,
+  Skeleton,
+  Space,
+  Table,
+} from "@mantine/core";
+import CustomInput from "../molecules/inputs/CustomInput";
 import { IconSearch } from "@tabler/icons-react";
-import CustomDateRangeFilter from "../filters/CustomDateRangeFilter";
+import CustomDateRangeFilter from "../molecules/filters/CustomDateRangeFilter";
 
 declare module "@tanstack/react-table" {
   //add fuzzy filter to the filterFns
@@ -58,7 +61,11 @@ export type GenericTableProps<T> = {
   refetchData?: () => void;
   total: number;
   limit: number;
-  filterList?: { name: string; placeholder: string; items: ComboboxData | undefined }[];
+  filterList?: {
+    name: string;
+    placeholder: string;
+    items: ComboboxData | undefined;
+  }[];
   isLoading?: boolean;
   handleRowClick?: (row: T) => void;
   onTableInstanceChange?: (instance: any) => void;
@@ -70,7 +77,7 @@ export function CustomDataTable<T>({
   handleRowClick,
   placeHolder,
   columns,
-  data,// Fixed: provide default value properly
+  data, // Fixed: provide default value properly
   limit,
   total,
   filterList,
@@ -90,7 +97,7 @@ export function CustomDataTable<T>({
 
   // Memoize table instance to prevent unnecessary re-renders
   const table = useReactTable({
-    data: data  ?? fallbackData, // Ensure data is never undefined
+    data: data ?? fallbackData, // Ensure data is never undefined
     columns,
     filterFns: {
       fuzzy: fuzzyFilter,
@@ -122,10 +129,9 @@ export function CustomDataTable<T>({
     setGlobalFilter(e);
   }, 300);
 
-
   const handleFilterChange = (columnId: string, value: string | null) => {
-    setColumnFilters(prev => {
-      const filtered = prev.filter(filter => filter.id !== columnId);
+    setColumnFilters((prev) => {
+      const filtered = prev.filter((filter) => filter.id !== columnId);
       if (value && value !== "all" && value !== null && value !== undefined) {
         filtered.push({ id: columnId, value });
       }
@@ -173,21 +179,22 @@ export function CustomDataTable<T>({
     [handleRowClick]
   );
 
-  const filterComponent = 
-          <div className="flex gap-2 justify-end">
-            {filterList?.map((opp, index) => (
-              <CustomInput
-                key={index}
-              type="select"
-              placeholder={opp.placeholder}
-              size="md"
-              radius="xl"
-              data={opp.items}
-                data-column-id={opp.name}
-                onChange={(_, option)=> handleFilterChange(opp.name, option.value)}
-            />
-            ))}
-          </div>
+  const filterComponent = (
+    <div className="flex gap-2 justify-end">
+      {filterList?.map((opp, index) => (
+        <CustomInput
+          key={index}
+          type="select"
+          placeholder={opp.placeholder}
+          size="md"
+          radius="xl"
+          data={opp.items}
+          data-column-id={opp.name}
+          onChange={(_, option) => handleFilterChange(opp.name, option.value)}
+        />
+      ))}
+    </div>
+  );
 
   return (
     <div className="p-2">
@@ -205,7 +212,7 @@ export function CustomDataTable<T>({
           radius="xl"
         />
         <div className="flex gap-2 items-center">
-         {filterComponent && filterComponent}
+          {filterComponent && filterComponent}
           {setNewDateRange && (
             <CustomDateRangeFilter
               setNewDateRange={setNewDateRange}

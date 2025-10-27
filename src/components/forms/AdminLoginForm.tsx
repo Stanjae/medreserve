@@ -2,7 +2,7 @@
 import { Box, PinInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import React, { useEffect } from "react";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import SubmitBtn from "../CButton/SubmitBtn";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { AdminLoginSchema } from "@/lib/schema/zod";
@@ -11,7 +11,8 @@ import useAdminLogin from "@/hooks/useAdminLogin";
 import { useHash } from "@/hooks/useHash";
 
 const AdminLoginForm = () => {
-  const { loginAdmin , isOtpActive, handleOtpVerificationAdmin} = useAdminLogin();
+  const { loginAdmin, isOtpActive, handleOtpVerificationAdmin } =
+    useAdminLogin();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -75,7 +76,13 @@ const AdminLoginForm = () => {
         </Box>
       ) : (
         <Box className="flex flex-col  gap-3 justify-center items-center">
-          <PinInput type={"number"} size="lg" onComplete={async(value) => await handleOtpVerificationAdmin(form.values, value)} />
+          <PinInput
+            type={"number"}
+            size="lg"
+            onComplete={async (value) =>
+              await handleOtpVerificationAdmin(form.values, value)
+            }
+          />
           <CountdownTimer data={form.values} isOtpActive={isOtpActive} />
         </Box>
       )}

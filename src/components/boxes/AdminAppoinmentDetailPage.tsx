@@ -58,6 +58,7 @@ import MedReserveLoader from "../loaders/MedReserveLoader";
 import MedReserveSwitch from "../atoms/Buttons/MedReserveSwitch";
 import { CDropdown } from "../dropdown/CDropdown";
 import MedReserveButton from "../atoms/Buttons/MedReserveButton";
+import ConfirmationModal from "../modals/ConfirmationModal";
 
 type Props = {
   slotId: string;
@@ -66,6 +67,11 @@ const AppoinmentDetailPage = ({ slotId }: Props) => {
   const { data, isLoading } = useAdminGetAppointmentDetail(slotId);
 
   const [showCancelModal, { close, open }] = useDisclosure(false);
+
+  const [
+    openedMarkAsCompletedModal,
+    { close: closeMarkAsCompleted, open: openMarkAsCompleted },
+  ] = useDisclosure(false);
 
   const { credentials } = useMedStore((store) => store);
 
@@ -81,8 +87,11 @@ const AppoinmentDetailPage = ({ slotId }: Props) => {
     PdfElement: <AppointmentDetailPagePdf data={data} />,
   });
 
-  const { cancelAppointment, patientCheckinForAppointment } =
-    useHandleAppointmentsByAdmin();
+  const {
+    cancelAppointment,
+    patientCheckinForAppointment,
+    markAsCompletedAppointment,
+  } = useHandleAppointmentsByAdmin();
 
   const handlePrint = () => {
     window.print();
@@ -160,6 +169,14 @@ const AppoinmentDetailPage = ({ slotId }: Props) => {
     });
   };
 
+  const handleMarkAsCompleted = async () => {
+    await markAsCompletedAppointment.mutateAsync({
+      userId: credentials?.userId as string,
+      appointmentId: data?.$id as string,
+      status: "completed",
+    });
+  };
+
   if (isLoading)
     return (
       <div className=" flex justify-center items-center">
@@ -170,10 +187,15 @@ const AppoinmentDetailPage = ({ slotId }: Props) => {
   const getAppointmentActions = () => {
     const actions = [];
     if (approvedStatus.includes(data?.status as string)) {
-      if (isTodayBeforeDateTime(`${data?.bookingDate} ${data?.startTime}`, "minute")) {
+      if (
+        isTodayBeforeDateTime(
+          `${data?.bookingDate} ${data?.startTime}`,
+          "minute"
+        )
+      ) {
         actions.push({
           label: "Reschedule Appointment",
-          color:"m-blue",
+          color: "m-blue",
           icon: IconEdit,
           action: () =>
             router.push(`${pathName.replace("details", "")}reschedule`),
@@ -183,6 +205,18 @@ const AppoinmentDetailPage = ({ slotId }: Props) => {
           color: "red",
           icon: IconCancel,
           action: () => open(),
+        });
+      }
+
+      if (
+        data?.didPatientSeeDoctor &&
+        isTodayAfterDateTime(`${data?.bookingDate} ${data?.endTime}`, "minute")
+      ) {
+        actions.push({
+          label: "Mark as Completed",
+          color: "green",
+          icon: IconCheck,
+          action: () => openMarkAsCompleted(),
         });
       }
     }
@@ -621,6 +655,17 @@ const AppoinmentDetailPage = ({ slotId }: Props) => {
           </InfoCard>
         </Tabs.Panel>
       </Tabs>
+
+      {/* modals */}
+      <ConfirmationModal
+        btnText="Confirm"
+        close={closeMarkAsCompleted}
+        modalContent=" Do you want to mark this Appointment as Completed"
+        modalHeader="Mark as Completed"
+        opened={openedMarkAsCompletedModal}
+        fn={handleMarkAsCompleted}
+        loading={markAsCompletedAppointment.isPending}
+      />
     </div>
   );
 };

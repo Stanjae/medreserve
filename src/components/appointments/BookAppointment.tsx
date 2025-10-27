@@ -1,9 +1,9 @@
 "use client";
 import { ActionIcon, Box, Divider, Flex, Text } from "@mantine/core";
 import React, { useEffect, useState } from "react";
-import CustomFilters from "../filters/CustomFilters";
+import CustomFilters from "../molecules/filters/CustomFilters";
 import { doctorCategories } from "@/constants";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import SubmitBtn from "../CButton/SubmitBtn";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { IconSearch, IconX } from "@tabler/icons-react";
@@ -46,7 +46,7 @@ const BookAppointment = () => {
   }
 
   function clearSearch(key: string) {
-    if (key === "specialty") setSpecialty('');
+    if (key === "specialty") setSpecialty("");
     if (key === "capacity") setCapacity("");
     if (key === "date") setDate(dayjs().format("YYYY-MM-DD"));
     // Remove from URL

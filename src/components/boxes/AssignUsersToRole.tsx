@@ -3,7 +3,7 @@ import { Models } from "node-appwrite";
 import React from "react";
 import { ModifiedRoles } from "../../../types/appwrite";
 import { Button, Checkbox, Divider, Group, Paper } from "@mantine/core";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import { parseResponse } from "@/utils/utilsFn";
 import useHandleRoles from "@/hooks/admin/useHandleRoles";
 
@@ -32,8 +32,8 @@ const AssignUsersToRole = ({ roles, users }: Props) => {
       const prefs = users?.find((user) => user.$id === id)?.prefs;
       return { userId: id, prefs: { ...prefs, subRoleId: selectedRole } };
     });
-      await mutateAsync(role);
-      setSelectedRole(null);
+    await mutateAsync(role);
+    setSelectedRole(null);
   };
   return (
     <div>

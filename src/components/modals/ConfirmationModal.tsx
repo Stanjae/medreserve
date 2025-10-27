@@ -1,5 +1,5 @@
 "use client";
-import { Button, Group, Text } from "@mantine/core";
+import { Button, Divider, Group, Text } from "@mantine/core";
 import CustomModal from "./CustomModal";
 
 type Props = {
@@ -44,6 +44,7 @@ const ConfirmationModal = ({
       <Text c="m-gray" size="lg">
         {modalContent}
       </Text>
+      <Divider my="md" color="m-cyan" />
       <Group mt="xl" justify="flex-end">
         <Button
           variant="outline"

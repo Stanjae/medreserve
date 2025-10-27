@@ -1,7 +1,7 @@
 "use client";
 import { Grid, Paper } from "@mantine/core";
 import React from "react";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 
 /**
  * DetailDrawerCard

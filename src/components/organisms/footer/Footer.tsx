@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import {
   Box,
   Divider,
@@ -18,7 +18,7 @@ import Image from "next/image";
 import React from "react";
 import MedLogo from "../../../public/medreserve_logo.png";
 import { footerLinks } from "@/constants/urls";
-import SubscribeForm from "../forms/SubscribeForm";
+import SubscribeForm from "../../forms/SubscribeForm";
 
 const Footer = () => {
   return (

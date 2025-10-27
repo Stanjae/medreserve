@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import React, { useEffect, useState } from "react";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import dayjs from "dayjs";
 import {
   DateInputProps,
@@ -43,7 +43,7 @@ import { useRouter } from "next/navigation";
 import useNgaStates from "@/hooks/useNgaStates";
 import { simulateFetchNin } from "@/utils/utilsFn";
 import useGetUniversities from "@/hooks/useGetUniversities";
-import { CustomMultiSelectCheckbox } from "../inputs/CustomMultiSelect";
+import { CustomMultiSelectCheckbox } from "../molecules/inputs/CustomMultiSelect";
 import { useHash } from "@/hooks/useHash";
 import AwaitingVerification from "../boxes/AwaitingVerification";
 import { InitialDoctorProfile } from "@/constants/formInitialValues";

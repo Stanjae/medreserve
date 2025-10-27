@@ -1,7 +1,7 @@
 "use client";
 import { IconAlertCircle } from "@tabler/icons-react";
 import React, { useState } from "react";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import { Button, Group } from "@mantine/core";
 
 type Props = {
@@ -11,7 +11,12 @@ type Props = {
   onSubmit: (data: string) => void;
 };
 
-const CancelAppointmentCard = ({ label, description, onClose, onSubmit }: Props) => {
+const CancelAppointmentCard = ({
+  label,
+  description,
+  onClose,
+  onSubmit,
+}: Props) => {
   const [text, setText] = useState("");
 
   const handleSubmit = () => {
@@ -39,7 +44,9 @@ const CancelAppointmentCard = ({ label, description, onClose, onSubmit }: Props)
           <Button onClick={onClose} color="m-blue">
             Keep Appointment
           </Button>
-          <Button onClick={handleSubmit} color="red">Yes, Cancel</Button>
+          <Button onClick={handleSubmit} color="red">
+            Yes, Cancel
+          </Button>
         </Group>
       </div>
     </div>

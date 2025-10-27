@@ -39,7 +39,7 @@ import dayjs from "dayjs";
 import { useForm } from "@mantine/form";
 import { RefundSchema } from "@/lib/schema/zod";
 import { adminFee, refundRate, refundReasons } from "@/constants";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import useGetAllBanks from "@/hooks/useGetAllBanks";
 import useGetBankAccountDetails from "@/hooks/useGetBankAccountDetails";
 import CustomCancelBtn from "../CButton/CustomCancelBtn";
@@ -77,12 +77,12 @@ const RefundAppointmentForm = ({ appointment }: RefundAppointmentProps) => {
       bankCode: "",
       bankName: "",
       bankAccountNumber: "",
-      },
+    },
     transformValues: (values) => ({
       ...values,
       reason: `${values.reason} - ${explanation}`,
     }),
-      validateInputOnChange: true,
+    validateInputOnChange: true,
     validate: (values) => {
       const schema = RefundSchema;
       if (!schema) return {};
@@ -105,8 +105,9 @@ const RefundAppointmentForm = ({ appointment }: RefundAppointmentProps) => {
     },
   });
 
-  const {  showProcessing, handleCancelAction } =
-    useCancelAppointment(appointment?.refundStatus);
+  const { showProcessing, handleCancelAction } = useCancelAppointment(
+    appointment?.refundStatus
+  );
 
   form.watch("reason", ({ value }) => {
     if (value === "medical_emergency" || value === "hospitalization") {
@@ -139,11 +140,18 @@ const RefundAppointmentForm = ({ appointment }: RefundAppointmentProps) => {
   const { data, isLoading, isFetching } = useGetBankAccountDetails(
     form.values.bankCode,
     newBankAccountNumber as string
-    );
-    
-    const activeStep = appointment?.refundStatus == "pending" ? 1 : appointment?.refundStatus == "approved" ? 2 : 0;
+  );
 
-  const submitHandler = form.onSubmit(async(vals) => await handleCancelAction(vals, "refunded"));
+  const activeStep =
+    appointment?.refundStatus == "pending"
+      ? 1
+      : appointment?.refundStatus == "approved"
+        ? 2
+        : 0;
+
+  const submitHandler = form.onSubmit(
+    async (vals) => await handleCancelAction(vals, "refunded")
+  );
 
   const handleButtonClick = () => {
     submitHandler(); // Note the double parentheses!

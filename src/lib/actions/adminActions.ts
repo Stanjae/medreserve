@@ -2,6 +2,7 @@
 "use server";
 import { createAdminClient } from "@/appwrite/appwrite";
 import {
+  AppointmentStatus,
   AssignUsersToNewRoleParams,
   EditUserModified,
   EditUserParams,
@@ -568,6 +569,36 @@ export async function patientCheckinForAppointmentAction(
       didPatientSeeDoctor: data.didPatientSeeDoctor,
       status: "success",
       message: `Patient ${data.didPatientSeeDoctor ? '' : 'did not'} checked in successfully for the appointment`,
+    };
+  } catch (err) {
+    return { code: 500, status: "error", message: `${err}` };
+  }
+};
+
+export async function markAsCompletedAppointmentAction(
+  uniqueID: string,
+  userId: string,
+  status: AppointmentStatus
+) {
+  try {
+    const { database } = await createAdminClient();
+    await database.updateDocument(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+      uniqueID,
+      {status}
+    );
+    await createHistory({
+      action: "update",
+      relatedEntityType: "appointments",
+      relatedEntityId: uniqueID,
+      description: `Patient was cheked in by`,
+      userId,
+    });
+    return {
+      code: 200,
+      status: "success",
+      message: `Appointment has been  completed successfully`,
     };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };

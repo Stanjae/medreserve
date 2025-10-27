@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useMedStore } from "@/providers/med-provider";
-import { addOrSubtractTime,  isTodayAfterDateTime } from "@/utils/utilsFn";
+import { addOrSubtractTime, isTodayAfterDateTime } from "@/utils/utilsFn";
 import {
   Alert,
   Box,
@@ -24,7 +24,7 @@ import {
   IconInfoCircle,
   IconSend2,
 } from "@tabler/icons-react";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import useReserveAppointment from "@/hooks/useReserveAppointment";
 import { useForm } from "@mantine/form";
 import { CreateBookingSchema } from "@/lib/schema/zod";
@@ -191,113 +191,110 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
             </Group>
           )}
       </CustomModal>
-  
-        <LoadingOverlay
-          visible={loading2}
-          zIndex={2000}
-          overlayProps={{ radius: "sm", blur: 2 }}
-        />
-  
-       { !userBookedSlot && (
-          <form
-            onSubmit={form.onSubmit(async (values) => {
-              if (
-                isTodayAfterDateTime(
-                  `${values.bookingDate} ${values.startTime}`,
-                  "date"
-                )
-              ) {
-                toast.error("You cannot book an appointment in the past.");
-                return;
-              }
-              await createAppointment.mutateAsync(values);
-            })}
-          >
-            <Grid gutter={{ base: 10, sm: 30 }}>
-              <GridCol span={{ base: 12, sm: 6 }}>
-                <Text fz={"28px"} lh={"38px"} fw={700} c="m-blue" mb="30px">
-                  Date Slots
-                </Text>
-                <DatePicker
-                  size="md"
-                  key={form.key("bookingDate")}
-                  {...form.getInputProps("bookingDate")}
-                  excludeDate={(date) =>
-                    !weekSchedule?.includes(
-                      new Date(date).getDay().toString()
-                    ) as boolean
-                  }
-                  onChange={(value) =>
-                    setDateTime({ ...dateTime, date: value })
-                  }
-                  minDate={dayjs().format("YYYY-MM-DD")}
+
+      <LoadingOverlay
+        visible={loading2}
+        zIndex={2000}
+        overlayProps={{ radius: "sm", blur: 2 }}
+      />
+
+      {!userBookedSlot && (
+        <form
+          onSubmit={form.onSubmit(async (values) => {
+            if (
+              isTodayAfterDateTime(
+                `${values.bookingDate} ${values.startTime}`,
+                "date"
+              )
+            ) {
+              toast.error("You cannot book an appointment in the past.");
+              return;
+            }
+            await createAppointment.mutateAsync(values);
+          })}
+        >
+          <Grid gutter={{ base: 10, sm: 30 }}>
+            <GridCol span={{ base: 12, sm: 6 }}>
+              <Text fz={"28px"} lh={"38px"} fw={700} c="m-blue" mb="30px">
+                Date Slots
+              </Text>
+              <DatePicker
+                size="md"
+                key={form.key("bookingDate")}
+                {...form.getInputProps("bookingDate")}
+                excludeDate={(date) =>
+                  !weekSchedule?.includes(
+                    new Date(date).getDay().toString()
+                  ) as boolean
+                }
+                onChange={(value) => setDateTime({ ...dateTime, date: value })}
+                minDate={dayjs().format("YYYY-MM-DD")}
+              />
+            </GridCol>
+            <GridCol span={{ base: 12, sm: 6 }}>
+              <Text fz={"28px"} lh={"38px"} fw={700} c="m-blue" mb="30px">
+                Time Slots
+              </Text>
+              <Box pos="relative">
+                <LoadingOverlay
+                  visible={isLoading}
+                  zIndex={1000}
+                  overlayProps={{ radius: "sm", blur: 2 }}
                 />
-              </GridCol>
-              <GridCol span={{ base: 12, sm: 6 }}>
-                <Text fz={"28px"} lh={"38px"} fw={700} c="m-blue" mb="30px">
-                  Time Slots
-                </Text>
-                <Box pos="relative">
-                  <LoadingOverlay
-                    visible={isLoading}
-                    zIndex={1000}
-                    overlayProps={{ radius: "sm", blur: 2 }}
-                  />
-                  <TimeGrid
-                    size="lg"
-                    allowDeselect
-                    key={form.key("startTime")}
-                    {...form.getInputProps("startTime")}
-                    data={getTimeRange({
-                      startTime: "10:00",
-                      endTime: "16:00",
-                      interval: "01:00",
-                    })}
-                    minTime={dateTime.minTime}
-                    maxTime={dateTime.maxTime}
-                    disableTime={!data ? [] : data}
-                  />
-                </Box>
-                <CustomInput
-                  mt={20}
-                  required
-                  size="md"
-                  radius={35}
-                  type="select"
-                  data={appointmentTypeData}
-                  placeholder="Select Type of Appointment"
-                  label="Type of Appointment"
-                  key={form.key("appointmentType")}
-                  {...form.getInputProps("appointmentType")}
+                <TimeGrid
+                  size="lg"
+                  allowDeselect
+                  key={form.key("startTime")}
+                  {...form.getInputProps("startTime")}
+                  data={getTimeRange({
+                    startTime: "10:00",
+                    endTime: "16:00",
+                    interval: "01:00",
+                  })}
+                  minTime={dateTime.minTime}
+                  maxTime={dateTime.maxTime}
+                  disableTime={!data ? [] : data}
                 />
-              </GridCol>
-            </Grid>
-            <Divider color={"m-cyan"} my="lg" size="md" variant="dotted" />
-            <Box>
+              </Box>
               <CustomInput
-                size="lg"
-                withAsterisk
-                placeholder="What may be your reason for booking an Appointment"
-                styles={{ input: { width: "100%" } }}
-                {...form.getInputProps("reason")}
-                key={form.key("reason")}
-                radius={15}
-                type="textarea"
-                label="Reason for Appointment"
-              />
-            </Box>
-            <Group mt="lg" justify="flex-end">
-              <SubmitBtn
-                type="submit"
-                leftSection={<IconClockHour5 />}
-                text="Make Reservation"
-                size="lg"
+                mt={20}
+                required
+                size="md"
                 radius={35}
+                type="select"
+                data={appointmentTypeData}
+                placeholder="Select Type of Appointment"
+                label="Type of Appointment"
+                key={form.key("appointmentType")}
+                {...form.getInputProps("appointmentType")}
               />
-            </Group>
-          </form>
-        )
-      }
+            </GridCol>
+          </Grid>
+          <Divider color={"m-cyan"} my="lg" size="md" variant="dotted" />
+          <Box>
+            <CustomInput
+              size="lg"
+              withAsterisk
+              placeholder="What may be your reason for booking an Appointment"
+              styles={{ input: { width: "100%" } }}
+              {...form.getInputProps("reason")}
+              key={form.key("reason")}
+              radius={15}
+              type="textarea"
+              label="Reason for Appointment"
+            />
+          </Box>
+          <Group mt="lg" justify="flex-end">
+            <SubmitBtn
+              type="submit"
+              leftSection={<IconClockHour5 />}
+              text="Make Reservation"
+              size="lg"
+              radius={35}
+            />
+          </Group>
+        </form>
+      )}
       {success && userBookedSlot && (
         <div>
           <Alert

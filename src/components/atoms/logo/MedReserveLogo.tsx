@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import React from 'react'
-import MedLogo from '../../../public/medreserve_logo.png'
+import MedLogo from '../../../../public/medreserve_logo.png'
 import Link from 'next/link'
 
 const MedReserveLogo = () => {

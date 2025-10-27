@@ -3,7 +3,7 @@
 import CustomCancelBtn from "@/components/CButton/CustomCancelBtn";
 import SubmitBtn from "@/components/CButton/SubmitBtn";
 import { DropzoneWrapper } from "@/components/dropzone/Dropzone";
-import CustomInput from "@/components/inputs/CustomInput";
+import CustomInput from "@/components/molecules/inputs/CustomInput";
 import useGetMedInfo from "@/hooks/useGetMedId";
 import { ROLES } from "@/types/store.types";
 import { capitalizeFirst } from "@/utils/utilsFn";
@@ -70,7 +70,7 @@ type Props = {
   submitBtnLoading: boolean;
   submitBtnAction: () => void;
   handleDeleteUser?: () => void;
-  file: File | string |null;
+  file: File | string | null;
   setFile: React.Dispatch<React.SetStateAction<string | File | null>>;
   documentFile: string | File | null;
   setDocumentFile: React.Dispatch<React.SetStateAction<string | File | null>>;

@@ -2,11 +2,13 @@
 import {
   cancelAdminAppointmentAction,
   deleteAdminAppointmentAction,
+  markAsCompletedAppointmentAction,
   patientCheckinForAppointmentAction,
   updateAdminAppointmentAction,
 } from "@/lib/actions/adminActions";
 import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
 import { cancellationActionParams, TpatientCheckinActionData, updateAppointmentAdminParams } from "@/types";
+import { AppointmentStatus } from "@/types/actions.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -78,6 +80,33 @@ const useHandleAppointmentsByAdmin = () => {
          });
        },
      });
+  
+       const markAsCompletedAppointment = useMutation({
+         mutationFn: async ({
+           userId,
+           appointmentId,
+           status,
+         }: {
+           userId: string;
+           appointmentId: string;
+           status:AppointmentStatus;
+         }) =>
+           await markAsCompletedAppointmentAction(
+             appointmentId,
+             userId,
+             status
+           ),
+         onSuccess: (data) => {
+           if (data?.code == 200) {
+               toast.success(data?.message);
+           } else {
+             toast.error(data?.message);
+           }
+           queryClient.invalidateQueries({
+             queryKey: [QUERY_KEYS.APPOINTMENTS.getAdminAppointmentDetail],
+           });
+         },
+       });
 
   const deleteAppointment = useMutation({
     mutationFn: async ({
@@ -99,7 +128,7 @@ const useHandleAppointmentsByAdmin = () => {
     },
   });
 
-  return { deleteAppointment, updateAppointment, cancelAppointment, patientCheckinForAppointment };
+  return { deleteAppointment, updateAppointment, cancelAppointment, patientCheckinForAppointment, markAsCompletedAppointment  };
 };
 
 export default useHandleAppointmentsByAdmin;

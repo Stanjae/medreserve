@@ -2,7 +2,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { Grid, GridCol, Group, NumberInput } from "@mantine/core";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import { useForm } from "@mantine/form";
 import { initialPaymentForm, newPrices } from "@/constants";
 import { PaymentFormSchema } from "@/lib/schema/zod";

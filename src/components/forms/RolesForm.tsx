@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import {
   Accordion,
   Button,

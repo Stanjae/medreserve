@@ -1,8 +1,8 @@
 "use client";
 import { ActionIcon, Box, Divider, Flex, Text } from "@mantine/core";
 import React, { useEffect, useState } from "react";
-import CustomFilters from "../filters/CustomFilters";
-import CustomInput from "../inputs/CustomInput";
+import CustomFilters from "../molecules/filters/CustomFilters";
+import CustomInput from "../molecules/inputs/CustomInput";
 import SubmitBtn from "../CButton/SubmitBtn";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { IconSearch, IconX } from "@tabler/icons-react";
@@ -16,22 +16,22 @@ const SearchAppointments = () => {
   const router = useRouter();
 
   // Controlled form state
-  const [appointmentId, setAppointmentId] = useState<string | null>('');
+  const [appointmentId, setAppointmentId] = useState<string | null>("");
   const [appointmentType, setAppointmentType] = useState<string | null>(null);
   const [date, setDate] = useState<string | null>("");
   const [loading, setLoading] = useState(false);
 
   // Sync state with URL params on mount or when params change
   useEffect(() => {
-    setAppointmentId(searchParams.get("appointmentId") || '');
+    setAppointmentId(searchParams.get("appointmentId") || "");
     setAppointmentType(searchParams.get("type") || null);
     setDate(searchParams.get("date") || null);
   }, [searchParams]);
 
   // Build URL params from state
   const buildParams = () => {
-      const params = new URLSearchParams();
-      params.set("page", "1");
+    const params = new URLSearchParams();
+    params.set("page", "1");
     if (appointmentId) params.set("appointmentId", appointmentId);
     if (appointmentType) params.set("type", appointmentType);
     if (date) params.set("date", date);
@@ -55,7 +55,7 @@ const SearchAppointments = () => {
   }
 
   function clearAllSearch() {
-    setAppointmentId('');
+    setAppointmentId("");
     setAppointmentType(null);
     setDate("");
     router.replace(`${pathname}`);
@@ -70,7 +70,7 @@ const SearchAppointments = () => {
         <CustomFilters label={"Appointment ID"} fullWidth>
           <CustomInput
             type="text"
-                      size="lg"
+            size="lg"
             value={appointmentId as string}
             onChange={(event) => setAppointmentId(event.currentTarget.value)}
             placeholder="Search by ID"
@@ -144,12 +144,17 @@ const SearchAppointments = () => {
         />
       </Flex>
       <div className=" my-[36] px-[18px]">
-        {date &&<Text c="m-gray" className=" font-medium text-[17px] leading-[22.5px]">
-          Showing available appointments On{" "}
-          <Text className="text-[17px] font-bold" component="span" c="m-blue">
-            {formatDate(date || dayjs().format("YYYY-MM-DD"))}
+        {date && (
+          <Text
+            c="m-gray"
+            className=" font-medium text-[17px] leading-[22.5px]"
+          >
+            Showing available appointments On{" "}
+            <Text className="text-[17px] font-bold" component="span" c="m-blue">
+              {formatDate(date || dayjs().format("YYYY-MM-DD"))}
+            </Text>
           </Text>
-        </Text>}
+        )}
       </div>
     </Box>
   );

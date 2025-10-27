@@ -1,7 +1,7 @@
 "use client";
 import { Box, Button, Group } from "@mantine/core";
 import React from "react";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import { doctorCategories } from "@/constants";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import useDoctorMasonryList from "@/hooks/useDoctorMasonryList";
@@ -12,8 +12,9 @@ const AllDoctorsMasonry = () => {
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
     ""
   );
-  const { data, isLoading, isSuccess } = useDoctorMasonryList(selectedCategory as string);
-
+  const { data, isLoading, isSuccess } = useDoctorMasonryList(
+    selectedCategory as string
+  );
 
   return (
     <Box className="space-y-10">
@@ -43,14 +44,18 @@ const AllDoctorsMasonry = () => {
         </div>
       )}
       <div>
-        {isSuccess && <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
-          <Masonry style={{ gap: "24px" }}>
-            {data &&
-              data?.map((doctor, index) => (
-                <DoctorMasonryCard key={index} item={doctor} />
-              ))}
-          </Masonry>
-        </ResponsiveMasonry>}
+        {isSuccess && (
+          <ResponsiveMasonry
+            columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
+          >
+            <Masonry style={{ gap: "24px" }}>
+              {data &&
+                data?.map((doctor, index) => (
+                  <DoctorMasonryCard key={index} item={doctor} />
+                ))}
+            </Masonry>
+          </ResponsiveMasonry>
+        )}
       </div>
     </Box>
   );

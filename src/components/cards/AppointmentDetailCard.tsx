@@ -25,7 +25,7 @@ import {
 import { Avatar, Badge, Button, ScrollArea, Switch, Tabs } from "@mantine/core";
 import { appointmentStatusData, RolesColor, statusConfig } from "@/constants";
 import CustomCancelBtn from "../CButton/CustomCancelBtn";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import { AppointmentStatus } from "@/types/actions.types";
 import { parseResponse } from "@/utils/utilsFn";
 import Link from "next/link";

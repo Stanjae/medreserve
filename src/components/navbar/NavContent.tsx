@@ -5,7 +5,7 @@ import TopNavLinks from "./TopNavLinks";
 import { Button } from "@mantine/core";
 import Link from "next/link";
 import { MobileMainNavbar } from "./MobileMainNavbar";
-import MedReserveLogo from "../logo/MedReserveLogo";
+import MedReserveLogo from "../atoms/logo/MedReserveLogo";
 import { useMedStore } from "@/providers/med-provider";
 
 const NavContent = ({ py, bg }: { bg: string; py: string }) => {

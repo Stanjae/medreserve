@@ -6,16 +6,18 @@ import { ComboboxItem, Group, Paper, Text } from "@mantine/core";
 import React, { useState } from "react";
 import { BarChart } from "@mantine/charts";
 import "@mantine/charts/styles.css";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import { barChartData } from "@/constants";
 import dayjs from "dayjs";
 
 const DashboardBarChart = () => {
-  const [value, setValue] = useState<ComboboxItem>(()=>(dayjs().month() > 5 ? barChartData[1] : barChartData[0]));
+  const [value, setValue] = useState<ComboboxItem>(() =>
+    dayjs().month() > 5 ? barChartData[1] : barChartData[0]
+  );
   const { credentials } = useMedStore((state) => state);
   const { data } = useGetDashboardBarchartAnalytics(
-      credentials?.databaseId as string,
-      value?.value
+    credentials?.databaseId as string,
+    value?.value
   );
   return (
     <Paper p={20} shadow="md" radius={"md"}>

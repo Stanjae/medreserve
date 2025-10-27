@@ -1,5 +1,5 @@
 import MedReserveBreadCrumbs from "@/components/atoms/breadcrumbs/MedReserveBreadCrumbs";
-import Footer from "@/components/footer/Footer";
+import Footer from "@/components/organisms/footer/Footer";
 import PageHeaders from "@/components/headers/PageHeaders";
 import MainNavbar from "@/components/navbar/MainNavbar";
 import NavContent from "@/components/navbar/NavContent";
@@ -24,7 +24,7 @@ export default function RootLayout({
         </Box>
       </section>
       {children}
-      <Footer/>
+      <Footer />
     </main>
   );
 }

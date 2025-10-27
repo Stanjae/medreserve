@@ -23,7 +23,7 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import SubmitBtn from "../CButton/SubmitBtn";
 import {
   IconCircleCheckFilled,
@@ -32,7 +32,13 @@ import {
 import useRescheduleAppointment from "@/hooks/useRescheduleAppointment";
 import { scaleY } from "./CreateAppointmentForm";
 
-const RescheduleAppointment = ({ row, handleClose }: { row: AppointmentColumnsType, handleClose: () => void }) => {
+const RescheduleAppointment = ({
+  row,
+  handleClose,
+}: {
+  row: AppointmentColumnsType;
+  handleClose: () => void;
+}) => {
   const [active, setActive] = useState<number>(0);
 
   const initialAmount = row?.paymentId?.find(
@@ -43,7 +49,7 @@ const RescheduleAppointment = ({ row, handleClose }: { row: AppointmentColumnsTy
     mode: "uncontrolled",
     initialValues: {
       doctorId: row?.doctorUserId,
-      doctorName:row?.doctorName,
+      doctorName: row?.doctorName,
       patientId: row?.patientUserId,
       paymentId: row?.paymentId,
       slotId: row?.id,
@@ -57,7 +63,7 @@ const RescheduleAppointment = ({ row, handleClose }: { row: AppointmentColumnsTy
       amount: 15000,
       phone: row?.patientPhone as string,
       capacity: row?.capacity?.toString() as string,
-      appointmentStatus:"rescheduled",
+      appointmentStatus: "rescheduled",
     },
     validateInputOnChange: true,
     transformValues: (values) => ({

@@ -2,7 +2,7 @@
 import { Badge, Divider, Group, Indicator, Paper } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import React, { useState } from "react";
-import CustomInput from "../../inputs/CustomInput";
+import CustomInput from "../../molecules/inputs/CustomInput";
 import { getAllAppointmentsActionWithinYearAndMonthResponse } from "@/types";
 import { timeStringtoHoursAndMinutes } from "@/utils/utilsFn";
 import { daysOfWeek, monthsOfYear, statusConfig } from "@/constants";

@@ -14,7 +14,7 @@ import {
   Button,
   Divider,
 } from "@mantine/core";
-import MedReserveLogo from "@/components/logo/MedReserveLogo";
+import MedReserveLogo from "@/components/atoms/logo/MedReserveLogo";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { handleNavLinks } from "@/utils/utilsFn";
@@ -28,7 +28,7 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import useLogout from "@/hooks/useLogout";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import { ROLES } from "@/types/store.types";
 import { NavList } from "@/types/table.types";
 import HeaderBtns from "../CButton/HeaderBtns";

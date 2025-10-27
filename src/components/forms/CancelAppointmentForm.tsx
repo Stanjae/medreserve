@@ -32,7 +32,7 @@ import {
   refundTextStatusInfo,
   statusConfig,
 } from "@/constants";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import {
   cancelAppointmentResponse,
   RefundAppointmentParams,
@@ -56,11 +56,8 @@ export default function CancelAppointmentForm({
 
   const { data: banks } = useGetAllBanks();
 
-  const {
-    activeStep,
-    showProcessing,
-    handleCancelAction,
-  } = useCancelAppointment(appointment?.refundStatus);
+  const { activeStep, showProcessing, handleCancelAction } =
+    useCancelAppointment(appointment?.refundStatus);
 
   const consultationFee = appointment.paymentId?.find(
     (item) => item.type === "initial-fees"
@@ -86,7 +83,7 @@ export default function CancelAppointmentForm({
       bankCode: "",
       bankName: "",
       bankAccountNumber: "",
-      },
+    },
     validateInputOnChange: true,
     validate: (values) => {
       const schema = RefundSchema;
@@ -114,11 +111,10 @@ export default function CancelAppointmentForm({
 
   form.watch("bankCode", ({ value }) => {
     form.setValues({
-      bankName:
-      banks?.find(
+      bankName: banks?.find(
         (item: { label: string; value: string }) => item?.value == value
-      )?.label as string
-   } );
+      )?.label as string,
+    });
   });
 
   form.watch("bankAccountNumber", ({ value }) => {
@@ -140,7 +136,8 @@ export default function CancelAppointmentForm({
     router.back();
   };
 
-  const initiateRefund = async () => await handleCancelAction(form.values, "cancelled");
+  const initiateRefund = async () =>
+    await handleCancelAction(form.values, "cancelled");
 
   const submitHandler = form.onSubmit(initiateRefund);
 
@@ -148,7 +145,7 @@ export default function CancelAppointmentForm({
     submitHandler(); // Note the double parentheses!
   };
 
-  if (showProcessing || appointment?.refundStatus ) {
+  if (showProcessing || appointment?.refundStatus) {
     return (
       <Container size="xl" py="xl">
         <Card shadow="sm" padding="xl" radius="md" withBorder>
@@ -302,7 +299,11 @@ export default function CancelAppointmentForm({
                   />
                   <div className=" mt-2 flex items-center">
                     {(isLoading || isFetching) && <Loader size={"xs"} />}
-                    {data?.status && <Text size="xs" fw={700} c="green.7">{data?.data?.account_name}</Text>}
+                    {data?.status && (
+                      <Text size="xs" fw={700} c="green.7">
+                        {data?.data?.account_name}
+                      </Text>
+                    )}
                   </div>
                 </GridCol>
               </Grid>

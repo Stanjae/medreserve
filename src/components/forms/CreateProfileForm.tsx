@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import React, { useEffect, useState } from "react";
-import CustomInput from "../inputs/CustomInput";
+import CustomInput from "../molecules/inputs/CustomInput";
 import dayjs from "dayjs";
 import { DateInputProps } from "@mantine/dates";
 import customParseFormat from "dayjs/plugin/customParseFormat";
