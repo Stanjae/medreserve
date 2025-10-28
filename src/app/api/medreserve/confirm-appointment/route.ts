@@ -22,21 +22,6 @@ export async function POST(request: Request) {
 
     const pdfBuffer = Buffer.from(base64Data, "base64");
 
-    // Configure your SMTP transporter
-/*     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      host: "email-smtp.us-east-1.amazonaws.com",
-      port: 587,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_USER, // your email address
-        pass: process.env.EMAIL_PASS, // your email password or app password
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    }); */
-
     const transporter = nodemailer.createTransport({
       host: "smtp.resend.com",
       secure: true,
@@ -83,7 +68,7 @@ export async function POST(request: Request) {
             <li>A list of any medications you are currently taking</li>
           </ul>
     
-          <p>If you need to reschedule or have any questions, please don't hesitate to contact us:</p>
+          <p>You can always reschedule your appointments in your dashboard in advance. If you have any questions, please don't hesitate to contact us:</p>
           <p>
             <strong>Phone:</strong> <a href="tel:${process.env.COMPANY_PHONE}" style="color: #0056b3; text-decoration: none;">${process.env.COMPANY_PHONE}</a><br>
             <strong>Website:</strong> <a href="${process.env.NEXT_PUBLIC_BASE_URL}" style="color: #0056b3; text-decoration: none;">${process.env.COMPANY_NAME}</a>

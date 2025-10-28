@@ -1,5 +1,4 @@
 "use client";
-import PdfLayout from "@/components/layout/PdfLayout";
 import RescheduleReceipt, {
   ExtendedParams,
 } from "@/components/pdfTemplates/RescheduleReceipt";
@@ -11,6 +10,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import useHandleEmails from "./useHandleEmails";
+import { serviceEndpoints } from "@/lib/queryclient/serviceEndpoints";
+import { convertPdfBlobToBase64 } from "@/utils/utilsFn";
 
 const useRescheduleAppointment = (
   setActive: React.Dispatch<React.SetStateAction<number>>
@@ -21,19 +22,21 @@ const useRescheduleAppointment = (
 
   const { sendEmailAction } = useHandleEmails();
   const setPDF = (params: RescheduleAppointmentParams & ExtendedParams) => (
-    <PdfLayout>
-      <RescheduleReceipt response={params} />
-    </PdfLayout>
+    <RescheduleReceipt response={params} />
   );
+
   const handleTransaction = async (
     params: RescheduleAppointmentParams,
     type: "reschedule-fees" | "initial-fees"
   ) => {
     const popup = new PaystackPop();
-    const response = await fetch("/api/paystack/initialize-transaction", {
-      method: "POST",
-      body: JSON.stringify({ email: params?.email, amount: params?.amount }),
-    });
+    const response = await fetch(
+      serviceEndpoints.PAYSTACK.initializeTransaction,
+      {
+        method: "POST",
+        body: JSON.stringify({ email: params?.email, amount: params?.amount }),
+      }
+    );
     const data = await response.json();
     popup.resumeTransaction(data?.data?.access_code, {
       onSuccess: async (transaction) => {
@@ -66,20 +69,14 @@ const useRescheduleAppointment = (
           metaData: JSON.stringify(meta),
         };
         const pdfComponent = setPDF(newData);
+        const pdfBase64 = await convertPdfBlobToBase64(pdfComponent);
         const response2 = await reschedulePaymentAction(newData);
         if (response2?.code != 201) {
           toast.error(response2?.message);
           return;
         }
-        sendEmailAction(
-          "email",
-          pdfComponent,
-          params?.fullname,
-          params?.doctorName as string,
-          params?.bookingDate,
-          `${params?.startTime} - ${params?.endTime}`,
-          params?.email
-        );
+        sendEmailAction({ method: "POST", endpoint: serviceEndpoints.EMAILS.rescheduleEmail, data: { pdfBase64, email: params?.email, appointmentDate: params?.bookingDate, appointmentTime: `${params?.startTime} - ${params?.endTime}`, doctorName: params?.doctorName, patientName: params?.fullname } })
+        
         queryClient.invalidateQueries({ queryKey: ["patient-appointments"] });
         setMessage(
           response2?.message.replace("user", credentials?.username as string)

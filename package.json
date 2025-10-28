@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "setup": "[ ! -f .env ] && cp .env.example .env && echo '✅ Created .env from template' || echo '⚠️  .env already exists'",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -11,7 +12,8 @@
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage --maxWorkers=2",
     "prepare": "husky"
-  },"lint-staged": {
+  },
+  "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
       "jest --bail --findRelatedTests --passWithNoTests"

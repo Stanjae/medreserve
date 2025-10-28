@@ -85,6 +85,7 @@ const AppoinmentDetailPage = ({ slotId }: Props) => {
     patientName: data?.patientId.fullname as string,
     doctorName: data?.doctorId.fullname as string,
     PdfElement: <AppointmentDetailPagePdf data={data} />,
+    endpoint: ""
   });
 
   const {

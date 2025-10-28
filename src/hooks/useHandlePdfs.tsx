@@ -3,7 +3,7 @@ import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
 import { JSX } from "react";
-import { toast } from "sonner";
+import useHandleEmails from "./useHandleEmails";
 
 const useHandlePdfs = ({
   PdfElement,
@@ -12,18 +12,37 @@ const useHandlePdfs = ({
   doctorName,
   appointmentDate,
   appointmentTime,
+  endpoint,
 }: {
   patientName: string;
   doctorName: string;
   appointmentDate: string;
   appointmentTime: string;
   email: string;
-  PdfElement: JSX.Element;
-}) => {
-  const generatePdf = async (fileType:'pdf'|'zip', fileName: string) => {
+    PdfElement: JSX.Element;
+  endpoint: string;
+  }) => {
+  const {sendEmailAction} = useHandleEmails();
+  const generatePdf = async (fileType: "pdf" | "zip", fileName: string, sendEmail?: boolean) => {
     try {
       const pdfBlobs = await generatePdfBlob();
       await createAndDownloadZip(pdfBlobs, fileType, fileName);
+      if (sendEmail) { 
+        const base64 = await blobToBase64(pdfBlobs);
+        await sendEmailAction({
+          method: "POST",
+          endpoint,
+          showToast: true,
+          data: {
+            email,
+            pdfBase64: base64,
+            patientName,
+            doctorName,
+            appointmentDate,
+            appointmentTime,
+          }
+        })
+      }
     } catch (error) {
       console.error("Error generating PDFs:", error);
     }
@@ -32,34 +51,6 @@ const useHandlePdfs = ({
   async function generatePdfBlob() {
     const blob = await pdf(PdfElement).toBlob();
     return blob;
-  };
-
-  async function sendPdfEmail(endpoint: string) {
-    try {
-       const pdfBlobs = await generatePdfBlob();
-      const base64 = await blobToBase64(pdfBlobs);
-
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          pdfBase64: base64,
-          patientName,
-          doctorName,
-          appointmentDate,
-          appointmentTime,
-        }),
-      });
-
-      if (response.ok) {
-        toast.success("Email sent successfully! Please check your inbox.");
-      } else {
-        toast.error("Failed to send email.");
-      }
-    } catch (error) {
-      console.error("Error sending email:", error, email);
-    }
   }
 
   const blobToBase64 = (blob: Blob): Promise<string> =>
@@ -70,22 +61,24 @@ const useHandlePdfs = ({
       reader.readAsDataURL(blob);
     });
 
-  async function createAndDownloadZip(pdfBlobs: Blob, fileType:'pdf'|'zip', fileName: string) {
+  async function createAndDownloadZip(
+    pdfBlobs: Blob,
+    fileType: "pdf" | "zip",
+    fileName: string
+  ) {
     const zip = new JSZip();
     const agent_name = "Medreserve"; // This can be dynamic for different PDFs.
     const blob = pdfBlobs;
     zip.file(`${agent_name}-${Date.now()}.pdf`, blob);
-      const zipBlob = await zip.generateAsync({ type: "blob" });
-      if (fileType === 'pdf') {
-        saveAs(blob, `${fileName}.pdf`);
-      } else {
-           saveAs(zipBlob, `${fileName}.zip`);
-      }
-   
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    if (fileType === "pdf") {
+      saveAs(blob, `${fileName}.pdf`);
+    } else {
+      saveAs(zipBlob, `${fileName}.zip`);
+    }
   }
 
-  return { generatePdf, sendPdfEmail };
-
+  return { generatePdf };
 };
 
 export default useHandlePdfs;
