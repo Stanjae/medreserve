@@ -21,6 +21,7 @@ import CustomCancelBtn from "../CButton/CustomCancelBtn";
 import useVerifyBlockUser from "@/hooks/useVerifyBlockUser";
 import { useMedStore } from "@/providers/med-provider";
 import { toast } from "sonner";
+import { PermissionsDataType } from "@/types";
 
 type Props = {
   row: ModifiedUser;
@@ -40,7 +41,7 @@ const NewSignUpDetails = ({ row, onClose }: Props) => {
 
   const handleBlockUser = () => {
     const stats = checkPermission(
-      JSON.parse(adminPermissions?.permissions as string),
+      adminPermissions?.permissions as PermissionsDataType,
       "users",
       "suspend_user"
     );
@@ -54,7 +55,7 @@ const NewSignUpDetails = ({ row, onClose }: Props) => {
 
   const handleVerifyUser = () => {
     const stats = checkPermission(
-      JSON.parse(adminPermissions?.permissions as string),
+      adminPermissions?.permissions as PermissionsDataType,
       "users",
       "verify_user"
     );

@@ -15,10 +15,10 @@ import { Payment } from "../../types/appwrite";
 import { Query } from "node-appwrite";
 import { SignupTabsType } from "@/types/actions.types";
 import {
-  AllPermissions,
   PermissionHeaderType,
   PermissionKeys,
   Permissions,
+  PermissionsDataType,
   ROLES,
 } from "@/types/store.types";
 import { Icon, IconProps } from "@tabler/icons-react";
@@ -369,7 +369,7 @@ export function capitalizeFirst(str: string): string {
 }
 
 export function checkPermission(
-  permissions: AllPermissions,
+  permissions: PermissionsDataType,
   permissionKey: PermissionHeaderType,
   permissionValue: string
 ): boolean {

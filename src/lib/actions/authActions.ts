@@ -16,12 +16,21 @@ import {
 import { AdminPermissions, ROLES } from "@/types/store.types";
 import { cookies } from "next/headers";
 import { Query } from "node-appwrite";
-import { PaymentFormParams } from "./../../types/actions.types";
+import { PaymentFormParams } from "../../types/actions.types";
 import { revalidatePath } from "next/cache";
 import { generateSecureOTP } from "@/utils/utilsFn";
 import argon2 from "argon2";
 import { History } from "../../../types/appwrite";
 
+/**
+ * Checks the authentication status of the current user.
+ *
+ * A reusable server action that verifies if a user is authenticated
+ *
+ *
+ * Usage:
+ * This component ensures type safety using TypeScript generics.
+ */
 export async function checkAuthStatus() {
   let newRole = null;
   try {
@@ -29,7 +38,7 @@ export async function checkAuthStatus() {
     const { database } = await createAdminClient();
 
     if (!account) return null;
-    // If successful, user is authenticated
+
     const response = await account.get();
 
     if (response?.prefs?.subRoleId) {
@@ -60,11 +69,12 @@ export async function checkAuthStatus() {
     };
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
-      console.error("Authentication check failed:", error);
+      console.error("Error checking auth status:", error);
     }
     return null;
   }
-}
+};
+
 export async function registerClientAction(
   data: ClientRegistrationParams,
   role: ROLES

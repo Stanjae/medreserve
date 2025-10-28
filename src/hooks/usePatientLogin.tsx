@@ -1,5 +1,5 @@
 "use client";
-import { loginClientAction } from "@/lib/actions/actions";
+import { loginClientAction } from "@/lib/actions/authActions";
 import { useMedStore } from "@/providers/med-provider";
 import { PatientLoginParams } from "@/types/actions.types";
 import { parseResponse } from "@/utils/utilsFn";
@@ -17,10 +17,14 @@ const usePatientLogin = () => {
       toast.success(response?.message);
       setAuthCredentials(response?.credentials);
       if (!response?.credentials?.emailVerified) {
-        router.push(`/${response?.credentials?.role}/${response?.credentials?.userId}/create-profile`);
-        return
+        router.push(
+          `/${response?.credentials?.role}/${response?.credentials?.userId}/create-profile`
+        );
+        return;
       }
-      window.location.replace(`/${response?.credentials?.role}/${response?.credentials?.userId}/dashboard`);
+      window.location.replace(
+        `/${response?.credentials?.role}/${response?.credentials?.userId}/dashboard`
+      );
     }
   };
   return {

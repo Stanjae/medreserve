@@ -27,7 +27,7 @@ import { CreatePatientProfileParams } from "@/types/actions.types";
 import { handleFileUpload } from "@/utils/utilsFn";
 import { DropzoneWrapper } from "../dropzone/Dropzone";
 import { IconRosetteDiscountCheckFilled } from "@tabler/icons-react";
-import { createPatientAction } from "@/lib/actions/actions";
+import { createPatientAction } from "@/lib/actions/authActions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AuthCredentials } from "@/types/store.types";

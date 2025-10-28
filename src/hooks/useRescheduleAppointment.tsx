@@ -1,7 +1,9 @@
-"use client"
+"use client";
 import PdfLayout from "@/components/layout/PdfLayout";
-import RescheduleReceipt, { ExtendedParams } from "@/components/pdfTemplates/RescheduleReceipt";
-import {  reschedulePaymentAction } from "@/lib/actions/actions";
+import RescheduleReceipt, {
+  ExtendedParams,
+} from "@/components/pdfTemplates/RescheduleReceipt";
+import { reschedulePaymentAction } from "@/lib/actions/authActions";
 import { useMedStore } from "@/providers/med-provider";
 import { RescheduleAppointmentParams } from "@/types/actions.types";
 import PaystackPop from "@paystack/inline-js";
@@ -17,12 +19,10 @@ const useRescheduleAppointment = (
   const { credentials } = useMedStore((state) => state);
   const [message, setMessage] = useState<string>("");
 
-  const {sendEmailAction} = useHandleEmails();
+  const { sendEmailAction } = useHandleEmails();
   const setPDF = (params: RescheduleAppointmentParams & ExtendedParams) => (
     <PdfLayout>
-      <RescheduleReceipt
-        response={params}
-      />
+      <RescheduleReceipt response={params} />
     </PdfLayout>
   );
   const handleTransaction = async (
@@ -49,12 +49,12 @@ const useRescheduleAppointment = (
           amount: params?.amount,
           email: params?.email,
           fullname: params?.fullname,
-          phone:params?.phone,
+          phone: params?.phone,
           capacity: params?.capacity,
           address: params?.address,
           patientId: params?.patientId,
           doctorId: params?.doctorId,
-          slotId:params?.slotId,
+          slotId: params?.slotId,
         };
         const newData = {
           ...params,
@@ -71,10 +71,20 @@ const useRescheduleAppointment = (
           toast.error(response2?.message);
           return;
         }
-        sendEmailAction('email', pdfComponent, params?.fullname, params?.doctorName as string, params?.bookingDate, `${params?.startTime} - ${params?.endTime}`, params?.email);
+        sendEmailAction(
+          "email",
+          pdfComponent,
+          params?.fullname,
+          params?.doctorName as string,
+          params?.bookingDate,
+          `${params?.startTime} - ${params?.endTime}`,
+          params?.email
+        );
         queryClient.invalidateQueries({ queryKey: ["patient-appointments"] });
-        setMessage(response2?.message.replace('user', credentials?.username as string));
-        setActive(prev => prev + 1);
+        setMessage(
+          response2?.message.replace("user", credentials?.username as string)
+        );
+        setActive((prev) => prev + 1);
       },
     });
   };

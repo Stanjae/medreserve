@@ -5,6 +5,7 @@ import { checkPermission } from "@/utils/utilsFn";
 import { useMemo } from "react";
 import AUsersTable from "../dataTable/AUsersTable";
 import { usePathname, useRouter } from "next/navigation";
+import { PermissionsDataType } from "@/types";
 
 const UsersBox = () => {
   const { adminPermissions } = useMedStore((state) => state);
@@ -13,8 +14,7 @@ const UsersBox = () => {
   const isAllowed = useMemo(
     () =>
       checkPermission(
-        adminPermissions?.permissions &&
-          JSON.parse((adminPermissions?.permissions as string) ?? ""),
+        adminPermissions?.permissions as PermissionsDataType,
         "users",
         "add_user"
       ),

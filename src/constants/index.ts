@@ -417,3 +417,27 @@ export const userAccountStatus = [
 ];  
 
 export const durationOfVisit = "1 hour";
+
+
+export const TOAST_MESSAGES = {
+  session_expired: {
+    type: "error",
+    message: "Session expired. Please login again.",
+  },
+  login_success: {
+    type: "success",
+    message: "Welcome back!",
+  },
+  logout_success: {
+    type: "success",
+    message: "Logged out successfully",
+  },
+  unauthorized: {
+    type: "error",
+    message: "You do not have permission to access that page",
+  },
+  email_not_verified: {
+    type: "info",
+    message: "Please complete your profile to continue",
+  },
+} as const;
