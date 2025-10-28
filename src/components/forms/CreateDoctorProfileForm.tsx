@@ -37,7 +37,7 @@ import { CreateDoctorProfileParams } from "@/types/actions.types";
 import { handleFileUpload } from "@/utils/utilsFn";
 import { DropzoneWrapper } from "../dropzone/Dropzone";
 import { IconRosetteDiscountCheckFilled } from "@tabler/icons-react";
-import { createDoctorAction } from "@/lib/actions/actions";
+import { createDoctorAction } from "@/lib/actions/authActions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import useNgaStates from "@/hooks/useNgaStates";

@@ -34,6 +34,7 @@ import MedReverseDrawer from "../drawers/MedReverseDrawer";
 import AssignUsersToRole from "./AssignUsersToRole";
 import { useMedStore } from "@/providers/med-provider";
 import { toast } from "sonner";
+import { PermissionsDataType } from "@/types";
 
 const RolesBox = () => {
   const {adminPermissions} = useMedStore((state) => state);
@@ -82,7 +83,7 @@ const RolesBox = () => {
 
   const handleEdit = () => {
         const isAllowed = checkPermission(
-          JSON.parse(adminPermissions?.permissions as string),
+          adminPermissions?.permissions as PermissionsDataType,
           "roles",
           "update_role"
         );
@@ -95,7 +96,7 @@ const RolesBox = () => {
   };
 
   const handleDelete = () => {
-    const isAllowed = checkPermission(JSON.parse(adminPermissions?.permissions as string), "roles", 'delete_role');
+    const isAllowed = checkPermission(adminPermissions?.permissions as PermissionsDataType, "roles", 'delete_role');
     if (!isAllowed) {
       toast.error("You don't have permission to perform this action");
       return
@@ -118,7 +119,7 @@ const RolesBox = () => {
 
   const handleSave = async () => {
             const isAllowed = checkPermission(
-              JSON.parse(adminPermissions?.permissions as string),
+              adminPermissions?.permissions as PermissionsDataType,
               "roles",
               "add_role"
             );

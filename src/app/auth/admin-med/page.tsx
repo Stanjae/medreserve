@@ -9,13 +9,13 @@ const page = () => {
                <h4 className=' text-2xl font-extrabold leading-[30px] mt-[3px] mb-[20px] text-center text-secondary'>Admin Login</h4>
                <AdminLoginForm/>
                <Stack>
-               {/*  <Group justify="center">
+                <Group justify="center">
                   <Text c="m-gray">Forgot Password</Text>
                   <Link className=' text-primary no-underline' href={'/auth/forgot-password'}>Click Here</Link>
-                </Group> */}
+                </Group>
                 <Group justify="center">
                   <Text c="m-gray">Back to Patient Login</Text>
-                  <Link className=' text-primary no-underline' href={'/auth/login'}>Create One</Link>
+                  <Link className=' text-primary no-underline' href={'/auth/login'}>Click Here</Link>
                 </Group>
               </Stack>
         </Paper>

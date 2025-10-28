@@ -10,8 +10,12 @@ import {
 import { ID, Query } from "node-appwrite";
 import { DefaultRoles, ModifiedRoles } from "../../../types/appwrite";
 import { ROLES } from "@/types/store.types";
-import { createHistory } from "./actions";
-import { cancellationActionData, TpatientCheckinActionData, updateAppointmentAdminParams } from "@/types";
+import { createHistory } from "./authActions";
+import {
+  cancellationActionData,
+  TpatientCheckinActionData,
+  updateAppointmentAdminParams,
+} from "@/types";
 
 export async function updateUserStatusAction(
   userId: string,
@@ -510,8 +514,7 @@ export async function deleteAdminAppointmentAction(
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };
   }
-};
-
+}
 
 export async function cancelAdminAppointmentAction(
   uniqueID: string,
@@ -543,7 +546,6 @@ export async function cancelAdminAppointmentAction(
   }
 }
 
-
 export async function patientCheckinForAppointmentAction(
   uniqueID: string,
   userId: string,
@@ -568,12 +570,12 @@ export async function patientCheckinForAppointmentAction(
       code: 200,
       didPatientSeeDoctor: data.didPatientSeeDoctor,
       status: "success",
-      message: `Patient ${data.didPatientSeeDoctor ? '' : 'did not'} checked in successfully for the appointment`,
+      message: `Patient ${data.didPatientSeeDoctor ? "" : "did not"} checked in successfully for the appointment`,
     };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };
   }
-};
+}
 
 export async function markAsCompletedAppointmentAction(
   uniqueID: string,
@@ -586,7 +588,7 @@ export async function markAsCompletedAppointmentAction(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
       uniqueID,
-      {status}
+      { status }
     );
     await createHistory({
       action: "update",

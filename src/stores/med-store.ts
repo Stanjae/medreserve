@@ -1,5 +1,5 @@
 import {
-  AdminPermissions,
+  AdminPermissionsTypes,
   AuthCredentials,
   HeaderButtonsType,
 } from "@/types";
@@ -9,7 +9,7 @@ import { persist } from "zustand/middleware";
 export type MedState = {
   credentials: AuthCredentials | null;
   weekSchedule: string[] | null;
-  adminPermissions: AdminPermissions | null;
+  adminPermissions: AdminPermissionsTypes | null;
   pageButtons: HeaderButtonsType[] | null;
   dateTime: {
     startTime?: string;
@@ -32,7 +32,7 @@ export type MedActions = {
     minTime: string;
     maxTime: string;
   }) => void;
-  setAdminPermissions: (params: AdminPermissions | null) => void;
+  setAdminPermissions: (params: AdminPermissionsTypes | null) => void;
   clearAdminPermissions: () => void;
   setPageButtons: (params: HeaderButtonsType[] | null) => void;
   clearPageButtons: () => void;

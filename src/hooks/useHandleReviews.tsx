@@ -1,5 +1,5 @@
 "use client";
-import { addUpdateReviewAction } from "@/lib/actions/actions";
+import { addUpdateReviewAction } from "@/lib/actions/authActions";
 import { ReviewParams } from "@/types/actions.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
