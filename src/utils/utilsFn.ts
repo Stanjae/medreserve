@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { ForwardRefExoticComponent, JSX, RefAttributes } from "react";
 import doctorsData from "../lib/api/data.json";
 import universitiesData from "../lib/api/universities.json";
 import dayjs from "dayjs";
@@ -36,6 +36,7 @@ import {
 } from "@/constants";
 import { ComboboxData } from "@mantine/core";
 import { DayUnits, GETADDBYPARAMS } from "@/types";
+import { pdf } from "@react-pdf/renderer";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -640,3 +641,17 @@ export function formatCurrency(amount: number, currency = "NGN") {
     currency: currency,
   }).format(amount);
 }
+
+  const blobToBase64 = (blob: Blob): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+  export async function convertPdfBlobToBase64(PdfElement: JSX.Element): Promise<string> {
+    const blob = await pdf(PdfElement).toBlob();
+    return await blobToBase64(blob);
+  }
+
