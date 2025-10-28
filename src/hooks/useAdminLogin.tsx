@@ -1,5 +1,8 @@
 "use client";
-import { handleOTPVerifyAction, loginAdminAction } from "@/lib/actions/actions";
+import {
+  handleOTPVerifyAction,
+  loginAdminAction,
+} from "@/lib/actions/authActions";
 import { useMedStore } from "@/providers/med-provider";
 import { PatientLoginParams } from "@/types/actions.types";
 import { customPromise, parseResponse } from "@/utils/utilsFn";
@@ -59,8 +62,8 @@ const useAdminLogin = () => {
         success: () => `${response?.message}`,
         error: "Error",
       });
-        setAuthCredentials(response?.credentials);
-        localStorage.removeItem("adminToken");
+      setAuthCredentials(response?.credentials);
+      localStorage.removeItem("adminToken");
       window.location.replace(
         `/${response?.credentials?.role}/${response?.credentials?.userId}/dashboard`
       );

@@ -10,10 +10,12 @@ import "@mantine/dates/styles.css";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { MedStoreProvider } from "@/providers/med-provider";
-import ProtectedRoutes from "@/providers/protected-routes";
-import { checkAuthStatus } from "@/lib/actions/actions";
+import { checkAuthStatus } from "@/lib/actions/authActions";
 import { Toaster } from "sonner";
 import QueryProviders from "@/providers/query-provider";
+import AuthInitializer from "@/providers/AuthInitializer";
+import { Suspense } from "react";
+import ToastHandler from "@/providers/ToastHandler";
 
 dayjs.extend(customParseFormat);
 
@@ -37,10 +39,12 @@ export default async function RootLayout({
       <body suppressHydrationWarning className={`demo antialiased`}>
         <MantineProvider theme={theme}>
           <MedStoreProvider>
-            <ProtectedRoutes auth={auth}>
-              <QueryProviders>{children}</QueryProviders>
-              <Toaster position="top-right" richColors />
-            </ProtectedRoutes>
+            <AuthInitializer auth={auth} />
+            <Suspense fallback={null}>
+              <ToastHandler />
+            </Suspense>
+            <QueryProviders>{children}</QueryProviders>
+            <Toaster position="top-right" richColors />
           </MedStoreProvider>
         </MantineProvider>
       </body>

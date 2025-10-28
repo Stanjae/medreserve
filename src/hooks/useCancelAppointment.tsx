@@ -1,6 +1,10 @@
 "use client";
-import { createCancellationAction } from "@/lib/actions/actions";
-import { AppointmentStatus, RefundAppointmentParams, refundStatus } from "@/types/actions.types";
+import { createCancellationAction } from "@/lib/actions/authActions";
+import {
+  AppointmentStatus,
+  RefundAppointmentParams,
+  refundStatus,
+} from "@/types/actions.types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -25,11 +29,11 @@ const useCancelAppointment = (status?: refundStatus | undefined) => {
   };
 
   useEffect(() => {
-    if (status == 'pending') {
-       setActiveStep(2);
+    if (status == "pending") {
+      setActiveStep(2);
     }
-    if (status == 'approved') {
-        simulateProcessing("success");
+    if (status == "approved") {
+      simulateProcessing("success");
     }
   }, []);
 
@@ -38,7 +42,10 @@ const useCancelAppointment = (status?: refundStatus | undefined) => {
     appointmentStatus: AppointmentStatus
   ) => {
     try {
-      const response = await createCancellationAction(params, appointmentStatus);
+      const response = await createCancellationAction(
+        params,
+        appointmentStatus
+      );
       if (response.code != 201) {
         toast.error(response.message);
         return;

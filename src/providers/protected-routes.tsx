@@ -1,11 +1,11 @@
 "use client";
 import { userRoles } from "@/constants";
-import { AdminPermissions, AuthCredentials } from "@/types/store.types";
+import { AdminPermissions, AdminPermissionsTypes, AuthCredentials } from "@/types/store.types";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
 import { useMedStore } from "./med-provider";
-import { clearCookies } from "@/lib/actions/actions";
+import { clearCookies } from "@/lib/actions/authActions";
 
 type AuthenticatedRouteProps = {
   auth: {
@@ -41,8 +41,9 @@ const ProtectedRoutes = ({ children, auth }: AuthenticatedRouteProps) => {
       }
 
       if (auth) {
+        const permissionData = auth.permissions ? JSON.parse(auth.permissions.permissions) : null;
         setAuthCredentials(auth?.credentials);
-        setAdminPermissions(auth?.permissions);
+        setAdminPermissions({...auth.permissions, permissions: permissionData } as AdminPermissionsTypes);
         if (isProtectedRoute && !pathname.includes(auth?.credentials?.role)) {
           router.back();
         }

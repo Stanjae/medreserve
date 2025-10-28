@@ -1,5 +1,5 @@
 "use client";
-import { createPaymentAction } from "@/lib/actions/actions";
+import { createPaymentAction } from "@/lib/actions/authActions";
 import { useMedStore } from "@/providers/med-provider";
 import { PaymentFormParams } from "@/types/actions.types";
 import PaystackPop from "@paystack/inline-js";

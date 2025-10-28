@@ -16,7 +16,7 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import React from "react";
-import MedLogo from "../../../public/medreserve_logo.png";
+import MedLogo from "../../../../public/medreserve_logo.png";
 import { footerLinks } from "@/constants/urls";
 import SubscribeForm from "../../forms/SubscribeForm";
 

@@ -1,5 +1,5 @@
 "use client";
-import { registerClientAction } from "@/lib/actions/actions";
+import { registerClientAction } from "@/lib/actions/authActions";
 import { ClientRegistrationParams } from "@/types/actions.types";
 import { parseResponse } from "@/utils/utilsFn";
 import { useRouter } from "next/navigation";

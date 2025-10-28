@@ -2,7 +2,7 @@
 import {
   createAppointmentAction,
   deleteAppointmentAction,
-} from "@/lib/actions/actions";
+} from "@/lib/actions/authActions";
 import { CreateAppointmentParams2 } from "@/types/actions.types";
 import { useDisclosure } from "@mantine/hooks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -19,7 +19,8 @@ const useReserveAppointment = () => {
   const [opened, { close, open }] = useDisclosure(false);
 
   const createAppointment = useMutation({
-    mutationFn: async (params: CreateAppointmentParams2) => await createAppointmentAction(params),
+    mutationFn: async (params: CreateAppointmentParams2) =>
+      await createAppointmentAction(params),
     onMutate: async (newTodo) => {
       open();
       await queryClient.cancelQueries({ queryKey: ["check"] });
@@ -41,7 +42,8 @@ const useReserveAppointment = () => {
   });
 
   const cancelAppointment = useMutation({
-    mutationFn: async (uniqueId:string) => await deleteAppointmentAction(uniqueId),
+    mutationFn: async (uniqueId: string) =>
+      await deleteAppointmentAction(uniqueId),
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["check"] });
       const previousTodos = queryClient.getQueryData(["check"]);
@@ -61,7 +63,6 @@ const useReserveAppointment = () => {
       queryClient.invalidateQueries({ queryKey: ["available-slots"] });
     },
   });
-
 
   return {
     createAppointment,
