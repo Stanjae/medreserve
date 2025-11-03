@@ -11,7 +11,7 @@ export default function AuthLayout({
       <Grid overflow="hidden" className=" h-full">
         <GridCol
           bg="m-background"
-          className=" relative px-[64px] py-[38px] h-screen w-full"
+          className=" relative px-[20px]  md:px-[64px] py-[38px] h-screen w-full"
           span={{ base: 12, md: 6 }}
         >
           <div>

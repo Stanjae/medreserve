@@ -7,10 +7,11 @@ import { useForm } from "@mantine/form";
 import { ResetPasswordSchema } from "@/lib/schema/zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import useResetPw from "@/hooks/useResetPw";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 const ResetPasswordForm = () => {
   const params = useParams<{ uid: string }>();
+   const searchParams = useSearchParams();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -27,7 +28,7 @@ const ResetPasswordForm = () => {
       className=" space-y-3"
       onSubmit={form.onSubmit(
         async (values) =>
-          await resetPasswordPatient({ ...values, userId: params?.uid })
+          await resetPasswordPatient({ ...values, userId: params?.uid, token: searchParams.get("token") || "" })
       )}
       component="form"
     >
