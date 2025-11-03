@@ -278,9 +278,12 @@ export async function getUserByEmail(email: string) {
   }
 }
 
-export async function resetPasswordAction(userId: string, password: string) {
+export async function resetPasswordAction(userId: string, password: string, token: string) {
   try {
     const { users } = await createAdminClient();
+    if(((await users.get(userId)).password as string) !== token){
+      return { code: 400, status: "error", message: "Invalid or expired token" };
+    }
     await users.updatePassword(userId, password);
     return {
       code: 200,
@@ -570,28 +573,7 @@ export async function verifyPassword(
     console.error("Password verification error:", error);
     return false;
   }
-}
-
-/* export const handleOtpAction = async (params:{email:string, otpCode:string, username:string}) => {
-  try {
-    const response = await fetch('/api/medreserve/send-otp-mail',
-      {
-        method: "POST",
-        body: JSON.stringify(params),
-      }
-    );
-    const data = await response.json();
-    console.log('dragons:', data);
-    return {
-      code: 201,
-      status: "success",
-      data: data,
-    };
-  } catch (err) {
-    console.log('give it up',err);
-    return { code: 500, status: "error", message: `${err}`, data: null };
-  }
-}; */
+};
 
 export async function loginAdminAction(data: PatientLoginParams) {
   try {
