@@ -64,3 +64,5 @@ jobs:
       run: npm run build
       env:
         NODE_ENV: production
+        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        
