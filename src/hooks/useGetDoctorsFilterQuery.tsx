@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
-import { getAvailableDoctorsFilterAction } from "@/lib/actions/getActions";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs";
 import { useSearchParams } from "next/navigation";
 import { Doctor } from "../../types/appwrite";
 import { useEffect } from "react";
+import { getAvailableDoctorsFilterAction } from "@/lib/actions/patientGetActions";
+import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
 
 const useGetDoctorsFilterQuery = () => {
     const queryClient = useQueryClient();
@@ -15,24 +16,34 @@ const useGetDoctorsFilterQuery = () => {
     const now = dayjs().format("YYYY-MM-DD");
     const isPast = dayjs(searchParams.get("date") || dayjs()).isBefore(now, "day");
 
-    const { data, isLoading, error, isSuccess, isPlaceholderData, isFetching } = useQuery({
-      queryKey: [
-        "doctors-filter",
-        searchParams.get("date"),
-            searchParams.get("specialty"),
+    const { data, isLoading, error, isSuccess, isPlaceholderData, isFetching } =
+      useQuery({
+        queryKey: [
+          QUERY_KEYS.APPOINTMENTS.getAvailableDoctorsFilterAction,
+          searchParams.get("date"),
+          searchParams.get("specialty"),
+          isPast,
+          searchParams.get("page"),
+        ],
+        queryFn: async (): Promise<{
+          project: Doctor[];
+          hasMore: boolean;
+          total: number;
+        }> =>
+          await getAvailableDoctorsFilterAction(
+            newSpecialty,
+            newDate.toString(),
             isPast,
-        searchParams.get('page')
-      ],
-      queryFn: async (): Promise<{project:Doctor[], hasMore: boolean, total: number}> =>
-        await getAvailableDoctorsFilterAction(newSpecialty, newDate.toString(), isPast, Number(searchParams.get("page") || 1)),
-      placeholderData: keepPreviousData,
-    });
+            Number(searchParams.get("page") || 1)
+          ),
+        placeholderData: keepPreviousData,
+      });
 
     useEffect(() => {
       if (!isPlaceholderData && data?.hasMore) {
         queryClient.prefetchQuery({
           queryKey: [
-            "doctors-filter",
+            QUERY_KEYS.APPOINTMENTS.getAvailableDoctorsFilterAction,
             Number(searchParams.get("page") || 1) + 1,
           ],
           queryFn: () =>

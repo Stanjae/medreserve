@@ -1,5 +1,6 @@
 "use client";
-import { cancel_refundStatusFilter, durationOfVisit, refundTextStatusInfo,   refundTextStatusInfo2,   statusConfig } from "@/constants";
+import { cancel_refundStatusFilter, cancellationStatuses, durationOfVisit,  statusConfig } from "@/constants";
+import { StatusHistoryItem } from "@/types";
 import { AppointmentColumnsType } from "@/types/table.types";
 import {
   checkDateTimeDifferenceFromNow,
@@ -41,12 +42,8 @@ const AppointmentDetails = ({ row }: Props) => {
     statusConfig[row?.appointmentStatus as keyof typeof statusConfig];
   const IconComponent = config.icon;
 
-  const appointmentStatus =
-    row?.appointmentStatus == "cancelled"
-      ? refundTextStatusInfo
-      : row?.appointmentStatus == "refunded" ? refundTextStatusInfo2 : null;
-  
-  const activeStep = appointmentStatus?.findIndex((step) => step.status == row?.cancelRefund?.status);
+  const cancelRecord:StatusHistoryItem[] = row?.cancelRefund && JSON.parse(row?.cancelRefund.statusHistory);
+
   return (
     <div className=" bg-background p-[20px]">
       <div className="space-y-3">
@@ -163,7 +160,7 @@ const AppointmentDetails = ({ row }: Props) => {
 
             <Group justify="space-between">
               <Text c="m-gray">Duration</Text>
-              <Text>{ durationOfVisit}</Text>
+              <Text>{durationOfVisit}</Text>
             </Group>
 
             <Group justify="space-between">
@@ -209,7 +206,7 @@ const AppointmentDetails = ({ row }: Props) => {
         <Divider my="md" variant="dotted" color={"m-cyan"} />
 
         {/*   <!-- refund/cancellation Information --> */}
-        {appointmentStatus && (
+        {row?.cancelRefund && cancelRecord.length > 0 && (
           <div className="space-y-2">
             <Text
               c={"m-blue"}
@@ -221,19 +218,21 @@ const AppointmentDetails = ({ row }: Props) => {
               <IconArrowBackUp color="red" /> Cancellation/ Refund Information
             </Text>
             <div className="space-y-3 mt-3">
-              <Timeline active={activeStep} bulletSize={24} lineWidth={3}>
-                {appointmentStatus?.map((item, index) => (
+              <Timeline
+                active={cancelRecord.length - 1}
+                bulletSize={24}
+                lineWidth={3}
+              >
+                {cancellationStatuses.map(({ icon: Icon, ...item }, index) => (
                   <Timeline.Item
                     key={index}
-                    title={
-                      <span className="text-secondary">
-                       {item.title}
-                      </span>
-                    }
+                    bullet={<Icon />}
+                    title={<span className="text-secondary">{item.label}</span>}
+                    lineVariant={index == 4 && cancelRecord.length  == 6 ? "dashed" : "solid"}
                   >
                     <Group justify="start">
                       <Text tt="capitalize" c="dimmed" size="sm">
-                        {item.subtitle}
+                        {item.description}
                       </Text>
                     </Group>
 

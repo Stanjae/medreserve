@@ -563,14 +563,14 @@ export async function patientCheckinForAppointmentAction(
       action: "update",
       relatedEntityType: "appointments",
       relatedEntityId: uniqueID,
-      description: `Patient was cheked in by`,
+      description: `Patient was ${data.didPatientSeeDoctor ? 'checked in':'unchecked'} by`,
       userId,
     });
     return {
       code: 200,
       didPatientSeeDoctor: data.didPatientSeeDoctor,
       status: "success",
-      message: `Patient ${data.didPatientSeeDoctor ? "" : "did not"} checked in successfully for the appointment`,
+      message: `Patient ${data.didPatientSeeDoctor ? "checked in" : "did not check in"} successfully for the appointment`,
     };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };

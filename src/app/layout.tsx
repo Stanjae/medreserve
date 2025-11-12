@@ -16,6 +16,7 @@ import QueryProviders from "@/providers/query-provider";
 import AuthInitializer from "@/providers/AuthInitializer";
 import { Suspense } from "react";
 import ToastHandler from "@/providers/ToastHandler";
+import "@mantine/carousel/styles.css";
 
 dayjs.extend(customParseFormat);
 

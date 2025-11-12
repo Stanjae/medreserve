@@ -1,15 +1,17 @@
 "use client";
 import useGetDoctorsFilterQuery from "@/hooks/useGetDoctorsFilterQuery";
 import React, { useEffect } from "react";
-import BookDoctorCard from "../cards/BookDoctorCard";
+import BookDoctorCard from "../../cards/BookDoctorCard";
 import { toast } from "sonner";
-import CustomPagination from "../molecules/pagination/CustomPagination";
-import MedReserveLoader from "../loaders/MedReserveLoader";
-import EmptyState from "../boxes/EmptyBox";
+import CustomPagination from "../../molecules/pagination/CustomPagination";
+import MedReserveLoader from "../../loaders/MedReserveLoader";
+import EmptyState from "../../boxes/EmptyBox";
 
 const FilterableDoctorList = () => {
   const { data, error, isLoading, isPlaceholderData, isSuccess, isFetching } =
     useGetDoctorsFilterQuery();
+
+  const loadingState = isLoading || isFetching;
 
   useEffect(() => {
     if (error) toast.error(error?.message);
@@ -27,16 +29,17 @@ const FilterableDoctorList = () => {
 
   return (
     <div>
-      {(isLoading || isFetching) && (
+      {loadingState && (
         <div className="flex items-center justify-center">
           <MedReserveLoader />
         </div>
       )}
-      {isSuccess &&
+      {!loadingState &&
+        isSuccess &&
         data?.project?.map((item) => (
           <BookDoctorCard item={item} key={item?.$id} />
         ))}
-      {!isLoading && (
+      {!loadingState && data && (
         <CustomPagination
           total={data?.total as number}
           dataHasMore={data?.hasMore as boolean}

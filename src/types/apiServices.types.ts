@@ -1,3 +1,5 @@
+
+
 export type EmailMethodTypes = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 export type TEmailServiceBodyPayload = {

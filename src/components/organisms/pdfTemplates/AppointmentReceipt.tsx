@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
-'use client'
-import { Image, Text, View } from "@react-pdf/renderer";
-import { Payment } from "../../../types/appwrite";
+"use client";
+import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
+import { Payment } from "../../../../types/appwrite";
 import { getAMPWAT } from "@/utils/utilsFn";
 import { styles } from "./style";
 
@@ -21,7 +21,8 @@ const AppointmentReceipt = ({
   const metaData = JSON.parse(response?.metaData || "");
   const authorization = JSON.parse(response?.authorization || "");
   return (
-    <section className="pr-3">
+     <Document>
+         <Page size="A4" style={{ paddingVertical: 40, paddingHorizontal: 30 }}>
       <View style={styles.container}>
         <Image
           src={
@@ -88,7 +89,10 @@ const AppointmentReceipt = ({
         <div style={styles.divider2} />
         <View style={styles.flex}>
           <Text style={styles.label}>Booking Code:</Text>
-          <Text style={styles.value}>#{type == 'appointment' ? response?.$id : response?.appointment?.$id }</Text>
+          <Text style={styles.value}>
+            #
+            {type == "appointment" ? response?.$id : response?.appointment?.$id}
+          </Text>
         </View>
         <div style={styles.divider2} />
         <View style={styles.flex}>
@@ -104,7 +108,8 @@ const AppointmentReceipt = ({
         </View>
         <div style={styles.divider2} />
       </View>
-    </section>
+    </Page>
+    </Document>
   );
 };
 

@@ -5,7 +5,17 @@ import {
   IconCurrencyDollar,
   IconCircleCheck,
   IconCalendarEvent,
+  IconLoader,
+  IconFileText,
+  IconCircleX,
 } from "@tabler/icons-react";
+
+export const pageHeadersLibrary = {
+  "our-doctors": "Doctor's details",
+  "cancel-appointment": "Cancel Appointment",
+  "reschedule": "Reschedule Appointment",
+  "dashboard":"Dashboard"
+};
 
 export const IdentificationTypes = [
   "Driver's License",
@@ -90,6 +100,11 @@ export const appointmentTypeData = [
   { label: "Consultation", value: "consultation" },
   { label: "Follow up", value: "follow-up" },
   { label: "Emergency", value: "emergency" },
+];
+
+export const capacityData = [
+  { label: "1 Person", value: "1" },
+  { label: "2 Persons", value: "2" },
 ];
 
 export const signUpFilterType = [
@@ -248,6 +263,8 @@ export const newPrices = [
   },
 ];
 
+export const rescheduleRate = 0.5;
+
 export const paymentStatusFilter = [
   { label: "Failed", value: "failed" },
   { label: "Success", value: "success" },
@@ -289,10 +306,10 @@ export const barChartData = [
 export const appointmentStatusData = [
   "pending",
   "approved",
+  "rescheduled",
   "cancelled",
   "refunded",
   "completed",
-  "rescheduled",
 ];
 
 export const RolesColor = {
@@ -346,70 +363,115 @@ export const statusConfig = {
     icon: IconCalendarEvent,
     label: "Rescheduled",
   },
-  /* processing: {
-    color: "orange", // Changed from yellow for better distinction
+  under_review: {
+    color: "yellow",
     variant: "light",
-    icon: IconLoader, 
-    label: "Processing",
-  }, */
+    icon: IconLoader,
+    label: "Under Review",
+  },
+  processing_refund: {
+    color: "purple",
+    variant: "light",
+    icon: IconLoader,
+    label: "Processing Refund",
+  },
+  rejected: {
+    color: "red.7",
+    variant:'filled',
+    icon: IconX,
+    label: "Rejected",
+  },
 } as const;
 
 export const CANCELLATION_REASONS = [
-  { value: "emergency", label: "Personal emergency" },
+  { value: "Personal emergency", label: "Personal emergency" },
   { value: "illness", label: "Patient illness" },
-  { value: "schedule", label: "Schedule conflict" },
+  { label: "Change in schedule", value: "Change in schedule" },
+  { label: "Found another doctor", value: "Found another doctor" },
+  { label: "Financial reasons", value: "Financial reasons" },
+  { value: "Doctor unavailable", label: "Doctor unavailable" },
+  { label: "Medical condition improved", value: "Medical condition improved" },
   { value: "other", label: "Other" },
 ];
 
-export const cancellationRate = 15; //15%
+export const cancellationRate = 5; //5%
 export const refundRate = 15; //10%
-export const adminFee = 5;
+export const administrationFee = 5;
 
-export const refundType = ["refund", "cancellation"];
-export const refundStatus = ["approved", "failed", "pending"];
-
-export const refundTextStatusInfo = [
+export const cancellationStatuses = [
   {
-    title: "Processing Cancellation",
-    subtitle: "Please wait while we process your request...",
-    status: "initialized",
-  },
-  {
-    title: "Processing Refund",
-    subtitle: "Initiating refund to your original payment method...",
     status: "pending",
+    label: "Cancellation Requested",
+    description: "Patient has submitted a cancellation request",
+    icon: IconFileText,
+    color: "border-blue-500",
+    textColor: "text-blue-700",
+    bgLight: "bg-blue-50",
+    timeline: "0-1 hours",
+    actions: ["Review request", "Verify appointment details"],
   },
   {
-    title: "Refund Completed",
-    subtitle: "Your refund has been processed successfully",
-    status: "success",
+    status: "under_review",
+    label: "Under Review",
+    description: "Admin is reviewing the cancellation request and eligibility",
+    icon: IconClock,
+    color: "border-yellow-500",
+    textColor: "text-yellow-700",
+    bgLight: "bg-yellow-50",
+    timeline: "1-24 hours",
+    actions: [
+      "Check cancellation policy",
+      "Verify appointment date",
+      "Calculate refund amount",
+    ],
+  },
+  {
+    status: "approved",
+    label: "Approved",
+    description: "Cancellation approved, refund process initiated",
+    icon: IconCircleCheck,
+    color: "border-green-500",
+    textColor: "text-green-700",
+    bgLight: "bg-green-50",
+    timeline: "24-48 hours",
+    actions: ["Notify patient", "Cancel appointment slot", "Initiate refund"],
+  },
+  {
+    status: "processing_refund",
+    label: "Processing Refund",
+    description: "Refund is being processed through payment gateway",
+    icon: IconCurrencyDollar,
+    color: "border-purple-500",
+    textColor: "text-purple-700",
+    bgLight: "bg-purple-50",
+    timeline: "3-7 business days",
+    actions: ["Payment gateway processing", "Bank transfer initiated"],
+  },
+  {
+    status: "completed",
+    label: "Refund Completed",
+    description: "Refund has been successfully processed",
+    icon: IconCircleCheck,
+    color: "border-emerald-500",
+    textColor: "text-emerald-700",
+    bgLight: "bg-emerald-50",
+    timeline: "Final",
+    actions: ["Refund credited to account", "Email confirmation sent"],
+  },
+  {
+    status: "rejected",
+    label: "Rejected",
+    description: "Cancellation request was rejected (outside policy)",
+    icon: IconCircleX,
+    color: "border-red-500",
+    textColor: "text-red-700",
+    bgLight: "bg-red-50",
+    timeline: "Final",
+    actions: ["Notify patient with reason", "Provide alternatives"],
   },
 ];
 
-export const refundTextStatusInfo2 = [
-  {
-    title: "Processing Refund",
-    subtitle: "Initiating refund to your original payment method...",
-    status: "pending",
-  },
-  {
-    title: "Refund Completed",
-    subtitle: "Your refund has been processed successfully",
-    status: "success",
-  },
-];
 
-export const refundReasons = [
-  { value: "medical_emergency", label: "Medical Emergency" },
-  { value: "family_emergency", label: "Family Emergency" },
-  { value: "transportation", label: "Transportation Issues" },
-  { value: "hospitalization", label: "Hospitalization" },
-  { value: "other", label: "Other (requires approval)" },
-];
-
-export const pageHeadersObject = {
-  "our-doctors": "Doctor's details",
-};
 
 export const userAccountStatus = [
   { label: "Active", value: "active" },
@@ -441,3 +503,40 @@ export const TOAST_MESSAGES = {
     message: "Please complete your profile to continue",
   },
 } as const;
+
+// constants/refund.ts
+export const REFUND_STATUSES = {
+  PENDING: 'pending',
+  UNDER_REVIEW: 'under_review',
+  APPROVED: 'approved',
+  PROCESSING_REFUND: 'processing_refund',
+  COMPLETED: 'completed',
+  REJECTED: 'rejected',
+} as const;
+
+export const REFUND_POLICY = {
+  MORE_THAN_24_HOURS: {
+    hours: 24,
+    percentage: 100,
+    label: 'Full refund'
+  },
+  BETWEEN_12_24_HOURS: {
+    hours: 12,
+    percentage: 50,
+    label: 'Partial refund'
+  },
+  LESS_THAN_12_HOURS: {
+    hours: 0,
+    percentage: 0,
+    label: 'No refund'
+  }
+};
+
+export const STATUS_LABELS = {
+  pending: 'Cancellation Requested',
+  under_review: 'Under Review',
+  approved: 'Approved',
+  processing_refund: 'Processing Refund',
+  completed: 'Refund Completed',
+  rejected: 'Rejected',
+};

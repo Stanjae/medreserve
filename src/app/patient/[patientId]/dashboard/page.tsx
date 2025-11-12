@@ -3,7 +3,7 @@ export const revalidate = 0;
 import DashboardMetrics from "@/components/boxes/DashboardMetrics";
 import DashboardShortCut from "@/components/boxes/DashboardShortCut";
 import RecentActivityCard from "@/components/cards/RecentActivityCard";
-import DashboardBarChart from "@/components/charts/DashboardBarChart";
+import DashboardBarChart from "@/components/organisms/charts/DashboardBarChart";
 import { Divider, Box, Grid, GridCol } from "@mantine/core";
 import React from "react";
 

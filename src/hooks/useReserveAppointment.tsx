@@ -1,8 +1,6 @@
 "use client";
-import {
-  createAppointmentAction,
-  deleteAppointmentAction,
-} from "@/lib/actions/authActions";
+import { createReservationAction, deleteReservationAction } from "@/lib/actions/patientActions";
+import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
 import { CreateAppointmentParams2 } from "@/types/actions.types";
 import { useDisclosure } from "@mantine/hooks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,58 +16,62 @@ const useReserveAppointment = () => {
   }>();
   const [opened, { close, open }] = useDisclosure(false);
 
-  const createAppointment = useMutation({
+  const createReservation = useMutation({
     mutationFn: async (params: CreateAppointmentParams2) =>
-      await createAppointmentAction(params),
+      await createReservationAction(params),
     onMutate: async (newTodo) => {
       open();
-      await queryClient.cancelQueries({ queryKey: ["check"] });
-      const previousTodos = queryClient.getQueryData(["check"]);
-      queryClient.setQueryData(["check"], () => [newTodo]);
+      await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.APPOINTMENTS.checkIfUserBookedASlot] });
+      const previousTodos = queryClient.getQueryData([
+        QUERY_KEYS.APPOINTMENTS.checkIfUserBookedASlot,
+      ]);
+      queryClient.setQueryData(
+        [QUERY_KEYS.APPOINTMENTS.checkIfUserBookedASlot],
+        () => [newTodo]
+      );
       return { previousTodos };
     },
-    onError: (err) => {
-      queryClient.setQueryData(["check"], () => null);
-      toast.error(`${err?.message}`);
+    onError: () => {
+      queryClient.setQueryData(
+        [QUERY_KEYS.APPOINTMENTS.checkIfUserBookedASlot],
+        () => null
+      );
     },
     onSuccess: (data) => {
       setResponse(data);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["check"] });
-      queryClient.invalidateQueries({ queryKey: ["available-slots"] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.APPOINTMENTS.checkIfUserBookedASlot],
+      });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.APPOINTMENTS.getAvailableSlots] });
     },
   });
 
-  const cancelAppointment = useMutation({
+  const cancelReservation = useMutation({
     mutationFn: async (uniqueId: string) =>
-      await deleteAppointmentAction(uniqueId),
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["check"] });
-      const previousTodos = queryClient.getQueryData(["check"]);
-      queryClient.setQueryData(["check"], () => null);
-      return { previousTodos };
-    },
-    onError: (err, _, context) => {
-      const con = context?.previousTodos as CreateAppointmentParams2;
-      queryClient.setQueryData(["check"], () => [con]);
+      await deleteReservationAction(uniqueId),
+  
+    onError: (err) => {
       toast.error(`${err?.message}`);
     },
     onSuccess: (data) => {
       toast.success(data?.message);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["check"] });
-      queryClient.invalidateQueries({ queryKey: ["available-slots"] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.APPOINTMENTS.checkIfUserBookedASlot],
+      });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.APPOINTMENTS.getAvailableSlots] });
     },
   });
 
   return {
-    createAppointment,
+    createReservation,
     response,
     opened,
     close,
-    cancelAppointment,
+    cancelReservation,
   };
 };
 

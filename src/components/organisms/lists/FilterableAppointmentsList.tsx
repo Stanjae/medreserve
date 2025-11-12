@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
-import CustomPagination from "../molecules/pagination/CustomPagination";
-import MedReserveLoader from "../loaders/MedReserveLoader";
+import CustomPagination from "../../molecules/pagination/CustomPagination";
+import MedReserveLoader from "../../loaders/MedReserveLoader";
 import useSearchForAppointments from "@/hooks/admin/useSearchForAppointments";
-import SearchAppointmentCard from "../cards/SearchAppointmentCard";
-import EmptyState from "../boxes/EmptyBox";
+import SearchAppointmentCard from "../../cards/SearchAppointmentCard";
+import EmptyState from "../../boxes/EmptyBox";
 
 const FilterableAppointmentList = () => {
   const { data, error, isLoading, isPlaceholderData, isSuccess, isFetching } =

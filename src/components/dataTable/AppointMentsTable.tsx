@@ -7,8 +7,13 @@ import { columnsAppointment } from "../tables/ColumnsDef";
 import { AppointmentColumnsType } from "@/types/table.types";
 import { useMedStore } from "@/providers/med-provider";
 import useGetPatientAppointmentTable from "@/hooks/tables/useGetPatientAppointmentTable";
-import { appointmentTabsData, appointmentTypeData, cancel_refundStatusFilter } from "@/constants";
-import { ActionIcon, Button, Menu, Paper } from "@mantine/core";
+import {
+  appointmentStatusData,
+  appointmentTabsData,
+  appointmentTypeData,
+  cancel_refundStatusFilter,
+} from "@/constants";
+import { ActionIcon, Menu, MenuItem, Paper } from "@mantine/core";
 import { CDropdown } from "../dropdown/CDropdown";
 import {
   IconCancel,
@@ -23,63 +28,82 @@ import Link from "next/link";
 import {
   getAMPWAT,
   getLatestObjectByCreatedAt,
-  isTodayAfterDateTime,
-  isTodayBeforeDateTime,
   isTodayBeforeOrSameWithDateTime,
 } from "@/utils/utilsFn";
-import GeneratePdfButton from "../boxes/NewPdf";
-import PdfLayout from "../layout/PdfLayout";
-import AppointmentReceipt from "../pdfTemplates/AppointmentReceipt";
-import RescheduleAppointment from "../forms/RescheduleAppointment";
+import AppointmentReceipt from "../organisms/pdfTemplates/AppointmentReceipt";
 import { useDisclosure } from "@mantine/hooks";
-import CustomModal from "../modals/CustomModal";
 import MedReverseTabs from "../tabs/MedReverseTabs";
 import useGetPatientsTabsCount from "@/hooks/useGetPatientsTabsCount";
 import MedReverseDrawer from "../drawers/MedReverseDrawer";
 import AppointmentDetails from "../boxes/AppointmentDetails";
 import CustomCancelBtn from "../CButton/CustomCancelBtn";
 import useReserveAppointment from "@/hooks/useReserveAppointment";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import useHandlePdfs from "@/hooks/useHandlePdfs";
+import { serviceEndpoints } from "@/lib/queryclient/serviceEndpoints";
 
 const AppointMentsTable = () => {
   const { credentials } = useMedStore((state) => state);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const approved_reschedule = [
+    appointmentStatusData[1],
+    appointmentStatusData[2],
+  ];
 
   const { refetch, data, isLoading } = useGetPatientAppointmentTable(
     credentials?.databaseId as string
   );
 
+  const { generatePdf } = useHandlePdfs();
+
   const { data: tabsCount } = useGetPatientsTabsCount(
     credentials?.databaseId as string
   );
 
-  const { cancelAppointment } = useReserveAppointment();
+  const { cancelReservation } = useReserveAppointment();
 
   const [drawerOpened, { open: drawerOpen, close: drawerClose }] =
     useDisclosure(false);
 
-  const [opened, { open, close }] = useDisclosure(false);
-
   const [row, setRow] = React.useState<AppointmentColumnsType>();
 
-  const handleRescheduleOption = (payload: AppointmentColumnsType) => {
-    setRow(payload);
-    open();
+  const handleNavigateToAction = (
+    payload: AppointmentColumnsType,
+    type: "reschedule" | "cancel"
+  ) => {
+    let url;
+    switch (type) {
+      case "reschedule":
+        url = `${pathname}/reschedule?slotId=${payload?.id}`;
+        break;
+      case "cancel":
+        url = `${pathname}/cancel-appointment?slotId=${payload?.id}`;
+        break;
+      default:
+        url = `${pathname}/reschedule?slotId=${payload?.id}`;
+    }
+    router.push(url);
   };
 
-  const cancelAppointmentFn = async (slotId: string) => {
-    const response = await cancelAppointment.mutateAsync(slotId);
-    refetch();
+  const cancelReservationAction = async (slotId: string) => {
+    const response = await cancelReservation.mutateAsync(slotId);
     refetch();
     return response;
   };
 
   const newTabs = React.useMemo(() => {
-    const safeTabsCount = tabsCount ?? { upcoming: 0, past: 0, today: 0, cancelled: 0 };
+    const safeTabsCount = tabsCount ?? {
+      upcoming: 0,
+      past: 0,
+      today: 0,
+      cancelled: 0,
+    };
     return appointmentTabsData.map((item) => ({
       ...item,
       count: safeTabsCount[item.value as keyof typeof safeTabsCount],
-      status: 'unread' as "unread" | "read"
+      status: "unread" as "unread" | "read",
     }));
   }, [tabsCount]);
 
@@ -94,16 +118,42 @@ const AppointMentsTable = () => {
           payment?.paymentId.length > 1
             ? getLatestObjectByCreatedAt(payment?.paymentId)
             : payment?.paymentId.find((item) => item.type == "initial-fees");
+
+        const pdfData = {
+          appointmentDate: payment?.bookingDate as string,
+          appointmentTime: getAMPWAT(
+            `${payment?.bookingDate}T${payment?.startTime}`
+          ),
+          email:
+            getPaymentId?.metaData && JSON.parse(getPaymentId?.metaData)?.email,
+          doctorName: payment.doctorName as string,
+          patientName:
+            getPaymentId?.metaData &&
+            JSON.parse(getPaymentId?.metaData)?.fullname,
+          PdfElement: (
+            <AppointmentReceipt
+              altTime={getAMPWAT(
+                `${payment?.bookingDate}T${payment?.startTime}Z`
+              )}
+              altDate={payment?.bookingDate}
+              response={getPaymentId}
+              type="appointment"
+            />
+          ),
+          endpoint: serviceEndpoints.EMAILS.confirmAppointment,
+        };
         return (
           <CDropdown
             props={{
               styles: { item: { fontSize: 13 } },
-              width: 150,
+              width: 200,
               position: "bottom-end",
             }}
             trigger={
               <ActionIcon
-                onClick={(event) => event.stopPropagation()}
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
                 variant="transparent"
                 aria-label="more options"
               >
@@ -129,20 +179,18 @@ const AppointMentsTable = () => {
                       leftSection: <IconCancel size={13} />,
                     }}
                     btnText="Cancel Booking"
-                    modalHeader="Cancel Booking"
-                    fn={async () => await cancelAppointmentFn(payment.id)}
-                    modalContent="Are you sure you want to cancel this booking?"
+                    modalHeader="Cancel Reservation"
+                    fn={async () => await cancelReservationAction(payment.id)}
+                    modalContent="Are you sure you want to cancel this reservation?"
                   />
                 </>
-              ) : cancel_refundStatusFilter.includes(payment.appointmentStatus) ? (
+              ) : cancel_refundStatusFilter[0] == payment.appointmentStatus ? (
                 <>
                   <Menu.Item
                     color="green.9"
                     onClick={(e) => {
                       e.stopPropagation();
-                      router.push(
-                        `/patient/${credentials?.userId}/dashboard/appointments/cancel-appointment?slotId=${payment.id}`
-                      );
+                      handleNavigateToAction(payment, "cancel");
                     }}
                     leftSection={<IconReceiptRefund size={13} />}
                   >
@@ -156,86 +204,44 @@ const AppointMentsTable = () => {
                       payment.bookingDate,
                       "day"
                     ) && (
-                      <>
-                        <GeneratePdfButton
-                          appointmentDate={payment?.bookingDate}
-                          appointmentTime={getAMPWAT(
-                            `${payment?.bookingDate}T${payment?.startTime}`
-                          )}
-                          doctorName={payment.doctorName}
-                          patientName={
-                            getPaymentId?.metaData &&
-                            JSON.parse(getPaymentId?.metaData)?.fullname
-                          }
-                          email={
-                            getPaymentId?.metaData &&
-                            JSON.parse(getPaymentId?.metaData)?.email
-                          }
-                          trigger={
-                            <Menu.Item
-                              color="green"
-                              leftSection={<IconDownload size={13} />}
-                            >
-                              Get Receipt
-                            </Menu.Item>
-                          }
-                          PdfElement={
-                            <PdfLayout>
-                              <AppointmentReceipt
-                                altTime={getAMPWAT(
-                                  `${payment?.bookingDate}T${payment?.startTime}Z`
-                                )}
-                                altDate={payment?.bookingDate}
-                                response={getPaymentId}
-                                type="appointment"
-                              />
-                            </PdfLayout>
-                          }
-                        />
-                      </>
+                      <MenuItem
+                        color="green"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          generatePdf(
+                            pdfData,
+                            "pdf",
+                            "Appointment Receipt",
+                            true
+                          );
+                        }}
+                        leftSection={<IconDownload size={13} />}
+                      >
+                        Download Receipt
+                      </MenuItem>
                     )}
                   {/* reschedule */}
-                  {payment.bookingDate &&
-                    isTodayBeforeDateTime(payment.bookingDate, "day") && (
-                      <Button
-                        size="md"
+                  {approved_reschedule.includes(payment.appointmentStatus) &&
+                    !payment.didPatientSeeDoctor && (
+                      <MenuItem
                         color="m-blue"
                         variant="subtle"
                         leftSection={<IconClockPlay size={13} />}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleRescheduleOption(payment);
+                          handleNavigateToAction(payment, "reschedule");
                         }}
                       >
                         Reschedule
-                      </Button>
+                      </MenuItem>
                     )}
-                  {payment.bookingDate &&
-                    isTodayAfterDateTime(payment.bookingDate, "day") &&
-                    payment.didPatientSeeDoctor == false && (
+                  {approved_reschedule.includes(payment.appointmentStatus) &&
+                    !payment.didPatientSeeDoctor && (
                       <Menu.Item
                         color="red"
                         onClick={(e) => {
                           e.stopPropagation();
-                          router.push(
-                            `/patient/${credentials?.userId}/dashboard/appointments/refund?slotId=${payment.id}`
-                          );
-                        }}
-                        leftSection={<IconCreditCardRefund size={13} />}
-                      >
-                        Refund
-                      </Menu.Item>
-                    )}
-                  {payment.bookingDate &&
-                    isTodayBeforeDateTime(payment.bookingDate, "day") &&
-                    payment.didPatientSeeDoctor == false && (
-                      <Menu.Item
-                        color="red"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(
-                            `/patient/${credentials?.userId}/dashboard/appointments/cancel-appointment?slotId=${payment.id}`
-                          );
+                          handleNavigateToAction(payment, "cancel");
                         }}
                         leftSection={<IconCreditCardRefund size={13} />}
                       >
@@ -261,10 +267,16 @@ const AppointMentsTable = () => {
     drawerOpen();
   };
 
-  const filters = [{name:"appointmentType", placeholder:"Filter by type", items:[{ label: "All", value: "all" }, ...appointmentTypeData]}];
+  const filters = [
+    {
+      name: "appointmentType",
+      placeholder: "Filter by type",
+      items: [{ label: "All", value: "all" }, ...appointmentTypeData],
+    },
+  ];
   return (
     <Paper p={20} radius="lg" shadow="md">
-      <MedReverseTabs tabs={newTabs} />
+      <MedReverseTabs tabs={newTabs} defaultActiveTab="upcoming" />
       <MedReverseDrawer
         position="right"
         title="Appointment Details"
@@ -273,20 +285,6 @@ const AppointMentsTable = () => {
       >
         <AppointmentDetails row={row} />
       </MedReverseDrawer>
-      <CustomModal
-        centered
-        closeOnClickOutside={false}
-        size={"xl"}
-        opened={opened}
-        onClose={close}
-      >
-        {row && (
-          <RescheduleAppointment
-            handleClose={close}
-            row={row as AppointmentColumnsType}
-          />
-        )}
-      </CustomModal>
       <CustomDataTable
         data={data?.project}
         columns={columns}

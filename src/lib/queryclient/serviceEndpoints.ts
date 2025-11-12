@@ -7,6 +7,7 @@ export const serviceEndpoints = {
   },
   PAYSTACK: {
     initializeTransaction: "/api/paystack/initialize-transaction",
+    verifyStatus: "/api/paystack/verify-status",
   },
   AUTH: {
     forgotPassword: "/api/medreserve/forgot-password",

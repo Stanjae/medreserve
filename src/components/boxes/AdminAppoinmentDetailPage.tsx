@@ -46,7 +46,7 @@ import {
 } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import AppointmentDetailPagePdf from "../pdfTemplates/AppointmentDetailPagePdf";
+import AppointmentDetailPagePdf from "../organisms/pdfTemplates/AppointmentDetailPagePdf";
 import { CopyButton } from "../atoms/Buttons/CopyButton";
 import CustomModal from "../modals/CustomModal";
 import CancelAppointmentCard from "../cards/CancelAppointmentCard";
@@ -78,15 +78,16 @@ const AppoinmentDetailPage = ({ slotId }: Props) => {
   const router = useRouter();
   const pathName = usePathname();
 
-  const { generatePdf } = useHandlePdfs({
+  const { generatePdf } = useHandlePdfs()
+  const params = {
     appointmentDate: data?.bookingDate as string,
     appointmentTime: data?.startTime as string,
     email: data?.patientId.email as string,
     patientName: data?.patientId.fullname as string,
     doctorName: data?.doctorId.fullname as string,
     PdfElement: <AppointmentDetailPagePdf data={data} />,
-    endpoint: ""
-  });
+    endpoint: "",
+  };
 
   const {
     cancelAppointment,
@@ -274,7 +275,7 @@ const AppoinmentDetailPage = ({ slotId }: Props) => {
                 leftSection={<IconDownload size={16} />}
                 size="sm"
                 onClick={async () =>
-                  await generatePdf("pdf", "Appointment_Details")
+                  await generatePdf(params,"pdf", "Appointment_Details")
                 }
               >
                 Export

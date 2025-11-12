@@ -7,7 +7,7 @@ import SubmitBtn from "../CButton/SubmitBtn";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { AdminLoginSchema } from "@/lib/schema/zod";
 import CountdownTimer from "../animated/CountdownTimer";
-import useAdminLogin from "@/hooks/useAdminLogin";
+import useAdminLogin from "@/hooks/admin/useAdminLogin";
 import { useHash } from "@/hooks/useHash";
 
 const AdminLoginForm = () => {

@@ -1,4 +1,4 @@
-import { Payment } from "../../types/appwrite";
+import { CancelRefund, Doctor, Patient, Payment } from "../../types/appwrite";
 import { AppointmentStatus } from "./actions.types";
 import { ModifiedHistoryResponseForAppointments } from "./history.types";
 
@@ -95,3 +95,18 @@ export type TpatientCheckinActionData = {
  didPatientSeeDoctor: boolean;
 };
 
+/* ================================patient============================================= */
+export type TuseFetchAppointmentForReschedule = {
+  startTime: string;
+  endTime: string;
+  bookingDate: string;
+  status: AppointmentStatus;
+  $id: string;
+  doctorId: Doctor;
+  patientId: Patient;
+  reason: string;
+  reasonForReschedule: string;
+  paymentId: Payment[];
+  capacity: number;
+  cancelRefund: CancelRefund;
+};

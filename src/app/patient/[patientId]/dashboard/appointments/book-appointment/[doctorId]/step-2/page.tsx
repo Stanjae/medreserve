@@ -1,6 +1,6 @@
 import React from "react";
 import PaymentForm from "@/components/forms/PaymentForm";
-import { fetchCurrentBookingSlot } from "@/lib/actions/getActions";
+import { fetchCurrentBookingSlot } from "@/lib/actions/patientGetActions";
 
 const page = async ({
   params,
@@ -16,7 +16,7 @@ const page = async ({
 
   return (
     <main>
-      <section className=" py-[40px] space-y-5 px-[50px] rounded-xl border border-cyan-200">
+      <section className=" py-[40px] space-y-5 px-[25px] md:px-[50px] rounded-xl border border-cyan-200">
         <PaymentForm slotId={slotId as string} response={response} doctorId={doctorId} />
       </section>
     </main>

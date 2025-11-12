@@ -1,6 +1,5 @@
 // components/toast-handler.tsx
 "use client";
-
 import { useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";

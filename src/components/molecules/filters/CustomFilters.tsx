@@ -14,7 +14,7 @@ const CustomFilters = ({
   return (
     <Box
       bg="m-cyan.0"
-      className={`${fullWidth && "flex-1"} gap-x-3 pl-[30px] items-center flex  rounded-3xl py-0 text-[18px] leading-[22.5px]`}
+      className={`${fullWidth && "flex-1"} gap-x-3 pl-[20px] md:pl-[30px] items-center flex  rounded-3xl py-0 text-[18px] leading-[22.5px]`}
     >
       <Text c="m-gray" className="text-[16px]">
         {label}

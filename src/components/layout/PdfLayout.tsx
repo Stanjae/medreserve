@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 "use client";
 import { Page, View, Document, Text, Image } from "@react-pdf/renderer";
-import { styles } from "../pdfTemplates/style";
+import { styles } from "../organisms/pdfTemplates/style";
 
 // Create Document Component
 
