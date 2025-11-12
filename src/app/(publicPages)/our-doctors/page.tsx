@@ -1,4 +1,4 @@
-import AllDoctorsMasonry from "@/components/lists/AllDoctorsMasonry";
+import AllDoctorsMasonry from "@/components/organisms/lists/AllDoctorsMasonry";
 import MedReserveLoader from "@/components/loaders/MedReserveLoader";
 import { Text } from "@mantine/core";
 import React, { Suspense } from "react";
@@ -22,7 +22,7 @@ const page = () => {
               <br /> qualified doctors.
             </Text>
           </section>
-          <Suspense fallback={<MedReserveLoader/>}>
+          <Suspense fallback={<MedReserveLoader />}>
             <AllDoctorsMasonry />
           </Suspense>
         </div>

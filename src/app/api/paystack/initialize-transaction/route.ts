@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     // Prepare payload (use body params or fallback to defaults)
     const payload = {
       email: body?.email || "customer@email.com",
-      amount: body?.amount || 500000,
+      amount: body?.amount
     };
 
     // Make the request to Paystack

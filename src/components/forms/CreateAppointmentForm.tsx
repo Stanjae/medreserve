@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useMedStore } from "@/providers/med-provider";
-import { addOrSubtractTime, isTodayAfterDateTime } from "@/utils/utilsFn";
+import { addOrSubtractTime } from "@/utils/utilsFn";
 import {
   Alert,
   Box,
@@ -20,6 +20,7 @@ import React, { useEffect } from "react";
 import SubmitBtn from "../CButton/SubmitBtn";
 import {
   IconCircleCheckFilled,
+  IconCircleXFilled,
   IconClockHour5,
   IconInfoCircle,
   IconSend2,
@@ -33,10 +34,10 @@ import { CreateAppointmentParams2 } from "@/types/actions.types";
 import CustomModal from "../modals/CustomModal";
 import useGetAvailableSlots from "@/hooks/useGetAvailableSlots";
 import useCheckIfUserBookedASlot from "@/hooks/useCheckIfUserBookedASlot";
-import Link from "next/link";
 import CustomCancelBtn from "../CButton/CustomCancelBtn";
 import dayjs from "dayjs";
 import { appointmentTypeData } from "@/constants";
+import { useRouter } from "next/navigation";
 
 export const scaleY = {
   in: { opacity: 1, transform: "scaleY(1)" },
@@ -49,11 +50,22 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
   const { weekSchedule, dateTime, credentials, setDateTime } = useMedStore(
     (state) => state
   );
-
-  const { createAppointment, close, opened, response, cancelAppointment } =
+  const router = useRouter();
+  
+  const { createReservation, close, opened, response, cancelReservation } =
     useReserveAppointment();
 
   const { data, isLoading } = useGetAvailableSlots(dateTime.date, doctorId);
+
+  const {
+    data: userBookedSlot,
+    isLoading: loading2,
+    isSuccess: success,
+  } = useCheckIfUserBookedASlot(
+    doctorId,
+    dateTime.date,
+    credentials?.databaseId as string
+  );
 
   const form = useForm<CreateAppointmentParams2>({
     mode: "uncontrolled",
@@ -65,7 +77,7 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
       endTime: "",
       reason: "",
       status: "pending",
-      appointmentType: "consultancy",
+      appointmentType: "",
     },
     validateInputOnChange: true,
     transformValues: (values) => ({
@@ -114,18 +126,16 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
     }
   }, [form.errors]);
 
-  const {
-    data: userBookedSlot,
-    isLoading: loading2,
-    isSuccess: success,
-  } = useCheckIfUserBookedASlot(
-    doctorId,
-    dateTime.date,
-    credentials?.databaseId as string
-  );
+  const cancelAppointmentFn = async () => {
+    await cancelReservation.mutateAsync(userBookedSlot?.at(0)?.$id as string);
+    form.reset();
+  };
 
-  const cancelAppointmentFn = async () =>
-    await cancelAppointment.mutateAsync(userBookedSlot?.at(0)?.$id as string);
+  const navigateToPayment = () =>
+    router.push(
+      `/patient/${credentials?.userId}/dashboard/appointments/book-appointment/${doctorId}/step-2?slotId=${userBookedSlot?.at(0)?.$id}`
+    );
+
   return (
     <div className="relative">
       <CustomModal
@@ -133,63 +143,66 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
         closeButtonProps={{ icon: <div></div> }}
         overlayProps={{ blur: 10, backgroundOpacity: 0.55 }}
         closeOnClickOutside={false}
-        onClose={() => ""}
+        onClose={close}
         opened={opened}
       >
         <div className="flex justify-center px-4 py-2">
-          {(createAppointment.isPending || cancelAppointment.isPending) && (
-            <Loader color="m-blue" size={80} />
-          )}
+          {createReservation.isPending && <Loader color="m-blue" size={80} />}
           <Transition
             mounted={
-              !(createAppointment.isPending || cancelAppointment.isPending) &&
-              (createAppointment?.status == "success" ||
-                cancelAppointment?.status == "success")
+              !createReservation.isPending &&
+              createReservation?.status == "success"
             }
             transition={scaleY}
             duration={200}
             timingFunction="ease"
             keepMounted
           >
-            {(styles) => (
-              <IconCircleCheckFilled
-                style={{ ...styles, zIndex: 1, color: "green" }}
-                size={80}
-              />
-            )}
+            {(styles) =>
+              response?.code == 201 ? (
+                <IconCircleCheckFilled
+                  style={{ ...styles, zIndex: 1, color: "green" }}
+                  size={80}
+                />
+              ) : (
+                <IconCircleXFilled
+                  style={{ ...styles, zIndex: 1, color: "red" }}
+                  size={80}
+                />
+              )
+            }
           </Transition>
         </div>
-        {!(createAppointment.isPending || cancelAppointment.isPending) &&
-          response?.status === "success" && (
-            <Text
-              fz={"28px"}
-              ta={"center"}
-              lh={"38px"}
-              fw={700}
-              c="m-blue"
-              mb="30px"
-            >
-              {response?.message}
-            </Text>
-          )}
-        {!(createAppointment.isPending || cancelAppointment.isPending) &&
-          response?.status === "success" && (
-            <Group justify="center">
-              <Button variant="outline" size="lg" color="red" onClick={close}>
-                Close
-              </Button>
+        {!createReservation.isPending && response?.status === "success" && (
+          <Text
+            fz={"28px"}
+            ta={"center"}
+            lh={"38px"}
+            fw={700}
+            className="text-black"
+            mb="30px"
+          >
+            {response?.message}
+          </Text>
+        )}
+        {!createReservation.isPending && response?.status === "success" && (
+          <Group justify="center">
+            <Button variant="outline" size="lg" color="red" onClick={close}>
+              Close
+            </Button>
+            {response.code == 201 && (
               <Button
                 radius={35}
                 size="lg"
                 color="m-blue"
                 rightSection={<IconSend2 />}
-                component={Link}
-                href={`/patient/${credentials?.userId}/dashboard/appointments/book-appointment/${doctorId}/step-2?slotId=${userBookedSlot?.at(0)?.$id}`}
+              onClick={navigateToPayment}
               >
                 Continue to Payment
               </Button>
-            </Group>
-          )}
+            )}
+          </Group>
+        )}
       </CustomModal>
 
       <LoadingOverlay
@@ -200,18 +213,9 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
 
       {!userBookedSlot && (
         <form
-          onSubmit={form.onSubmit(async (values) => {
-            if (
-              isTodayAfterDateTime(
-                `${values.bookingDate} ${values.startTime}`,
-                "date"
-              )
-            ) {
-              toast.error("You cannot book an appointment in the past.");
-              return;
-            }
-            await createAppointment.mutateAsync(values);
-          })}
+          onSubmit={form.onSubmit(
+            async (values) => await createReservation.mutateAsync(values)
+          )}
         >
           <Grid gutter={{ base: 10, sm: 30 }}>
             <GridCol span={{ base: 12, sm: 6 }}>
@@ -289,6 +293,7 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
               type="submit"
               leftSection={<IconClockHour5 />}
               text="Make Reservation"
+              disabled={!form.isValid()}
               size="lg"
               radius={35}
             />
@@ -316,18 +321,18 @@ const CreateAppointmentForm = ({ doctorId }: { doctorId: string }) => {
                 color: "red",
                 variant: "subtle",
               }}
-              btnText="Cancel Appointment"
-              modalHeader="Cancel Appointment"
+              btnText="Cancel Reservation"
+              modalHeader="Cancel Reservation"
               fn={cancelAppointmentFn}
-              modalContent="Are you sure you want to cancel this appointment?"
+              loading={cancelReservation.isPending}
+              modalContent="Are you sure you want to cancel this reservation?"
             />
             <Button
               radius={35}
               size="lg"
               color="m-blue"
               rightSection={<IconSend2 />}
-              component={Link}
-              href={`/patient/${credentials?.userId}/dashboard/appointments/book-appointment/${doctorId}/step-2?slotId=${userBookedSlot?.at(0)?.$id}`}
+              onClick={navigateToPayment}
             >
               Continue to Payment
             </Button>

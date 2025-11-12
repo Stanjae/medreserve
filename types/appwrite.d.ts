@@ -150,6 +150,29 @@ export type History = {
   relatedEntityType: string;
   userId: string;
   relatedEntityId: string;
+  type?: "string";
 };
 
 export type ModifiedHistory = Models.Document & History;
+
+export type CancelRefund = Models.Document & {
+  bankName: string;
+  bankAccountNumber: string;
+  bankCode: string;
+  status: string;
+  reason: string;
+  refundAmount: number;
+  cancellationFee: number;
+  appointmentId: string;
+  doctorId: Doctor;
+  patientId: Patient;
+  paymentId: Payment;
+  refundReference: string;
+  statusHistory: string;
+  rejectionReason: string;
+  reviewedAt: string;
+  processedAt: string;
+  completedAt: string;
+  $createdAt: string;
+  $updatedAt: string;
+};

@@ -17,7 +17,7 @@ import {
 import MedReserveLogo from "@/components/atoms/logo/MedReserveLogo";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { handleNavLinks } from "@/utils/utilsFn";
+import { formatPageHeaders, handleNavLinks } from "@/utils/utilsFn";
 import { useMedStore } from "@/providers/med-provider";
 import { CDropdown } from "../dropdown/CDropdown";
 import {
@@ -98,11 +98,11 @@ export default function DashboardLayout({
             />
           </div>
           <CustomInput
-            label={""}
             w={300}
             size="md"
             radius={"md"}
             placeholder="Search or type command..."
+            className="hidden md:block"
             type="text"
             leftSection={<IconSearch />}
             rightSection={
@@ -333,10 +333,7 @@ export default function DashboardLayout({
         <div>
           <Group justify="space-between">
             <Text className=" capitalize font-semibold" fz={"h3"}>
-              {pathname
-                .split("/")
-                .at(pathname.split("/").length - 1)
-                ?.replaceAll("-", " ")}
+              {formatPageHeaders(pathname)}
             </Text>
             <HeaderBtns />
           </Group>

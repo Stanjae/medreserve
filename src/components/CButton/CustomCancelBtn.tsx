@@ -21,11 +21,11 @@ const CustomCancelBtn = ({
 }) => {
   const [opened, { open, close }] = useDisclosure(false);
 
-  const handleConfirm = (
+  const handleConfirm = async(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
-    if (fn) fn();
+    if (fn) await fn();
     close();
   };
   return (

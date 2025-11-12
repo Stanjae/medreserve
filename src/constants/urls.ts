@@ -79,7 +79,7 @@ export const patientDashLinks = [
     child: true,
     leftIcon: IconCalendarBolt,
     sub: [
-      { label: "Overview", href: 'index' },
+      { label: "Manage Appointments", href: 'index' },
       { label: "Book an Appointment", href: "book-appointment" },
     ],
   },

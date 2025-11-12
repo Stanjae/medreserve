@@ -89,7 +89,6 @@ const CreateDoctorProfileForm = () => {
             errors[err.path[0]] = err.message;
           }
         }
-        console.log("theme: ", errors);
         return errors;
       }
     },

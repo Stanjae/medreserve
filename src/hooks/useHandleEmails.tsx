@@ -26,8 +26,9 @@ const useHandleEmails = () => {
         body: JSON.stringify(data),
       });
 
-      if (response.ok && showToast) {
-        toast.success("Email sent successfully! Please check your inbox.");
+      if (response.ok) {
+        if (showToast)
+          toast.success("Email sent successfully! Please check your inbox.");
       } else {
         toast.error("Failed to send email.");
       }

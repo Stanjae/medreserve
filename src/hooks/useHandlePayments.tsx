@@ -1,5 +1,7 @@
 "use client";
-import { createPaymentAction } from "@/lib/actions/authActions";
+import { createPaymentAction } from "@/lib/actions/patientActions";
+import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
+import { serviceEndpoints } from "@/lib/queryclient/serviceEndpoints";
 import { useMedStore } from "@/providers/med-provider";
 import { PaymentFormParams } from "@/types/actions.types";
 import PaystackPop from "@paystack/inline-js";
@@ -13,17 +15,20 @@ const useHandlePayments = () => {
   const { credentials } = useMedStore((state) => state);
   const handleTransaction = async (params: PaymentFormParams) => {
     const popup = new PaystackPop();
-    const response = await fetch("/api/paystack/initialize-transaction", {
-      method: "POST",
-      body: JSON.stringify({ email: params?.email, amount: params?.amount }),
-    });
+    const response = await fetch(
+      serviceEndpoints.PAYSTACK.initializeTransaction,
+      {
+        method: "POST",
+        body: JSON.stringify({ email: params?.email, amount: params?.amount }),
+      }
+    );
     const data = await response.json();
     popup.resumeTransaction(data?.data?.access_code, {
       onSuccess: async (transaction) => {
         const queryString = new URLSearchParams({
           ref: transaction.reference,
         }).toString();
-        const url = `/api/paystack/verify-status?${queryString}`;
+        const url = `${serviceEndpoints.PAYSTACK.verifyStatus}?${queryString}`;
         const responseData = await fetch(url, {
           method: "GET",
         });
@@ -35,13 +40,16 @@ const useHandlePayments = () => {
           authorization: JSON.stringify(res?.data?.authorization),
           paidOn: res?.data?.paidAt,
           metaData: JSON.stringify(params),
+          userId: credentials?.userId as string,
         };
         const response2 = await createPaymentAction(newData);
         if (response2?.code != 201) {
           toast.error(response2?.message);
           return;
         }
-        queryClient.invalidateQueries({ queryKey: ["check"] });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.APPOINTMENTS.checkIfUserBookedASlot],
+        });
         toast.success(response2?.message);
         router.push(
           `/patient/${credentials?.userId}/dashboard/appointments/book-appointment/${params.doctorId}/step-3?paymentreferenceId=${response2?.refId}`

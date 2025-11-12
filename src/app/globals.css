@@ -12,27 +12,33 @@
 :root {
   --background: #fff;
   --foreground: #0a0a0a;
-  --primary: #ff594d;      /* orange */
-  --secondary: #283779;    /* default blue */
-  --primary-dark: #b20000; /* lighter orange for dark mode */
-  --secondary-dark: #4c5eba; /* blue for dark mode */
-  --m-gray:#5e616c;
+  --primary: #ff594d;
+  /* orange */
+  --secondary: #283779;
+  /* default blue */
+  --primary-dark: #b20000;
+  /* lighter orange for dark mode */
+  --secondary-dark: #4c5eba;
+  /* blue for dark mode */
+  --m-gray: #5e616c;
 }
 
 
 
 .demo {
-    background: var(--background);
+  background: var(--background);
 
   @mixin dark {
     background: var(--foreground);
   }
 }
 
-.customNavlink{
+.customNavlink {
   &[data-active] {
-      color:var(--primary)
-    };
+    color: var(--primary)
+  }
+
+  ;
 }
 
 
@@ -51,22 +57,22 @@
 }*/
 
 
-@theme inline{
-  --color-primary: var(--primary);      
+@theme inline {
+  --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-background: var(--background);
-  --color-graytext:var(--m-gray);
+  --color-graytext: var(--m-gray);
 
 }
 
 /* Optional: define dark mode variants using postcss-preset-mantine mixins */
 @layer base {
   @variant dark {
-    @theme inline{
+    @theme inline {
       --color-primary: var(--primary);
       --color-secondary: var(--secondary);
       --color-background: var(--background);
-       --color-graytext:var(--m-gray);
+      --color-graytext: var(--m-gray);
     }
   }
 }
@@ -79,36 +85,36 @@ body {
   font-style: normal;
 }
 
-.medNavLinks .mantine-NavLink-label{
-  font-size:16px;
-  letter-spacing:0.36px;
+.medNavLinks .mantine-NavLink-label {
+  font-size: 16px;
+  letter-spacing: 0.36px;
 }
 
-.medFooterLinks .mantine-NavLink-label{
-  font-size:20px;
+.medFooterLinks .mantine-NavLink-label {
+  font-size: 20px;
   line-height: 25px;
 }
 
 /* homepage */
 .hero-image {
-  background-image:url('../../public/hero2.png');
+  background-image: url('../../public/hero2.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-.banner1{
-  background-image:url('../../public/mother_child3.jpg');
+.banner1 {
+  background-image: url('../../public/mother_child3.jpg');
   background-size: cover;
   background-position: top right;
   background-repeat: no-repeat;
 }
 
 /* forms */
-#subscribeFormWrapper .mantine-TextInput-input{
+#subscribeFormWrapper .mantine-TextInput-input {
   background-color: #22306d;
-  border:none !important;
-  color:white !important;
+  border: none !important;
+  color: white !important;
   border-radius: 35px !important;
   padding-left: 28px !important;
   padding-right: 7.5px !important;
@@ -120,75 +126,75 @@ body {
 
 }
 
-.phone-no{
-  background-color:#fff !important;
-border-color:#ced4da;
-border-radius:35px;
-border-style:solid;
-border-width:0.8px;
-font-size:14px;
-line-height:40px;
-padding:0px 14px;
-text-align:left;
+.phone-no {
+  background-color: #fff !important;
+  border-color: #ced4da;
+  border-radius: 35px;
+  border-style: solid;
+  border-width: 0.8px;
+  font-size: 14px;
+  line-height: 40px;
+  padding: 0px 14px;
+  text-align: left;
 }
-.phone-no input:focus-visible{
+
+.phone-no input:focus-visible {
   outline: none !important;
-  border:none !important;
+  border: none !important;
 }
 
 /* auth */
-.authWrapper{
-  background-image:url('../../public/auth.jpg');
+.authWrapper {
+  background-image: url('../../public/auth.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-.authWrapper-fp{
-  background-image:url('../../public/auth2.jpg');
+.authWrapper-fp {
+  background-image: url('../../public/auth2.jpg');
   background-size: cover;
   background-position: top;
   background-repeat: no-repeat;
 }
 
 /*create Profile */
-.create-profile-bg{
-  background-image:url('../../public/auth2.jpg');
+.create-profile-bg {
+  background-image: url('../../public/auth2.jpg');
   background-size: cover;
   background-position: top-center;
   background-repeat: no-repeat;
 }
 
-.create-profile-bg .card{
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
+.create-profile-bg .card {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
 }
 
-.inputFul{
-  width:100% !important;
+.inputFul {
+  width: 100% !important;
 }
 
 .c-table-td .m_4081bf90 {
   justify-content: flex-start !important;
 }
 
-.bg-card-metrics{
-  background-image:url('../../public/card.svg');
+.bg-card-metrics {
+  background-image: url('../../public/card.svg');
   background-size: contain;
-  background-position:right center;
+  background-position: right center;
   background-repeat: no-repeat;
 }
 
-.mason-card:hover .mason-overlay{
-  display:flex !important;
+.mason-card:hover .mason-overlay {
+  display: flex !important;
   opacity: 1 !important;
 }
 
 
-#roleTab:hover .tabIcon{
- transition:all;
- transition-duration: 0.2s;
- transform: translateX(4px);
- transition-timing-function: ease-in-out;
-
+#roleTab:hover .tabIcon {
+  transition: all;
+  transition-duration: 0.2s;
+  transform: translateX(4px);
+  transition-timing-function: ease-in-out;
 }

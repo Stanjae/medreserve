@@ -58,16 +58,16 @@ const BookAppointment = () => {
   function clearAllSearch() {
     setSpecialty(null);
     setCapacity(null);
-    setDate("");
+    setDate(dayjs().format("YYYY-MM-DD"));
     router.replace(`${pathname}`);
   }
 
   return (
     <Box>
-      <Text fz={"38px"} lh={"43px"} fw={700} c="m-blue" mb="30px">
+      <Text fz={{md:"38px", base:"30px"}} lh={"43px"} fw={700} c="m-blue" mb="30px">
         Select a Doctor
       </Text>
-      <Flex direction={{ base: "column", md: "row" }} align={"center"} gap={10}>
+      <Flex direction={{ base: "column", md: "row" }} align={{ md:"center", base:"flex-start"}} gap={10}>
         <CustomFilters label={"Speciality in"}>
           <CustomInput
             type="select"
@@ -92,19 +92,19 @@ const BookAppointment = () => {
           />
         </CustomFilters>
 
-        <CustomFilters label={"for"}>
+        <CustomFilters fullWidth label={"for"}>
           <CustomInput
             type="select"
             size="lg"
             value={capacity}
             onChange={setCapacity}
-            placeholder="Capacity of persons"
+            placeholder="No of persons"
             clearable
             onClear={() => {
               clearSearch("capacity");
             }}
             styles={{
-              root: { width: "130px" },
+              root: { width: "100%" },
               input: {
                 border: "1px solid cyan",
               },
@@ -134,7 +134,7 @@ const BookAppointment = () => {
           />
         </CustomFilters>
         <Divider orientation="vertical" />
-        {specialty || capacity || date ? (
+        {specialty || capacity || date != dayjs().format("YYYY-MM-DD") ? (
           <ActionIcon
             onClick={() => clearAllSearch()}
             size="lg"
@@ -147,9 +147,10 @@ const BookAppointment = () => {
         <SubmitBtn
           radius={"xl"}
           leftSection={<IconSearch />}
+          disabled={!(specialty || capacity || date != dayjs().format("YYYY-MM-DD"))}
           size="lg"
           color="m-blue"
-          text={"Appointments"}
+          text={"Search"}
           loading={loading}
           type="button"
           onClick={handleSearch}

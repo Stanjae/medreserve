@@ -29,7 +29,6 @@ import { DropzoneWrapper } from "../dropzone/Dropzone";
 import { IconRosetteDiscountCheckFilled } from "@tabler/icons-react";
 import { createPatientAction } from "@/lib/actions/authActions";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { AuthCredentials } from "@/types/store.types";
 import { initialPatientProfile } from "@/constants/formInitialValues";
 
@@ -41,8 +40,6 @@ const CreateProfileForm = () => {
 
   const [file, setFile] = useState<File | null>(null);
   const [documentFile, setDocumentFile] = useState<File | null>(null);
-
-  const router = useRouter();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -70,10 +67,6 @@ const CreateProfileForm = () => {
   });
 
   useEffect(() => {
-    if (credentials?.emailVerified) {
-      router.push(`/patient/${credentials?.userId}/dashboard`);
-      return;
-    }
     form.setValues({ email: credentials?.email });
     form.setFieldValue("userId", credentials?.userId);
   }, [credentials]);
@@ -119,7 +112,7 @@ const CreateProfileForm = () => {
   return (
     <Paper
       shadow="md"
-      className=" card py-[46px] space-y-4 px-[70px] w-full max-w-[992px]"
+      className=" card py-[46px] space-y-4 px-[35px] md:px-[70px] w-full max-w-[992px]"
     >
       <Box
         onSubmit={form.onSubmit((values) => handleSubmit(values))}
@@ -415,11 +408,11 @@ const CreateProfileForm = () => {
           </Stepper.Step>
           <Stepper.Completed>
             <Box className=" flex flex-col items-center justify-center space-y-5">
-              <Text c="m-orange" fw="700" size="40px">
+              <Text className=" text-green-600" fw="700" size="40px">
                 Completed!:
               </Text>
               <IconRosetteDiscountCheckFilled
-                className=" text-primary"
+                className=" text-green-600"
                 width={150}
                 height={150}
               />

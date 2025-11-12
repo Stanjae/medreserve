@@ -5,50 +5,49 @@ import JSZip from "jszip";
 import { JSX } from "react";
 import useHandleEmails from "./useHandleEmails";
 
-const useHandlePdfs = ({
-  PdfElement,
-  email,
-  patientName,
-  doctorName,
-  appointmentDate,
-  appointmentTime,
-  endpoint,
-}: {
+type Props = {
   patientName: string;
   doctorName: string;
   appointmentDate: string;
   appointmentTime: string;
   email: string;
-    PdfElement: JSX.Element;
+  PdfElement: JSX.Element;
   endpoint: string;
-  }) => {
-  const {sendEmailAction} = useHandleEmails();
-  const generatePdf = async (fileType: "pdf" | "zip", fileName: string, sendEmail?: boolean) => {
+};
+
+const useHandlePdfs = () => {
+  const { sendEmailAction } = useHandleEmails();
+  const generatePdf = async (
+    data: Props,
+    fileType: "pdf" | "zip",
+    fileName: string,
+    sendEmail?: boolean
+  ) => {
     try {
-      const pdfBlobs = await generatePdfBlob();
+      const pdfBlobs = await generatePdfBlob(data.PdfElement);
       await createAndDownloadZip(pdfBlobs, fileType, fileName);
-      if (sendEmail) { 
+      if (sendEmail) {
         const base64 = await blobToBase64(pdfBlobs);
         await sendEmailAction({
           method: "POST",
-          endpoint,
+          endpoint:data.endpoint,
           showToast: true,
           data: {
-            email,
+            email: data.email,
             pdfBase64: base64,
-            patientName,
-            doctorName,
-            appointmentDate,
-            appointmentTime,
-          }
-        })
+            patientName: data.patientName,
+            doctorName: data.doctorName,
+            appointmentDate: data.appointmentDate,
+            appointmentTime: data.appointmentTime,
+          },
+        });
       }
     } catch (error) {
       console.error("Error generating PDFs:", error);
     }
   };
 
-  async function generatePdfBlob() {
+  async function generatePdfBlob(PdfElement: JSX.Element) {
     const blob = await pdf(PdfElement).toBlob();
     return blob;
   }

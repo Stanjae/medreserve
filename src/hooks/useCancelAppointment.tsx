@@ -1,70 +1,35 @@
 "use client";
-import { createCancellationAction } from "@/lib/actions/authActions";
-import {
-  AppointmentStatus,
-  RefundAppointmentParams,
-  refundStatus,
-} from "@/types/actions.types";
-import { useEffect, useState } from "react";
+import { createCancellationAction } from "@/lib/actions/patientActions";
+import { QUERY_KEYS } from "@/lib/queryclient/querk-keys";
+import { RefundAppointmentParams } from "@/types";
+import { useDisclosure } from "@mantine/hooks";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-const useCancelAppointment = (status?: refundStatus | undefined) => {
-  const [showProcessing, setShowProcessing] = useState(false);
-  const [activeStep, setActiveStep] = useState(0);
-  const [showSuccess, setShowSuccess] = useState(false);
+const useCancelAppointment = () => {
+  const [opened, { open, close }] = useDisclosure(false);
+  const queryClient = useQueryClient();
 
-  const simulateProcessing = async (stats?: string) => {
-    // Step 1: Cancel appointment
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setActiveStep(1);
-
-    // Step 2: Process refund
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setActiveStep(2);
-
-    if (stats == "success") {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setActiveStep(3);
+  const handleCancelAction = useMutation({
+    mutationFn: async (params: RefundAppointmentParams) => await createCancellationAction(params),
+    onError: (error) => {
+      toast.error(error?.message)
+    },
+    onSuccess: () => {
+      open();
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.APPOINTMENTS.getPatientAppointments],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.APPOINTMENTS.fetchAppointmentForReschedule],
+      });
     }
-  };
-
-  useEffect(() => {
-    if (status == "pending") {
-      setActiveStep(2);
-    }
-    if (status == "approved") {
-      simulateProcessing("success");
-    }
-  }, []);
-
-  const handleCancelAction = async (
-    params: RefundAppointmentParams,
-    appointmentStatus: AppointmentStatus
-  ) => {
-    try {
-      const response = await createCancellationAction(
-        params,
-        appointmentStatus
-      );
-      if (response.code != 201) {
-        toast.error(response.message);
-        return;
-      }
-      toast.success(response.message);
-      setShowProcessing(true);
-      await simulateProcessing();
-    } catch (error) {
-      console.log("Cancellation failed:", error);
-      setShowProcessing(false);
-    }
-  };
+  });
 
   return {
     handleCancelAction,
-    showProcessing,
-    activeStep,
-    showSuccess,
-    setShowSuccess,
+    opened,
+    close,
   };
 };
 

@@ -1,6 +1,6 @@
 import DoctorBookingProfileStatus from "@/components/boxes/DoctorBookingProfileStatus";
 import CustomHeaders from "@/components/headers/CustomHeaders";
-import { getDoctorDetailsOnBooking } from "@/lib/actions/getActions";
+import { getDoctorDetailsOnBooking } from "@/lib/actions/patientGetActions";
 import { Grid, GridCol, Paper } from "@mantine/core";
 import Image from "next/image";
 import React, { Suspense } from "react";
@@ -14,7 +14,6 @@ const Bookinglayout = async ({
 }) => {
   const { doctorId } = await params;
   const response = await getDoctorDetailsOnBooking(doctorId);
-
   return (
     <Paper p={20} className=" min-h-screen" shadow="md" radius={"md"}>
       <CustomHeaders />
@@ -31,7 +30,8 @@ const Bookinglayout = async ({
             />
             <Suspense>
               <DoctorBookingProfileStatus
-                rating={response?.rating}
+                count={response?.ratingCount}
+                rating={response?.avgRating}
                 fullname={response?.fullname}
                 doctorId={doctorId}
                 specialization={response?.specialization}

@@ -2,17 +2,22 @@
 import { workSchedule } from "@/constants";
 import useCheckIfUserBookedASlot from "@/hooks/useCheckIfUserBookedASlot";
 import { useMedStore } from "@/providers/med-provider";
-import { addOrSubtractTime, getCalendarDateTime, parseResponse} from "@/utils/utilsFn";
+import {
+  addOrSubtractTime,
+  getCalendarDateTime,
+  parseResponse,
+} from "@/utils/utilsFn";
 import { Card, Pill, Rating, Skeleton, Text } from "@mantine/core";
 import { IconClockHour5 } from "@tabler/icons-react";
 import React from "react";
 
 type Props = {
   fullname: string;
-  rating: string[];
+  rating: number;
+  count: number;
   doctorId: string;
   specialization: string;
-  workingDays: string[] | undefined;
+  workingDays: string[] | null;
 };
 
 const DoctorBookingProfileStatus = ({
@@ -20,15 +25,9 @@ const DoctorBookingProfileStatus = ({
   rating,
   doctorId,
   specialization,
-  workingDays
+  workingDays,
 }: Props) => {
   const { dateTime, credentials } = useMedStore((state) => state);
-  const total =
-    rating?.length == 0
-      ? 1
-      : rating?.reduce((acc, val) => Number(acc) + Number(val), 0);
-  const totalCount = rating?.length ? rating?.length : 1;
-  const newRating = ((total as number) / totalCount) as number;
 
   const { data, isLoading, isSuccess } = useCheckIfUserBookedASlot(
     doctorId,
@@ -36,12 +35,13 @@ const DoctorBookingProfileStatus = ({
     credentials?.databaseId as string
   );
 
-  const newWorkingDays = workSchedule.filter(item => workingDays?.includes(item.value))?.map((item, index) => (
-    <Pill key={index} className=" border border-primary text-secondary">
-      {item.label}
-    </Pill>
-  ));
-
+  const newWorkingDays = workSchedule
+    .filter((item) => workingDays?.includes(item.value))
+    ?.map((item, index) => (
+      <Pill key={index} className=" border border-primary text-secondary">
+        {item.label}
+      </Pill>
+    ));
 
   return (
     <div className=" space-y-4">
@@ -53,16 +53,19 @@ const DoctorBookingProfileStatus = ({
         >
           Dr. {fullname}
         </Text>
-        <Pill.Group>
-          {newWorkingDays}
-        </Pill.Group>
+        <Pill.Group>{newWorkingDays}</Pill.Group>
         <div className="flex gap-2 items-center">
-          <Rating readOnly fractions={2} defaultValue={newRating} />
+          <Rating readOnly fractions={2} defaultValue={rating} />
           <Text>
-            {newRating.toFixed(1)}/({totalCount})
+            { rating ? rating.toFixed(1) : 1 }/5
           </Text>
         </div>
-        <Text c="m-gray" className="leading-[30px] capitalize mt-1 text-[16px] font-medium">{parseResponse(specialization)}</Text>
+        <Text
+          c="m-gray"
+          className="leading-[30px] capitalize mt-1 text-[16px] font-medium"
+        >
+          {parseResponse(specialization)}
+        </Text>
         {isSuccess && data && (
           <Text
             c="m-gray"

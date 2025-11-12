@@ -6,21 +6,16 @@ import {
   ClientRegistrationParams,
   PatientLoginParams,
   CreateDoctorProfileParams,
-  CreateAppointmentParams2,
-  RescheduleAppointmentParams,
-  PaymentDataType,
-  RefundAppointmentParams,
-  AppointmentStatus,
   ReviewParams,
 } from "@/types/actions.types";
 import { AdminPermissions, ROLES } from "@/types/store.types";
 import { cookies } from "next/headers";
 import { Query } from "node-appwrite";
-import { PaymentFormParams } from "../../types/actions.types";
 import { revalidatePath } from "next/cache";
 import { generateSecureOTP } from "@/utils/utilsFn";
 import argon2 from "argon2";
 import { History } from "../../../types/appwrite";
+
 
 /**
  * Checks the authentication status of the current user.
@@ -40,6 +35,8 @@ export async function checkAuthStatus() {
     if (!account) return null;
 
     const response = await account.get();
+
+    if (!response) return null;
 
     if (response?.prefs?.subRoleId) {
       const role = await database.getDocument(
@@ -140,6 +137,18 @@ export async function signOut() {
   }
 }
 
+export async function isAuthenticated() {
+  const { account } = await createSessionClient();
+  const response = await account?.get();
+  if (!response) {
+    await clearCookies();
+    throw new Error("Not authenticated");
+  }
+   
+   
+    return { code: 200, type: "success", message: "Logged out successfully" };
+}
+
 export async function loginClientAction(data: PatientLoginParams) {
   try {
     const { email, password } = data;
@@ -192,6 +201,7 @@ export async function createPatientAction(data: CreatePatientProfileParams) {
     );
     await users.updateEmailVerification(data?.userId as string, true);
     await users.updatePrefs(data?.userId as string, { databaseId: a.$id });
+    await users.updatePhone(data?.userId as string, data?.phone as string);
     return {
       code: 200,
       status: "success",
@@ -273,7 +283,7 @@ export async function getUserByEmail(email: string) {
       username: fetchedUserInfo?.name,
     };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return null;
   }
 }
@@ -281,7 +291,7 @@ export async function getUserByEmail(email: string) {
 export async function resetPasswordAction(userId: string, password: string, token: string) {
   try {
     const { users } = await createAdminClient();
-    if(((await users.get(userId)).password as string) !== token){
+    if (((await users.get(userId)).password as string) !== token) {
       return { code: 400, status: "error", message: "Invalid or expired token" };
     }
     await users.updatePassword(userId, password);
@@ -291,229 +301,10 @@ export async function resetPasswordAction(userId: string, password: string, toke
       message: "Password reset successful",
     };
   } catch (err) {
-    console.log(err);
-    return { code: 400, status: "error", message: "Failed to reset password" };
+    return { code: 400, status: "error", message: `${err}` };
   }
 }
 
-/**
- * Create an Appoinment to see a doctor
- *
- * A reusable server action that creates a booking for the patient.
- *
- * Props:
- * - items: An object of items. Each item must have a unique `id` property.
- *
- * Usage:
- * Pass an array of objects and specify how to render each item.
- * This component ensures type safety using TypeScript generics.
- */
-export async function createAppointmentAction(data: CreateAppointmentParams2) {
-  try {
-    const { database } = await createAdminClient();
-    const uniqueID = ID.unique();
-    await database.createDocument(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
-      uniqueID, // documentId
-      { ...data }
-    );
-    return {
-      code: 201,
-      status: "success",
-      message: "Appointment created successfully",
-    };
-  } catch (err) {
-    return { code: 500, status: "error", message: `${err}` };
-  }
-}
-
-/**
- * cancel an Appoinment to see a doctor
- *
- * A reusable server action that deletes a booking for the patient.
- *
- * Props:
- * - items: An object of items. Each item must have a unique `id` property.
- *
- * Usage:
- * Pass an array of objects and specify how to render each item.
- * This component ensures type safety using TypeScript generics.
- */
-export async function deleteAppointmentAction(uniqueID: string) {
-  try {
-    const { database } = await createAdminClient();
-    await database.deleteDocument(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
-      uniqueID // documentID
-    );
-    return {
-      code: 201,
-      status: "success",
-      message: "Appointment cancelled successfully",
-    };
-  } catch (err) {
-    return { code: 500, status: "error", message: `${err}` };
-  }
-}
-
-/**
- * Creates a payment record in the database for a completed appointment.
- *
- * This function is a server-side action that processes payment information
- * and stores it in the designated payment collection. It ensures that all
- * necessary payment details are recorded, including metadata and authorization.
- *
- * @param {PaymentFormParams & { reference: string; status: "success" | "failed"; metaData: string; paidOn: string; authorization: string }} data
- * - The payment data object containing all necessary fields for processing
- *   the payment. It includes information such as the payment reference,
- *   transaction status, metadata, and authorization.
- *
- * @returns {Promise<{ code: number; status: string; message: string }>}
- * - Returns a promise that resolves to an object indicating the result of
- *   the operation, including an HTTP status code, a status string, and a
- *   message describing the outcome.
- *
- * @throws Will log an error and return an error response if the payment
- *         record creation fails.
- */
-
-export const createPaymentAction = async (
-  data: PaymentFormParams & {
-    reference: string;
-    status: "success" | "failed";
-    metaData: string;
-    paidOn: string;
-    authorization: string;
-  }
-) => {
-  try {
-    const { database } = await createAdminClient();
-    const uniqueID = ID.unique();
-    await database.createDocument(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PAYMENT_ID!,
-      uniqueID, // documentId
-      {
-        metaData: data.metaData,
-        appointment: data.slotId,
-        amount: data.amount,
-        paidOn: data.paidOn,
-        reference: data.reference,
-        status: data.status,
-        patientId: data.patientId,
-        doctorId: data.doctorId,
-        authorization: data.authorization,
-      }
-    );
-    await database.updateDocument(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
-      data.slotId,
-      {
-        status: "approved",
-        capacity: Number(data.capacity),
-      }
-    );
-    return {
-      code: 201,
-      status: "success",
-      refId: data.reference,
-      message: "Appointment Paid and Completed successfully",
-    };
-  } catch (err) {
-    return { code: 500, status: "error", message: `${err}` };
-  }
-};
-
-export const reschedulePaymentAction = async (
-  data: RescheduleAppointmentParams & {
-    reference: string;
-    status: "success" | "failed";
-    metaData: string;
-    paidOn: string;
-    authorization: string;
-    type: PaymentDataType;
-  }
-) => {
-  try {
-    const { database } = await createAdminClient();
-    const uniqueId = ID.unique();
-    await database.createDocument(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PAYMENT_ID!,
-      uniqueId, // documentId
-      {
-        metaData: data.metaData,
-        appointment: data.slotId,
-        amount: data.amount,
-        paidOn: data.paidOn,
-        reference: data.reference,
-        status: data.status,
-        patientId: data.patientId,
-        doctorId: data.doctorId,
-        authorization: data.authorization,
-        type: data.type,
-      }
-    );
-    await database.updateDocument(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
-      data.slotId,
-      {
-        capacity: Number(data.capacity),
-        bookingDate: data.bookingDate,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        reason: data.reason,
-        status: data.appointmentStatus,
-      }
-    );
-    return {
-      code: 201,
-      status: "success",
-      refId: data.reference,
-      message: "Dear user, your appointment has been rescheduled successfully",
-    };
-  } catch (err) {
-    return { code: 500, status: "error", message: `${err}` };
-  }
-};
-
-export const createCancellationAction = async (
-  params: RefundAppointmentParams,
-  appointmentStatus: AppointmentStatus
-) => {
-  try {
-    const { database } = await createAdminClient();
-    const uniqueID = ID.unique();
-    await database.createDocument(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_CANCEL_REFUND_ID!,
-      uniqueID, // documentId
-      {
-        ...params,
-      }
-    );
-    await database.updateDocument(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
-      params.appointmentId,
-      {
-        cancelRefund: uniqueID,
-        status: appointmentStatus,
-      }
-    );
-    return {
-      code: 201,
-      status: "success",
-      message: "Appointment cancellation successful!",
-    };
-  } catch (err) {
-    return { code: 500, status: "error", message: `${err}` };
-  }
-};
 
 /* reviews */
 
@@ -686,7 +477,7 @@ export async function handleOTPVerifyAction(
   }
 }
 
-export const createHistory = async (data: History) => {
+export async function createHistory(data: History) {
   try {
     const { database } = await createAdminClient();
     await database.createDocument(

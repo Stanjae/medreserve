@@ -58,6 +58,7 @@
     "jszip": "^3.10.1",
     "mantine-form-zod-resolver": "^1.2.1",
     "motion": "^12.23.12",
+    "nanoid": "^5.1.6",
     "next": "15.3.3",
     "node-appwrite": "^17.0.0",
     "nodemailer": "^7.0.5",

@@ -4,6 +4,7 @@ import {
   EditUserModified,
   Gender,
   GenotypeType,
+  StatusHistoryItem,
 } from "@/types/actions.types";
 import { ROLES } from "@/types/store.types";
 
@@ -143,24 +144,6 @@ export const EditInitialPatientProfile = {
   privacyConsent: false as boolean,
 };
 
-/* export const userFormInitals = (role: ROLES) => {
-  const newAccount =
-    role == "admin"
-      ? { ...initialUsers, prefs: { subRoleId: "", subRole: "" } }
-      : { ...initialUsers };
-  const newProfile =
-    role == "admin"
-      ? initialAdminProfile
-      : role == "patient"
-        ? EditInitialPatientProfile
-        : {...EditInitialDoctorProfile,  ...EditSchedule};
-
-  return {
-    account: newAccount,
-    profile: newProfile,
-  };
-}; */
-
 export const userFormInitials = (
   role: ROLES,
   userId?: string
@@ -273,4 +256,41 @@ export const userEditFormArrange = (role: ROLES, userId?: string) => {
     account: newAccount,
     profile: newProfile,
   };
+};
+
+export const rescheduleAppointmentInitialValues = {
+  doctorId: "",
+  doctorName: "",
+  patientId: "",
+  slotId: "",
+  bookingDate: "",
+  startTime: "",
+  endTime: "",
+  reason: "",
+  reasonForReschedule: "",
+  fullname: "",
+  email: "",
+  address: "",
+  amount: 0,
+  phone: "",
+  capacity: "",
+  appointmentStatus: "",
+  isReschedueledPolicyConfirm: false,
+};
+
+export const cancelRefundInitialValues = {
+  bankName: "",
+  bankAccountNumber: "",
+  bankCode: "",
+  status: "",
+  reason: "",
+  refundAmount: 0,
+  cancellationFee: 0,
+  appointmentId: "",
+  doctorId: "",
+  patientId: "",
+  paymentId: "",
+  notes:"",
+  refundReference: "",
+  statusHistory: [] as StatusHistoryItem[],
 };

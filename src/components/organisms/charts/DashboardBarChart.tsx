@@ -3,12 +3,12 @@
 import useGetDashboardBarchartAnalytics from "@/hooks/useGetDashboardBarchartAnalytics";
 import { useMedStore } from "@/providers/med-provider";
 import { ComboboxItem, Group, Paper, Text } from "@mantine/core";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { BarChart } from "@mantine/charts";
 import "@mantine/charts/styles.css";
-import CustomInput from "../molecules/inputs/CustomInput";
 import { barChartData } from "@/constants";
 import dayjs from "dayjs";
+import CustomInput from "@/components/molecules/inputs/CustomInput";
 
 const DashboardBarChart = () => {
   const [value, setValue] = useState<ComboboxItem>(() =>

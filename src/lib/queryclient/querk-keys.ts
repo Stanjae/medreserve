@@ -16,6 +16,13 @@ export const QUERY_KEYS = {
     getMonthYearAppointments: "appointments-month-year",
     searchForAppointments: "search-for-appointments-by-id",
     getAdminAppointmentDetail: "get-admin-appointment-detail",
+
+    //patients
+    getAvailableDoctorsFilterAction: "get-available-doctors-filter-action",
+    checkIfUserBookedASlot: "check-if-user-booked-a-slot",
+    getAvailableSlots: "get-available-slots",
+    getPatientAppointments: "get-patient-appointments",
+    fetchAppointmentForReschedule: "fetch-appointment-for-reschedule",
   },
   HISTORY: {
     getAllHistory: "all-history",

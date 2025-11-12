@@ -1,8 +1,7 @@
 import {
   appointmentStatusData,
   appointmentTypeData,
-  refundStatus,
-  refundType,
+  REFUND_STATUSES,
 } from "@/constants";
 import { ROLES } from "@/types/store.types";
 import { isTodayAfterDateTime } from "@/utils/utilsFn";
@@ -235,24 +234,23 @@ export const UpdateBookingSchema = z
     patientId: z.string().nonempty("Patient ID is required"),
     doctorId: z.string().nonempty("Doctor ID is required"),
     doctorName: z.string().optional(),
-    paymentId: z.array(z.record(z.any())).optional(),
     bookingDate: z.coerce.string(),
     startTime: z.string(),
     endTime: z.string(),
     appointmentStatus: z.enum(appointmentStatusData as [string, ...string[]]),
-    reason: z.string().nonempty("Reasons for appointment is required"),
+    reasonForReschedule: z
+      .string()
+      .nonempty("Reasons for rescheduling is required"),
+    isReschedueledPolicyConfirm: z.boolean().refine((val) => val === true, {
+      message: "You must consent to privacy in order to proceed",
+    }),
     slotId: z.string().nonempty("Slot ID is required"),
     address: z.string().nonempty("Address is required"),
     fullname: z.string().nonempty("Full name is required"),
     email: z.string().email({ message: "Invalid email address" }),
     phone: z.string().nonempty("Phone number is required"),
     capacity: z.string().nonempty("Capacity is required"),
-    amount: z
-      .number()
-      .int("Amount must be an integer")
-      .positive("Amount must be positive")
-      .min(1, "Amount must be at least 1")
-      .max(100000, "Amount exceeds maximum allowed"),
+    amount: z.number().int("Amount must be an integer"),
   })
   .refine(
     (data) =>
@@ -281,37 +279,37 @@ export const PaymentFormSchema = z.object({
   capacity: z.string().nonempty("Capacity is required"),
 });
 
+const StatusHistoryItemSchema = z.object({
+  status: z.enum(Object.values(REFUND_STATUSES) as [string, ...string[]]),
+  timestamp: z.string(),
+  note: z.string().optional(),
+  updatedBy: z.string(),
+});
+
 export const RefundSchema = z.object({
   doctorId: z.string().nonempty("Doctor ID is required"),
   patientId: z.string().nonempty("Patient ID is required"),
   appointmentId: z.string().nonempty("Slot ID is required"),
+  paymentId: z.string().nonempty("Payment ID is required"),
+  refundReference: z.string().nonempty("Refund reference is required"),
   refundAmount: z
     .number()
     .int("Amount must be an integer")
-    .positive("Amount must be positive")
-    .min(1, "Amount must be at least 1")
-    .max(1000000, "Amount exceeds maximum allowed"),
-  consultationFee: z
-    .number()
-    .int("Amount must be an integer")
-    .positive("Amount must be positive")
-    .min(1, "Amount must be at least 1")
-    .max(1000000, "Amount exceeds maximum allowed"),
+    .positive("Amount must be positive"),
   cancellationFee: z
     .number()
     .int("Amount must be an integer")
-    .positive("Amount must be positive")
-    .min(1, "Amount must be at least 1")
-    .max(1000000, "Amount exceeds maximum allowed"),
-  type: z.enum(refundType as [string, ...string[]]),
+    .positive("Amount must be positive"),
   reason: z.string().nonempty("Reasons is required"),
-  status: z.enum(refundStatus as [string, ...string[]]),
+  notes: z.string().optional(),
+  status: z.enum(Object.values(REFUND_STATUSES) as [string, ...string[]]),
   bankCode: z.string().nonempty("Bank code is required"),
   bankName: z.string().nonempty("Bank name is required"),
   bankAccountNumber: z
     .string()
     .nonempty("Bank account number is required")
     .max(10, "Bank account number must be 10 digits"),
+  statusHistory: z.array(StatusHistoryItemSchema),
 });
 
 //EDIT PROFILES

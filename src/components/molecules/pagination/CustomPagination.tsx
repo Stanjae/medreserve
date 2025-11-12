@@ -1,7 +1,6 @@
 "use client";
 import { Pagination } from "@mantine/core";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React from "react";
 
 const CustomPagination = ({
   total,
@@ -29,10 +28,6 @@ const CustomPagination = ({
       <Pagination
         size={"lg"}
         value={Number(searchParams.get("page")) || 1}
-        /* getItemProps={(item) => {
-            if (!isPlaceholderData && dataHasMore) {
-            }
-          }} */
         onChange={handlePaginate}
         total={Math.ceil(total / 5)}
       />

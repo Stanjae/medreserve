@@ -30,6 +30,9 @@ import {
   genotypes,
   IdentificationTypes,
   medicalCourses,
+  newPrices,
+  pageHeadersLibrary,
+  REFUND_POLICY,
   schoolGrades,
   userAccountStatus,
   workSchedule,
@@ -64,7 +67,7 @@ export const handleFileUpload = async (file: File) => {
     const data = await response.json();
     return data?.fileUrl;
   } catch (err) {
-    console.log(err);
+    throw new Error(`${err}`);
   }
 };
 
@@ -135,6 +138,16 @@ export async function simulateFetchNin(
     }, delay);
   });
 }
+
+export const formatPageHeaders = (pathname: string): string => {
+  const resolvedPathname = pathname
+    .split("/")
+    .at(pathname.split("/").length - 1)
+  const removeQuery = resolvedPathname?.includes("?") ? resolvedPathname?.split("?")[0] : resolvedPathname
+  return pageHeadersLibrary[
+    removeQuery as keyof typeof pageHeadersLibrary
+  ];
+};
 
 export async function simulateFetchUniversities(
   delay: number
@@ -251,10 +264,10 @@ export function getCalendarDateTime(dateTimeString: string) {
   });
 }
 
-export function getAMPWAT(timeString: string) {
-  const watTime = dayjs.utc(timeString).tz("Africa/Lagos").subtract(1, "hour");
-  const formatted = watTime.format("hA [WAT]"); // "4PM WAT"
-  return formatted;
+export function getAMPWAT(dateTimeString: string) {
+  const watTime = dayjs.utc(dateTimeString).tz("Africa/Lagos").subtract(1, "hour");
+  return watTime.format("hA [WAT]"); // "4PM WAT"
+
 }
 
 export const getTimeFromNow = (dateTimeString: string, status = false) => {
@@ -642,16 +655,90 @@ export function formatCurrency(amount: number, currency = "NGN") {
   }).format(amount);
 }
 
-  const blobToBase64 = (blob: Blob): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
+const blobToBase64 = (blob: Blob): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 
-  export async function convertPdfBlobToBase64(PdfElement: JSX.Element): Promise<string> {
-    const blob = await pdf(PdfElement).toBlob();
-    return await blobToBase64(blob);
+export async function convertPdfBlobToBase64(
+  PdfElement: JSX.Element
+): Promise<string> {
+  const blob = await pdf(PdfElement).toBlob();
+  return await blobToBase64(blob);
+}
+
+export const getRescheduleFeeBasedOnBookingDate = (
+  dateTimeString: string,
+  specialization: string
+) => {
+  const startDate = dayjs(dateTimeString);
+  const initialFee =
+    newPrices.find((item) => item.value == specialization)?.price || 0;
+  
+  if (
+    dayjs().isBetween(
+      startDate.subtract(2, "day"),
+      startDate.subtract(1, "day"),
+      "minute"
+    )
+  ) {
+    return initialFee * 0.15;
+  } else if (
+    dayjs().isBetween(startDate.subtract(1, "day"), startDate, "minute")
+  ) {
+    return initialFee * 0.3;
+  } else if (isTodayAfterDateTime(dateTimeString, "minute")) {
+    return initialFee;
+  } else {
+    return 0;
   }
+};
 
+
+export function calculateRefundAmount(
+  appointmentDate: string,
+  appointmentTime: string,
+  originalAmount: number
+): { refundAmount: number; percentage: number; reason: string } {
+  const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
+  const now = new Date();
+  const hoursUntilAppointment = (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+  if (hoursUntilAppointment > REFUND_POLICY.MORE_THAN_24_HOURS.hours) {
+    return {
+      refundAmount: originalAmount,
+      percentage: 100,
+      reason: 'Cancelled more than 24 hours before appointment'
+    };
+  } else if (hoursUntilAppointment >= REFUND_POLICY.BETWEEN_12_24_HOURS.hours) {
+    return {
+      refundAmount: originalAmount * 0.5,
+      percentage: 50,
+      reason: 'Cancelled between 12-24 hours before appointment'
+    };
+  } else if (hoursUntilAppointment > 0) {
+    return {
+      refundAmount: 0,
+      percentage: 0,
+      reason: 'Cancelled less than 12 hours before appointment'
+    };
+  } else {
+    return {
+      refundAmount: 0,
+      percentage: 0,
+      reason: 'Appointment time has passed'
+    };
+  }
+}
+
+export function getRefundEligibility(
+  appointmentDate: string,
+  appointmentTime: string
+): boolean {
+  const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
+  const now = new Date();
+  return appointmentDateTime > now;
+}

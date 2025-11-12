@@ -83,10 +83,31 @@ export type CreateDoctorProfileParams = {
   workSchedule?: string[];
 };
 
-export type AppointmentStatus = "pending" | "approved" | "cancelled" | "refunded" | "completed" | "rescheduled" ;
+export type AppointmentStatus =
+  | "pending"
+  | "approved"
+  | "cancelled"
+  | "refunded"
+  | "completed"
+  | "rescheduled";
+
+  export type RefundStatus =
+    | "pending"
+    | "under_review"
+    | "approved"
+    | "processing_refund"
+    | "completed"
+  | "rejected";
+    
+  export type StatusHistoryItem =  {
+    status: RefundStatus;
+    timestamp: string;
+    note?: string;
+    updatedBy: string; // userId of admin or 'system'
+  }
 export type AppointmentType = "consultation" | "follow-up" | "emergency";
 export type PaymentDataType = "initial-fees" | "reschedule-fees";
-export type refundStatus = 'pending' | 'approved' | 'failed';
+
 export type CreateAppointMentParams = {
   doctorId: string;
   patientId: string;
@@ -94,7 +115,7 @@ export type CreateAppointMentParams = {
   startTime: string;
   endTime: string;
   notes: string;
-  status:AppointmentStatus;
+  status: AppointmentStatus;
 };
 
 export type CreateAppointmentParams2 = z.infer<typeof CreateBookingSchema>;
@@ -136,69 +157,81 @@ export type cancelAppointmentResponse = {
   doctorId: string;
   patientId: string;
   slotId: string;
-  refundStatus: refundStatus;
+  refundStatus: RefundStatus;
 };
 
-export type GetDoctorsMasonryResponse =   {
+export type GetDoctorsMasonryResponse = {
   id: string;
   fullname: string;
   profilePicture: string;
   specialization: string;
-  bio:string;
+  bio: string;
 };
-
 
 export type ReviewParams = {
   doctorId?: string | undefined;
   rating: number;
   reviewText: string;
-  type: 'doctor' | 'appointment';
+  type: "doctor" | "appointment";
   patientId: string | null | undefined;
   appointmentId?: string | undefined;
   anonymous?: boolean;
- _id?:string | null | undefined
-}
+  _id?: string | null | undefined;
+};
 
 export type DoctorReviewsResponse = {
   _id: string;
   rating: number;
   reviewText: string;
-  type: ReviewParams['type'];
+  type: ReviewParams["type"];
   anonymous: boolean;
   patientPicture: string;
   patientName: string;
   patientOccupation: string;
-}
+};
 
-export type SignupTabsType = 'pending-doctors' | 'verified-doctors' | 'patient' | 'suspended';
+export type SignupTabsType =
+  | "pending-doctors"
+  | "verified-doctors"
+  | "patient"
+  | "suspended";
 
 export type AssignUsersToNewRoleParams = {
   userId: string;
-  prefs: {[key: string]: string |undefined | null};
-}
+  prefs: { [key: string]: string | undefined | null };
+};
 
-export type EditAccountSubSectionType =  {
-    status: "suspended" | "active";
-    email: string;
-    phone: string;
-    username: string;
-    prefs?: {
+export type EditAccountSubSectionType = {
+  status: "suspended" | "active";
+  email: string;
+  phone: string;
+  username: string;
+  prefs?:
+    | {
         subRoleId?: string | undefined;
         subRole?: string | undefined;
-    } | undefined;
-}
+      }
+    | undefined;
+};
 
 export type Cadre = "housemanship" | "consultancy" | "residency";
-export type BloodGroupType = "a-positive" | "a-negative" | "b-positive" | "b-negative" | "ab-positive" | "ab-negative" | "o-positive" | "o-negative";
+export type BloodGroupType =
+  | "a-positive"
+  | "a-negative"
+  | "b-positive"
+  | "b-negative"
+  | "ab-positive"
+  | "ab-negative"
+  | "o-positive"
+  | "o-negative";
 export type GenotypeType = "AA" | "AS" | "SS";
 
 export type EditUserParams = {
   accountId: string | undefined;
-  profileId: string| undefined;
+  profileId: string | undefined;
   scheduleId?: string | null;
   role: string;
-}
-
+};
 
 export type EditUserModified = {
   account: {
@@ -220,7 +253,7 @@ export type EditUserModified = {
     userId: string;
     fullname: string;
     birthDate: string;
-    gender: Gender
+    gender: Gender;
     address: string;
     privacyConsent: boolean;
     profilePicture: string;

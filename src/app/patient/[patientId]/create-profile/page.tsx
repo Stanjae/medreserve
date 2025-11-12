@@ -3,7 +3,7 @@ import React from "react";
 
 const page = () => {
   return (
-    <main className="h-screen flex justify-center items-center create-profile-bg">
+    <main className="min-h-dvh md:h-screen flex justify-center items-center create-profile-bg">
       <CreateProfileForm />
     </main>
   );

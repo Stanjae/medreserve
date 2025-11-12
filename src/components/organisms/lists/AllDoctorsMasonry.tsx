@@ -1,12 +1,12 @@
 "use client";
 import { Box, Button, Group } from "@mantine/core";
 import React from "react";
-import CustomInput from "../molecules/inputs/CustomInput";
+import CustomInput from "../../molecules/inputs/CustomInput";
 import { doctorCategories } from "@/constants";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import useDoctorMasonryList from "@/hooks/useDoctorMasonryList";
-import DoctorMasonryCard from "../cards/DoctorMasonryCard";
-import MedReserveLoader from "../loaders/MedReserveLoader";
+import DoctorMasonryCard from "../../cards/DoctorMasonryCard";
+import MedReserveLoader from "../../loaders/MedReserveLoader";
 
 const AllDoctorsMasonry = () => {
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(

@@ -1,12 +1,7 @@
 import { getPatientBookingReference } from "@/lib/actions/getActions";
 import { getAMPWAT } from "@/utils/utilsFn";
-import { Button, Divider, Group, Text } from "@mantine/core";
-import React from "react";
-import GeneratePdfButton from "../boxes/NewPdf";
-import AppointmentReceipt from "../pdfTemplates/AppointmentReceipt";
-import PdfLayout from "../layout/PdfLayout";
-import { IconDownload } from "@tabler/icons-react";
-
+import {  Divider, Group, Text } from "@mantine/core";
+import GeneratePdfBox from "../molecules/boxes/GeneratePdfBox";
 
 const AppointmentReferenceCard = async ({
   paymentreferenceId,
@@ -21,25 +16,7 @@ const AppointmentReferenceCard = async ({
           <h4 className=" text-[26px] capitalize font-extrabold leading-[44px] mt-[0px] mb-[4px] text-left text-secondary">
             Dear, {metaData?.fullname}
           </h4>
-          <GeneratePdfButton
-            appointmentDate={response?.appointment?.bookingDate}
-            appointmentTime={getAMPWAT(
-              `${response?.appointment?.bookingDate}T${response?.appointment?.startTime}`
-            )}
-            doctorName={response?.doctorId?.fullname}
-            patientName={metaData?.fullname}
-            trigger={
-              <Button rightSection={<IconDownload />} radius={35}>
-                Download Receipt
-              </Button>
-            }
-            email={metaData?.email}
-            PdfElement={
-              <PdfLayout>
-                <AppointmentReceipt response={response} />
-              </PdfLayout>
-            }
-          />
+          <GeneratePdfBox response={response} />
         </Group>
 
         <p className=" text-[16px] font-semibold leading-[30px] mt-[4px] mb-[16px] text-left text-gray-600">
@@ -109,7 +86,7 @@ const AppointmentReferenceCard = async ({
               Booking Code:
             </Text>
             <Text className=" capitalize" fz={18} c="m-blue">
-             # {response?.appointment?.$id}
+              # {response?.appointment?.$id}
             </Text>
           </Group>
           <Divider variant="dotted" color={"m-cyan"} />
