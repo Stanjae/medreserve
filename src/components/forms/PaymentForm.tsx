@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { Grid, GridCol, Group, NumberInput } from "@mantine/core";
 import CustomInput from "../molecules/inputs/CustomInput";
 import { useForm } from "@mantine/form";
-import { initialPaymentForm, newPrices } from "@/constants";
+import { capacityData, initialPaymentForm, newPrices } from "@/constants";
 import { PaymentFormSchema } from "@/lib/schema/zod";
 import SubmitBtn from "../CButton/SubmitBtn";
 import { IconCircleDottedLetterP } from "@tabler/icons-react";
@@ -52,10 +52,11 @@ const PaymentForm = ({
     },
   });
 
+  const yun = newPrices.find(
+    (item) => item.value === response?.doctorSpecialization
+  );
+
   useEffect(() => {
-    const yun = newPrices.find(
-      (item) => item.value === response?.doctorSpecialization
-    );
     form.setValues({
       doctorId,
       patientId: credentials?.databaseId as string,
@@ -67,6 +68,11 @@ const PaymentForm = ({
     });
     form.setFieldValue("phone", response?.phone);
   }, [credentials, doctorId]);
+
+  form.watch("capacity", (input) => {
+    console.log("value", input.value);
+   form.setFieldValue("amount", yun?.price as number  * Number(input.value));
+  });
 
   const { handleTransaction } = useHandlePayments();
 
@@ -133,10 +139,7 @@ const PaymentForm = ({
             placeholder="Capacity of persons"
             withAsterisk
             radius={35}
-            data={[
-              { label: "1 Person", value: "1" },
-              { label: "2 Persons", value: "2" },
-            ]}
+            data={capacityData}
             key={form.key("capacity")}
             {...form.getInputProps("capacity")}
           />
@@ -150,7 +153,6 @@ const PaymentForm = ({
             size="md"
             prefix="&#8358;"
             hideControls
-            defaultValue={20000}
             allowNegative={false}
             allowDecimal={false}
             decimalScale={2}
