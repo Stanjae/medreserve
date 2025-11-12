@@ -78,7 +78,7 @@ export default function CancelAppointmentForm({
 }: CancelAppointmentProps) {
   const router = useRouter();
   const { data: banks } = useGetAllBanks();
-  const [steps, setSteps] = useState<number>(0);
+  const [steps, setSteps] = useState<number>(10);
   const [checked, setChecked] = useState<boolean>(false);
   const { credentials } = useMedStore((state) => state);
 
@@ -132,12 +132,14 @@ export default function CancelAppointmentForm({
       if (fetchedAppointment?.cancelRefund) {
         setSteps(4);
         return;
-      };
+      }else {
+        setSteps(0);
+      }
       const transformedData = transformCancelRefundData(fetchedAppointment);
       form.setValues(transformedData);
       form.setInitialValues(transformedData);
     }
-  }, [fetchedAppointment]);
+  }, [fetchedAppointment, setSteps]);
 
   const [newBankAccountNumber, setNewBankAccountNumber] = useState<string>();
 
@@ -189,8 +191,10 @@ export default function CancelAppointmentForm({
     },
   ];
 
+  const isFormValid = Object.keys(form.errors).length === 0;
+
   if (isFetchedLoading) {
-    <div className="flex justify-center items-center">
+    return <div className="flex justify-center items-center">
       <MedReserveLoader />
     </div>;
   }
@@ -258,7 +262,7 @@ export default function CancelAppointmentForm({
             </div>
             <div className="bg-white rounded-lg p-3 border border-red-200">
               <p className="text-sm text-gray-600 mb-1">Less than 12 hours</p>
-              <p className="text-xl font-bold text-red-600">No Refund</p>
+              <p className="text-xl font-bold text-red-600">6% Refund</p>
             </div>
             <div className="bg-white rounded-lg p-3 border border-red-200">
               <p className="text-sm text-gray-600 mb-1">After appointment</p>
@@ -585,6 +589,7 @@ export default function CancelAppointmentForm({
           <Button
             type="button"
             size="md"
+            disabled={!isFormValid}
             onClick={() => setSteps((prev) => prev + 1)}
           >
             Review Cancellation
@@ -689,7 +694,7 @@ export default function CancelAppointmentForm({
       <div className="relative">
         <Timeline
           active={cancelRecord?.length - 1}
-          bulletSize={24}
+          bulletSize={31}
           lineWidth={3}
         >
           {cancellationStatuses.map(({ icon: Icon, ...item }, index) => (

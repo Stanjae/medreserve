@@ -721,9 +721,9 @@ export function calculateRefundAmount(
     };
   } else if (hoursUntilAppointment > 0) {
     return {
-      refundAmount: 0,
-      percentage: 0,
-      reason: 'Cancelled less than 12 hours before appointment'
+      refundAmount: originalAmount * 0.06,
+      percentage: 6,
+      reason: "Cancelled less than 12 hours before appointment",
     };
   } else {
     return {

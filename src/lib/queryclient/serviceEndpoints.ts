@@ -1,9 +1,10 @@
 export const serviceEndpoints = {
   EMAILS: {
     sendEmail: "send-email",
-  verifyEmail: "verify-email",
-  confirmAppointment: "/api/medreserve/confirm-appointment",
-  rescheduleEmail: "/api/medreserve/reschedule-appointment",
+    verifyEmail: "verify-email",
+    confirmAppointment: "/api/medreserve/confirm-appointment",
+    rescheduleEmail: "/api/medreserve/reschedule-appointment",
+    cancelAppointment: "/api/medreserve/cancel-appointment",
   },
   PAYSTACK: {
     initializeTransaction: "/api/paystack/initialize-transaction",
@@ -11,5 +12,5 @@ export const serviceEndpoints = {
   },
   AUTH: {
     forgotPassword: "/api/medreserve/forgot-password",
-  }
+  },
 };

@@ -1,10 +1,22 @@
 "use server";
 import { createAdminClient } from "@/appwrite/appwrite";
-import { CreateAppointmentParams2, PaymentDataType, PaymentFormParams, RefundAppointmentParams, RescheduleAppointmentParams } from "@/types";
+import {
+  CreateAppointmentParams2,
+  PaymentDataType,
+  PaymentFormParams,
+  RefundAppointmentParams,
+  RescheduleAppointmentParams,
+} from "@/types";
 import { ID } from "node-appwrite";
 import { createHistory, isAuthenticated } from "./authActions";
-import { isTodayAfterDateTime } from "@/utils/utilsFn";
+import {
+  calculateRefundAmount,
+  formatCurrency,
+  getAMPM,
+  isTodayAfterDateTime,
+} from "@/utils/utilsFn";
 import { appointmentStatusData } from "@/constants";
+import dayjs from "dayjs";
 
 /**
  * Create a reservation to see a doctor
@@ -24,11 +36,11 @@ export async function createReservationAction(data: CreateAppointmentParams2) {
     await isAuthenticated();
 
     if (isTodayAfterDateTime(`${data.bookingDate} ${data.startTime}`, "hour")) {
-     return {
-       code: 403,
-       status: "success",
-       message: "You cannot book an appointment in the past.",
-     };
+      return {
+        code: 403,
+        status: "success",
+        message: "You cannot book an appointment in the past.",
+      };
     }
     const uniqueID = ID.unique();
     await database.createDocument(
@@ -80,7 +92,7 @@ export async function deleteReservationAction(uniqueID: string) {
   } catch (err) {
     throw new Error(`${err}`);
   }
-};
+}
 
 /**
  * Creates a payment record in the database for a completed appointment.
@@ -142,7 +154,13 @@ export const createPaymentAction = async (
       }
     );
 
-    await createHistory({action:"create", relatedEntityType:"payments", userId: data.userId, relatedEntityId: uniqueID, description: `Payment was made for an appointment by`});
+    await createHistory({
+      action: "create",
+      relatedEntityType: "payments",
+      userId: data.userId,
+      relatedEntityId: uniqueID,
+      description: `Payment was made for an appointment by`,
+    });
     return {
       code: 201,
       status: "success",
@@ -199,8 +217,20 @@ export const reschedulePaymentAction = async (
       }
     );
 
-    await createHistory({ action: "create", relatedEntityType: "payments", userId: data.userId, relatedEntityId: uniqueId, description: `Reschedule fees was made for an appointment by` });
-    await createHistory({ action: "update", relatedEntityType: "appointments", relatedEntityId: data.slotId, description: `Appointment was rescheduled by`, userId: data.userId });
+    await createHistory({
+      action: "create",
+      relatedEntityType: "payments",
+      userId: data.userId,
+      relatedEntityId: uniqueId,
+      description: `Reschedule fees was made for an appointment by`,
+    });
+    await createHistory({
+      action: "update",
+      relatedEntityType: "appointments",
+      relatedEntityId: data.slotId,
+      description: `Appointment was rescheduled by`,
+      userId: data.userId,
+    });
     return {
       code: 200,
       status: "success",
@@ -212,15 +242,18 @@ export const reschedulePaymentAction = async (
   }
 };
 
-
 //cancel-refund
-export const createCancellationAction = async (
- { notes, ...params}: RefundAppointmentParams
-) => {
+export const createCancellationAction = async ({
+  notes,
+  ...params
+}: RefundAppointmentParams) => {
   try {
     const { database } = await createAdminClient();
     const uniqueID = ID.unique();
-    const newParams = {...params, statusHistory:JSON.stringify(params.statusHistory)}
+    const newParams = {
+      ...params,
+      statusHistory: JSON.stringify(params.statusHistory),
+    };
     await database.createDocument(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_CANCEL_REFUND_ID!,
@@ -229,8 +262,8 @@ export const createCancellationAction = async (
         ...newParams,
       }
     );
-    console.log(notes)
-    await database.updateDocument(
+    console.log(notes);
+    const response = await database.updateDocument(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
       params.appointmentId,
@@ -239,10 +272,30 @@ export const createCancellationAction = async (
         status: appointmentStatusData[3],
       }
     );
+
+    const newData = {
+      email: response.patientId.email,
+      patientName: response.patientId.fullname,
+      doctorName: response.doctorId.fullname,
+      appointmentDate: response.bookingDate,
+      appointmentTime: `${getAMPM(response.startTime)} - ${getAMPM(response.endTime)}`,
+      cancellationReason: params.reason,
+      refundAmount: formatCurrency(params.refundAmount - params.cancellationFee),
+      refundPercentage: 
+        calculateRefundAmount(
+          response?.bookingDate,
+          response?.startTime,
+          params?.refundAmount
+        ).percentage,
+      refundReference: params.refundReference,
+      expectedRefundDate: dayjs().add(7, "day").format("YYYY-MM-DD"),
+      userId: response.patientId.userId,
+    };
     return {
       code: 201,
       status: "success",
       message: "Appointment cancellation successful!",
+      data: newData,
     };
   } catch (err) {
     throw new Error(`${err}`);
