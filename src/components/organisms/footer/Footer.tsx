@@ -22,8 +22,8 @@ import SubscribeForm from "../../forms/SubscribeForm";
 
 const Footer = () => {
   return (
-    <Box bg="m-blue" py={147} pos={"relative"}>
-      <section className="max-w-[calc(100%-316px)] mx-auto">
+    <Box bg="m-blue" className=" overflow-hidden md:py-[147px] py-[50px]  px-6 md:px-0">
+      <section className="md:max-w-[calc(100%-316px)] mx-auto">
         <div className=" flex justify-between">
           <Image
             width={185}

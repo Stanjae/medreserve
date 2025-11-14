@@ -9,7 +9,7 @@ const page = async ({ params }: { params: Promise<{ doctorId: string }> }) => {
   return (
     <main className="py-1">
       <section className="p-1">
-        <div className=" mx-auto max-w-[calc(100%-316px)]">
+        <div className=" mx-auto md:max-w-[calc(100%-316px)]">
           <section className=" mt-[150px]">
             <Suspense
               key={doctorId}
@@ -37,11 +37,11 @@ const page = async ({ params }: { params: Promise<{ doctorId: string }> }) => {
       </section>
 
       <section id="reviews" className="p-1 bg-[#EBF6FA]">
-        <div className=" mx-auto max-w-[calc(100%-726px)]">
+        <div className=" mx-auto md:max-w-[calc(100%-726px)]">
           {/* reviews section */}
           <section className="my-[120px]">
-            <div className=" flex  pb-[40px] mb-[10px] ">
-              <h2 className="text-secondary text-[40px] leading-[70px] font-extrabold tracking-[-0.8px] ">
+            <div className=" pb-[40px] mb-[10px] ">
+              <h2 className="text-secondary text-[40px] leading-[70px] font-extrabold tracking-[-0.8px] text-center md:text-left ">
                 Write a review
               </h2>
             </div>

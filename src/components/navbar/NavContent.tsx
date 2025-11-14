@@ -15,7 +15,7 @@ const NavContent = ({ py, bg }: { bg: string; py: string }) => {
       <Box
         mx="auto"
         py={py}
-        className="max-w-[calc(100%-128px)] items-center flex justify-between"
+        className="md:max-w-[calc(100%-128px)] items-center flex justify-between"
       >
         <MedReserveLogo />
 

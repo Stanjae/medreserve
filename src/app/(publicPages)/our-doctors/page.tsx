@@ -7,16 +7,15 @@ const page = () => {
   return (
     <main className="p-1">
       <section className="p-1">
-        <div className=" mx-auto max-w-[calc(100%-316px)]">
+        <div className=" mx-auto md:max-w-[calc(100%-316px)]">
           <section className=" mt-[130px]">
             <Text
               c="m-blue"
               ta="center"
               fw={800}
-              fz="60px"
-              lh="80px"
               mb="30px"
               lts="-1.2px"
+              className=" text-[45px] md:text-[60px] md:leading-[80px] leading-[50px] "
             >
               Meet our expert and
               <br /> qualified doctors.

@@ -7,6 +7,7 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import useDoctorMasonryList from "@/hooks/useDoctorMasonryList";
 import DoctorMasonryCard from "../../cards/DoctorMasonryCard";
 import MedReserveLoader from "../../loaders/MedReserveLoader";
+import { useScreenResolution } from "@/hooks/useScreenResolution";
 
 const AllDoctorsMasonry = () => {
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
@@ -15,6 +16,8 @@ const AllDoctorsMasonry = () => {
   const { data, isLoading, isSuccess } = useDoctorMasonryList(
     selectedCategory as string
   );
+
+  const resolution = useScreenResolution()
 
   return (
     <Box className="space-y-10">
@@ -48,7 +51,7 @@ const AllDoctorsMasonry = () => {
           <ResponsiveMasonry
             columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
           >
-            <Masonry style={{ gap: "24px" }}>
+            <Masonry style={{ gap: resolution.isMobile ? "360px" : "24px" }}>
               {data &&
                 data?.map((doctor, index) => (
                   <DoctorMasonryCard key={index} item={doctor} />

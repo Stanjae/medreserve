@@ -16,7 +16,7 @@ export default function RootLayout({
       <section className=" overflow-hidden w-full bg-[#EBF6FA] ">
         <NavContent py="30" bg="" />
         <Box
-          className="max-w-[calc(100%-316px)] mt-[101px] mb-[130px] space-y-[13px]"
+          className="md:max-w-[calc(100%-316px)] md:mt-[101px] mt-[60px] mb-[65px] md:mb-[130px] space-y-[13px] px-5 md:px-0"
           mx="auto"
         >
           <PageHeaders />
