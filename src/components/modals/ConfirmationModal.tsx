@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button, Divider, Group, Text } from "@mantine/core";
 import CustomModal from "./CustomModal";
 
 type Props = {
-  fn?: () => void;
+  fn?: () => Promise<any>;
   modalContent: string;
   modalHeader: string;
   btnText: string;
@@ -21,11 +22,11 @@ const ConfirmationModal = ({
     btnText,
     close
 }: Props) => {
-      const handleConfirm = (
+      const handleConfirm = async(
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
       ) => {
         e.stopPropagation();
-        if (fn) fn();
+        if (fn) await fn();
         close();
       };
   return (

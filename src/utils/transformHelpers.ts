@@ -1,10 +1,17 @@
 import {
-    RefundAppointmentParams,
+  RefundAppointmentParams,
   RescheduleAppointmentParams,
   TuseFetchAppointmentForReschedule,
 } from "@/types";
-import { calculateRefundAmount, getRescheduleFeeBasedOnBookingDate } from "./utilsFn";
-import { appointmentStatusData, cancellationRate, REFUND_STATUSES } from "@/constants";
+import {
+  calculateRefundAmount,
+  getRescheduleFeeBasedOnBookingDate,
+} from "./utilsFn";
+import {
+  appointmentStatusData,
+  cancellationRate,
+  REFUND_STATUSES,
+} from "@/constants";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 
@@ -37,14 +44,14 @@ export const transformToRescheduleData = (
 export const transformCancelRefundData = (
   data: TuseFetchAppointmentForReschedule
 ): RefundAppointmentParams => {
-    const initialRecord = data?.paymentId?.find(
-        (item) => item.type === "initial-fees"
-    );
-    const refunded = calculateRefundAmount(
-      data?.bookingDate,
-      data?.startTime,
-      initialRecord?.amount
-    );
+  const initialRecord = data?.paymentId?.find(
+    (item) => item.type === "initial-fees"
+  );
+  const refunded = calculateRefundAmount(
+    data?.bookingDate,
+    data?.startTime,
+    initialRecord?.amount as number
+  );
   return {
     bankName: "",
     bankAccountNumber: "",
@@ -52,7 +59,8 @@ export const transformCancelRefundData = (
     status: REFUND_STATUSES.PENDING,
     reason: "",
     refundAmount: refunded?.refundAmount,
-    cancellationFee: initialRecord?.amount * cancellationRate / 100,
+    cancellationFee:
+      ((initialRecord?.amount as number) * cancellationRate) / 100,
     appointmentId: data.$id,
     doctorId: data?.doctorId?.$id,
     patientId: data?.patientId?.$id,

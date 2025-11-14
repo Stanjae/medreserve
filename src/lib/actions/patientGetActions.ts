@@ -3,9 +3,12 @@ import { createAdminClient } from "@/appwrite/appwrite";
 import { cancel_refundStatusFilter } from "@/constants";
 import {
   TgetDoctorDetailsOnBooking,
+  TMedicalRecordResonse,
   TuseFetchAppointmentForReschedule,
 } from "@/types";
 import { Query } from "node-appwrite";
+import { MedicalRecord } from "../../../types/appwrite";
+import dayjs from "dayjs";
 
 export const getAvailableDoctorsFilterAction = async (
   specialty: string | null | undefined,
@@ -186,3 +189,45 @@ export async function fetchAppointmentByIdForReschedule(
   if (!response) throw new Error("No appointment found");
   return response as unknown as TuseFetchAppointmentForReschedule;
 }
+
+export const fetchMedicalRecords = async (
+  patientId: string,
+  dateRange: [string | null, string | null]
+): Promise<TMedicalRecordResonse> => {
+  const { database } = await createAdminClient();
+
+  const filters = [
+    Query.equal("patientId", patientId),
+    Query.orderDesc("$createdAt"),
+  ];
+  if (dateRange[0] && dateRange[1]) {
+    filters.push(Query.between("$createdAt", dateRange[0], dateRange[1]));
+  }
+  const response = await database.listDocuments(
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_MEDICAL_RECORDS_ID!,
+    filters
+  );
+  const isActive = response.documents.filter(
+    (doc) => doc.isPrescriptionActive && !doc.isPrescriptionCompleted
+  );
+  const doctorsVisited = response.documents.filter(
+    (doc) => doc.appointmentId.status == "completed"
+  );
+  const lastAppointment = response.documents.sort(
+    (a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime()
+  )[0];
+  if (!response) throw new Error("No medical records found");
+  return {
+    stats: {
+      total: response.total,
+      active: isActive.length,
+      doctorsVisited: doctorsVisited.length,
+      lastVisit: dayjs(lastAppointment.$createdAt).format("MMM DD"),
+    },
+    records: response.documents.map((doc) => ({
+      ...doc,
+      vitals: doc.vitals && JSON.parse(doc.vitals),
+    })) as unknown as MedicalRecord[],
+  };
+};

@@ -1,6 +1,6 @@
 
 import { ForwardRefExoticComponent, RefAttributes } from "react";
-import { CancelRefund, Payment } from "../../types/appwrite";
+import { CancelRefund, Payment, Reviews } from "../../types/appwrite";
 import { AppointmentStatus, AppointmentType, PaymentDataType } from "./actions.types";
 import { Icon, IconProps } from "@tabler/icons-react";
 
@@ -15,7 +15,7 @@ export type AppointmentColumnsType = {
   didPatientSeeDoctor: boolean;
   profilePicture: string;
   specialization: string;
-  rating: string[];
+  rating: Reviews[];
   bio: string;
   patientUserId: string;
   doctorUserId: string;

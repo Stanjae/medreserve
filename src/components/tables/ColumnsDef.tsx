@@ -16,9 +16,9 @@ import { IconArrowsUpDown } from "@tabler/icons-react";
 import { compareItems } from "@tanstack/match-sorter-utils";
 import { ColumnDef, SortingFn, sortingFns } from "@tanstack/react-table";
 import { CustomHoverCard } from "../hovercard/CustomHoverCard";
-import AppointmentTableHoverCard from "../cards/AppointmentTableHoverCard";
+import AppointmentTableHoverCard from "../cards/TableHoverDoctorCard";
 import { statusConfig } from "@/constants";
-import { ModifiedUser } from "../../../types/appwrite";
+import { MedicalRecord, ModifiedUser, Reviews } from "../../../types/appwrite";
 import dayjs from "dayjs";
 import { ROLES } from "@/types/store.types";
 
@@ -157,7 +157,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
           </p>
         }
       >
-        <AppointmentTableHoverCard row={row.original} />
+        <AppointmentTableHoverCard bio={row.original.bio} doctorName={row.original.doctorName} profilePicture={row.original.profilePicture} rating={row.original.rating} specialization={row.original.specialization } />
       </CustomHoverCard>
     ),
     filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
@@ -573,3 +573,136 @@ export const ColumnsUsersFn = (role: ROLES) => {
 
   return columnsUsers;
 };
+
+
+export const columnsMedicalRecords: ColumnDef<MedicalRecord, any>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        indeterminate={
+          table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
+        }
+        onChange={(event) =>
+          table.toggleAllPageRowsSelected(event.currentTarget.checked)
+        }
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        indeterminate={row.getIsSomeSelected() && !row.getIsSelected()}
+        onChange={(event) => row.toggleSelected(event.currentTarget.checked)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "diagnosis",
+    header: "Diagnosis",
+    cell: (info) => info.getValue(),
+    filterFn: "fuzzy", //using our custom fuzzy filter function
+    // filterFn: fuzzyFilter, //or just define with the function
+    sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+  },
+  {
+    accessorKey: "doctorName",
+    id: "doctorName",
+    cell: ({ row }) => (
+      <CustomHoverCard
+        props={{
+          width: 240,
+          shadow: "md",
+          withArrow: true,
+          openDelay: 200,
+          closeDelay: 400,
+        }}
+        trigger={
+          <p className="capitalize hover:underline">
+            Dr. {row.original?.appointmentId.doctorId?.fullname}
+          </p>
+        }
+      >
+        <AppointmentTableHoverCard
+          bio={row.original?.appointmentId.doctorId?.bio as string}
+          doctorName={row.original?.appointmentId.doctorId?.fullname as string}
+          profilePicture={
+            row.original?.appointmentId.doctorId?.profilePicture as string
+          }
+          rating={row.original?.appointmentId.doctorId?.reviewsId as Reviews[]}
+          specialization={
+            row.original?.appointmentId.doctorId?.specialization as string
+          }
+        />
+      </CustomHoverCard>
+    ),
+    filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="transparent"
+          className=" pl-0 text-[14.5px] font-bold text-black"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Doctor&apos;s Name
+          <IconArrowsUpDown size={13} />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.appointmentId?.bookingDate,
+    id: "bookingDate",
+    cell: (info) => info.getValue(),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="transparent"
+          className=" pl-0 text-[14.5px] font-bold text-black"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date of Visit
+          <IconArrowsUpDown size={13} />
+        </Button>
+      );
+    },
+    filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
+  },
+  {
+    accessorFn: (row) =>
+      `${getAMPM(row.appointmentId?.startTime)} - ${getAMPM(row.appointmentId?.endTime)}`,
+    id: "timeFrameTimeZone",
+    header: "Duration",
+    cell: (info) => info.getValue(),
+    filterFn: "fuzzy", //using our custom fuzzy filter function
+    // filterFn: fuzzyFilter, //or just define with the function
+    sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+  },
+ {
+    accessorFn: (row) => row.isPrescriptionCompleted,
+    id: "prescriptionStatus",
+    header: "Prescription Status",
+    cell: (info) => {
+      const statusKey = info.getValue() ? "completed" : "pending";
+      const config = statusConfig[statusKey];
+      const IconComponent = config.icon;
+      return (
+        <Badge
+          leftSection={<IconComponent size={12} />}
+          color={config.color}
+          variant={config.variant}
+        >
+          {statusKey}
+        </Badge>
+      );
+    },
+    //filterFn: "fuzzy", //using our custom fuzzy filter function
+    // filterFn: fuzzyFilter, //or just define with the function
+    sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+  },
+
+];

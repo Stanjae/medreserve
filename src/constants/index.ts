@@ -13,8 +13,9 @@ import {
 export const pageHeadersLibrary = {
   "our-doctors": "Doctor's details",
   "cancel-appointment": "Cancel Appointment",
-  "reschedule": "Reschedule Appointment",
-  "dashboard":"Dashboard"
+  reschedule: "Reschedule Appointment",
+  dashboard: "Dashboard",
+  "medical-records": "Medical Records",
 };
 
 export const IdentificationTypes = [
@@ -298,6 +299,13 @@ export const dashboardMetricsCardInfo = [
   { label: "Health Score", value: "healthscore" },
 ];
 
+export const medicalRecordsMetricsInfo = [
+  { label: "Total Record(s)", value: "total" },
+  { label: "Active Prescriptions", value: "active" },
+  { label: "Doctors Visited", value: "doctorsVisited" },
+  { label: "Last visit", value: "lastVisit" },
+];
+
 export const barChartData = [
   { label: "Jan - Jun", value: "first-half" },
   { label: "Jul - Dec", value: "second-half" },
@@ -377,7 +385,7 @@ export const statusConfig = {
   },
   rejected: {
     color: "red.7",
-    variant:'filled',
+    variant: "filled",
     icon: IconX,
     label: "Rejected",
   },
@@ -471,15 +479,12 @@ export const cancellationStatuses = [
   },
 ];
 
-
-
 export const userAccountStatus = [
   { label: "Active", value: "active" },
   { label: "Suspended", value: "suspended" },
-];  
+];
 
 export const durationOfVisit = "1 hour";
-
 
 export const TOAST_MESSAGES = {
   session_expired: {
@@ -506,37 +511,37 @@ export const TOAST_MESSAGES = {
 
 // constants/refund.ts
 export const REFUND_STATUSES = {
-  PENDING: 'pending',
-  UNDER_REVIEW: 'under_review',
-  APPROVED: 'approved',
-  PROCESSING_REFUND: 'processing_refund',
-  COMPLETED: 'completed',
-  REJECTED: 'rejected',
+  PENDING: "pending",
+  UNDER_REVIEW: "under_review",
+  APPROVED: "approved",
+  PROCESSING_REFUND: "processing_refund",
+  COMPLETED: "completed",
+  REJECTED: "rejected",
 } as const;
 
 export const REFUND_POLICY = {
   MORE_THAN_24_HOURS: {
     hours: 24,
     percentage: 100,
-    label: 'Full refund'
+    label: "Full refund",
   },
   BETWEEN_12_24_HOURS: {
     hours: 12,
     percentage: 50,
-    label: 'Partial refund'
+    label: "Partial refund",
   },
   LESS_THAN_12_HOURS: {
     hours: 0,
     percentage: 0,
-    label: 'No refund'
-  }
+    label: "No refund",
+  },
 };
 
 export const STATUS_LABELS = {
-  pending: 'Cancellation Requested',
-  under_review: 'Under Review',
-  approved: 'Approved',
-  processing_refund: 'Processing Refund',
-  completed: 'Refund Completed',
-  rejected: 'Rejected',
+  pending: "Cancellation Requested",
+  under_review: "Under Review",
+  approved: "Approved",
+  processing_refund: "Processing Refund",
+  completed: "Refund Completed",
+  rejected: "Rejected",
 };
