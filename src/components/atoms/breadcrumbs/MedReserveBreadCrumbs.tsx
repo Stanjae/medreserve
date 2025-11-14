@@ -20,15 +20,17 @@ const MedReserveBreadCrumbs = () => {
     );
   });
   return (
-    <div
-      className={
-        " py-[13.4px]  px-[28px] rounded-[25px] bg-white w-auto inline-block"
-      }
-    >
-      <Breadcrumbs separator={<IconActivityHeartbeat />} separatorMargin="md">
-        {newbreadCrumbs}
-      </Breadcrumbs>
-    </div>
+    <section className=" flex justify-center">
+      <div
+        className={
+          " py-[13.4px]  px-[28px] rounded-[25px] bg-white w-auto inline-block "
+        }
+      >
+        <Breadcrumbs separator={<IconActivityHeartbeat />} separatorMargin="md">
+          {newbreadCrumbs}
+        </Breadcrumbs>
+      </div>
+    </section>
   );
 };
 

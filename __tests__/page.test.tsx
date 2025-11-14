@@ -26,7 +26,7 @@ describe("Home Page", () => {
 
     // Check that one has the correct href
     const heroButton = buttons.find(
-      (btn) => btn.getAttribute("href") === "/book-appointment"
+      (btn) => btn.getAttribute("href") === "/auth/login"
     );
     expect(heroButton).toBeInTheDocument();
   });

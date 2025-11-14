@@ -10,13 +10,13 @@ import {
   Group,
   List,
   Paper,
-  Stack,
   Text,
 } from "@mantine/core";
 import Image from "next/image";
 import React from "react";
 import FirstDoc from "../../public/firstDoc.png";
 import Puzzle from "../../public/puzzle-1.png";
+import MotherChild from '../../public/mother_kid.png'
 import Link from "next/link";
 import {
   IconActivityHeartbeat,
@@ -31,40 +31,42 @@ import {
 } from "@/lib/api/mockData";
 import Footer from "@/components/organisms/footer/Footer";
 import { CAffix } from "@/components/affix/CAffix";
+import { useScreenResolution } from "@/hooks/useScreenResolution";
 
-const page = () => {
+const Page = () => {
+  const resolution = useScreenResolution()
   return (
     <main>
       {/* hero section */}
       <CAffix />
       <MainNavbar />
-      <section className=" overflow-hidden w-full hero-image min-h-screen">
+      <section className=" overflow-hidden w-full hero-image bg-lightcyan min-h-screen px-6 md:px-0">
         <NavContent py="30" bg="" />
 
         <Box
-          className="max-w-[calc(100%-316px)] mt-[182px] mb-[215px]"
+          className="md:max-w-[calc(100%-316px)] md:mt-[182px] md:mb-[215px]"
           mx="auto"
         >
           <Grid justify="center" align="center" overflow="hidden">
             <Grid.Col className=" space-y-5" span={{ base: 12, md: 6 }}>
-              <h1 className=" mb-6 -ml-0.5 font-extrabold leading-[100px] text-4xl md:text-6xl lg:text-[80px] text-secondary">
+              <h1 className=" mb-6 -ml-0.5 font-extrabold md:leading-[100px] leading-[60px] text-4xl md:text-6xl lg:text-[80px] text-secondary text-center md:text-left">
                 Doctors who
                 <br /> treat with care
               </h1>
 
-              <Text size="xl" c="m-gray" mb="40px" className=" leading-[34px]">
+              <Text size="xl" c="m-gray" mb="40px" className=" leading-[34px] md:text-left text-center">
                 Our skilled doctors have tremendous experience with wide range
                 of diseases to serve the needs of our patients
               </Text>
 
-              <Group>
+              <Group className=" md:justify-start justify-center">
                 <Button
                   component={Link}
-                  href={"/book-appointment"}
+                  href={"/auth/login"}
                   color="m-orange"
                   size="xl"
                   variant="filled"
-                  className=" hover:bg-secondary duration-500  font-extrabold rounded-full"
+                  className=" hover:bg-secondary duration-500  font-extrabold rounded-full w-full md:w-auto"
                 >
                   Book an Appointment
                 </Button>
@@ -75,7 +77,7 @@ const page = () => {
                   color="m-gray"
                   size="xl"
                   variant="white"
-                  className=" hover:text-white hover:bg-primary duration-500  font-extrabold rounded-full"
+                  className=" hover:text-white hover:bg-primary duration-500  font-extrabold rounded-full w-full md:w-auto"
                 >
                   Learn More
                 </Button>
@@ -83,9 +85,9 @@ const page = () => {
             </Grid.Col>
             <Grid.Col span={{ base: 12, md: 6 }}>
               <Image
-                width={500}
-                height={500}
-                className=" md:hidden w-full"
+                width={950}
+                height={950}
+                className=" md:hidden w-full object-cover"
                 alt=""
                 src={FirstDoc}
               />
@@ -94,18 +96,18 @@ const page = () => {
         </Box>
       </section>
 
-      <section className=" bg-secondary py-[95px] relative">
+      <section className=" bg-secondary py-[95px] relative px-6 md:px-0">
         <Image
           width={500}
           height={500}
-          className=" absolute right-[180px] -top-28 hidden w-[160px] h-[217px] md:block"
+          className=" absolute md:right-[180px] right-[5%] -top-28  w-[160px] h-[217px] block"
           alt=""
           src={Puzzle}
         />
 
-        <Box className="max-w-[calc(100%-316px)]" mx="auto">
+        <Box className="md:max-w-[calc(100%-316px)] mx-auto">
           <Grid
-            gutter={{ base: 5, xs: "md", md: "xl", xl: 130 }}
+            gutter={{ base:60, xs: "md", md: "xl", xl: 130 }}
             overflow="hidden"
           >
             <Grid.Col className=" space-y-5" span={{ base: 12, md: 5 }}>
@@ -181,30 +183,30 @@ const page = () => {
                 panel of expert doctors.
               </Text>
 
-              <>
+              <div>
                 <Button
                   component={Link}
-                  href={"/auth/sign-in"}
+                  href={"/our-doctors"}
                   color="m-orange"
-                  size="md"
+                  size={resolution.isMobile ? "lg" : "md"}
                   variant="filled"
-                  className=" capitalize hover:bg-background hover:text-graytext duration-500  font-extrabold rounded-full"
+                  className=" capitalize hover:bg-background hover:text-graytext duration-500  font-extrabold rounded-full w-full md:w-auto"
                 >
                   Meet our Doctors
                 </Button>
-              </>
+              </div>
             </Grid.Col>
           </Grid>
         </Box>
       </section>
 
-      <section className=" bg-backgroung py-[132px] relative">
-        <Box className="max-w-[calc(100%-316px)]" mx="auto">
-          <h1 className=" mb-6 -ml-0.5 tracking-tighter font-extrabold text-center leading-[80px] text-2xl md:text-4xl lg:text-6xl text-secondary">
+      <section className=" bg-background py-[132px] relative">
+        <Box className="md:max-w-[calc(100%-316px)]" mx="auto">
+          <h1 className=" mb-6 -ml-0.5 tracking-tighter font-extrabold text-center md:leading-[80px] text-2xl md:text-4xl lg:text-6xl text-secondary">
             Quality care for you and
             <br /> the ones you love.
           </h1>
-          <Grid className=" mt-12" gutter={{ xs: 30 }} overflow="hidden">
+          <Grid className=" mt-12 px-6" gutter={{ base: 30 }} overflow="hidden">
             {conditionData.map((item, index) => (
               <Grid.Col key={index} span={{ base: 12, md: 4 }}>
                 <Paper bg="m-cyan.0" shadow="xs" radius="lg">
@@ -257,41 +259,40 @@ const page = () => {
         </Box>
       </section>
 
-      <section className=" overflow-hidden w-full banner1">
+      <section className=" overflow-hidden w-full banner1 bg-lightcyan px-6 md:px-0">
         <Box
-          className="max-w-[calc(100%-316px)] mt-[132px] mb-[150px]"
+          className="md:max-w-[calc(100%-316px)] mt-[60px] md:mt-[132px] md:mb-[150px]"
           mx="auto"
         >
-          <Grid justify="center" align="center" overflow="hidden">
+          <Grid justify="center" align="center" overflow="hidden" >
             <Grid.Col className=" space-y-5" span={{ base: 12, md: 7 }}>
-              <h2 className=" mb-6 -ml-0.5 font-extrabold leading-[80px] text-2xl md:text-4xl lg:text-6xl text-secondary">
+              <h1 className=" mb-6 -ml-0.5 font-extrabold leading-[40px] md:leading-[80px] text-2xl md:text-4xl lg:text-6xl text-secondary">
                 We provide quality care
                 <br /> that treats everyone.
-              </h2>
+              </h1>
 
               <Text
                 size="xl"
-                c="m-gray.0"
                 mb="40px"
-                className=" leading-[34px]"
+                className=" leading-[34px] md:text-gray-50 text-graytext"
               >
                 Our skilled doctors have tremendous experience with wide range
                 of diseases to serve the needs of our patients
               </Text>
 
-              <Grid className=" mt-12" gutter={{ xs: 30 }} overflow="hidden">
+              <Grid className=" mt-12" gutter={{ base: 30 }} overflow="hidden">
                 {pricingPlansData.map((item, index) => (
                   <Grid.Col key={index} span={{ base: 12, md: 4 }}>
                     <Paper bg="m-background" shadow="xs" radius="lg">
                       <Center px={40} py={35}>
-                        <Stack align={"center"} gap={17} justify={"center"}>
+                        <div className={" flex md:flex-col flex-row items-center gap-4"}>
                           <div className=" bg-cyan-100 p-5 rounded-full text-primary flex justify-center items-center">
                             {item.icon}
                           </div>
                           <h4 className=" text-center text-secondary leading-[28px] text-xl font-bold ">
                             {item.title}
                           </h4>
-                        </Stack>
+                        </div>
                       </Center>
                     </Paper>
                   </Grid.Col>
@@ -301,13 +302,13 @@ const page = () => {
               <Group mt={50}>
                 <Button
                   component={Link}
-                  href={"/book-appointment"}
+                  href={"/auth/login"}
                   color="m-orange"
                   size="xl"
                   variant="filled"
-                  className=" hover:bg-secondary duration-500  font-extrabold rounded-full"
+                  className=" hover:bg-secondary duration-500  font-extrabold rounded-full md:w-auto w-full"
                 >
-                  View Planning Plans
+                  Book an Appointment
                 </Button>
               </Group>
             </Grid.Col>
@@ -315,9 +316,9 @@ const page = () => {
               <Image
                 width={500}
                 height={500}
-                className=" md:hidden w-full"
+                className=" md:hidden w-full mt-[100px] block"
                 alt=""
-                src={FirstDoc}
+                src={MotherChild}
               />
             </Grid.Col>
           </Grid>
@@ -325,11 +326,11 @@ const page = () => {
       </section>
 
       <section className=" bg-background py-[132px] relative">
-        <Box className="max-w-[calc(100%-316px)]" mx="auto">
-          <h1 className=" mb-6 -ml-0.5 tracking-tighter font-extrabold text-center leading-[80px] text-2xl md:text-4xl lg:text-6xl text-secondary">
+        <Box className="md:max-w-[calc(100%-316px)] px-6 md:px-0" mx="auto">
+          <h1 className=" mb-6 -ml-0.5 tracking-tighter font-extrabold text-center md:leading-[80px] leading-[40px] text-2xl md:text-4xl lg:text-6xl text-secondary">
             How does our online <br /> program works?
           </h1>
-          <Grid className=" mt-12" gutter={{ xs: 30 }} overflow="hidden">
+          <Grid className=" mt-12" gutter={{ base: 30 }} overflow="hidden">
             {onlinePrograms.map((item, index) => (
               <Grid.Col
                 key={index}
@@ -380,4 +381,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

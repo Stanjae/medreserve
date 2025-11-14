@@ -10,13 +10,13 @@ const DoctorDetails = async ({ doctorId }: { doctorId: string }) => {
 
   const ratingTotal = response?.reviewsId?.reduce((acc, val) => Number(acc) + Number(val?.rating), 0) || 1;
   const totatlCount = response?.reviewsId?.length || 1;
-  const averageRating = (ratingTotal / totatlCount).toFixed(1) || 0;
+  const averageRating = (ratingTotal / totatlCount).toFixed(1) || 1 ;
 
   return (
-    <Grid>
-      <GridCol pr={82} span={{ xs: 12, md: 7 }}>
+    <Grid overflow="hidden">
+      <GridCol className=" md:pr-[82px] px-6" span={{ xs: 12, md: 7 }} order={{ base: 2, md: 1 }}>
         <section className=" space-y-[25px]">
-          <h3 className=" text-secondary leading-[70px] font-extrabold text-[50px]">
+          <h3 className=" text-secondary md:leading-[70px] leading-[50px] font-extrabold md:text-[50px] text-[40px]  tracking-[0.32px]">
             Dr. {response?.fullname}
           </h3>
 
@@ -95,7 +95,12 @@ const DoctorDetails = async ({ doctorId }: { doctorId: string }) => {
           </section>
         </section>
       </GridCol>
-      <GridCol  pos={"relative"} span={{ base: 12, md: 5 }}>
+      <GridCol
+        pos={"relative"}
+        span={{ base: 12, md: 5 }}
+        order={{ base: 1, md: 2 }}
+        className=" mt-[140px] md:mt-0 "
+      >
         <section className="">
           <Image
             src={response?.profilePicture as string}
@@ -110,7 +115,7 @@ const DoctorDetails = async ({ doctorId }: { doctorId: string }) => {
             width={163}
             height={220}
             alt="puzzle"
-            className=" absolute -top-[45px] block -right-[55px]  z-30"
+            className=" absolute md:-top-[45px] top-[-33%] block md:-right-[55px] right-[5%]  z-30 md:w-[163px] md:h-[220px] w-[133px] h-[190px]"
           />
         </section>
       </GridCol>
