@@ -31,7 +31,7 @@ export async function getPatientBookingReference(
     [Query.equal("reference", paymentreferenceId)]
   );
   if (response.total == 0) return null;
-  return response.documents[0];
+  return response.documents[0] as unknown as Payment;
 }
 
 /* Tables */
@@ -74,7 +74,7 @@ export async function getPatientAppointmentTable(
     createdAt: slot.$createdAt,
     specialization: slot.doctorId.specialization,
     profilePicture: slot.doctorId.profilePicture,
-    rating: slot.doctorId.rating,
+    rating: slot.doctorId.reviewsId,
     bio: slot.doctorId.bio,
     patientUserId: slot.patientId.$id,
     doctorUserId: slot.doctorId.$id,

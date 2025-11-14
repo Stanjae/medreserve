@@ -27,4 +27,7 @@ export const QUERY_KEYS = {
   HISTORY: {
     getAllHistory: "all-history",
   },
+  MEDICAL_RECORDS: {
+    getAllMedicalRecords: "all-medical-records",
+  },
 };

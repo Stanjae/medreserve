@@ -8,6 +8,7 @@ import {
   IconHome,
   IconLicense,
   IconReportAnalytics,
+  IconReportMedical,
   IconSearch,
   IconStethoscope,
   IconUsersGroup,
@@ -79,7 +80,7 @@ export const patientDashLinks = [
     child: true,
     leftIcon: IconCalendarBolt,
     sub: [
-      { label: "Manage Appointments", href: 'index' },
+      { label: "Manage Appointments", href: "index" },
       { label: "Book an Appointment", href: "book-appointment" },
     ],
   },
@@ -88,6 +89,12 @@ export const patientDashLinks = [
     href: "payments",
     child: false,
     leftIcon: IconCoins,
+  },
+  {
+    label: "Medical Records",
+    href: "medical-records",
+    child: false,
+    leftIcon: IconReportMedical,
   },
 ];
 

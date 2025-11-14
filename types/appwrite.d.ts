@@ -62,9 +62,26 @@ export type Patient = Models.Document & {
   genotype: string | null;
 };
 
-export type Appointment = Models.Document & {};
-
-export type Payment = Models.Document & {};
+export type Appointment = Models.Document & {
+  status: string;
+  doctorId: Doctor | null;
+  patientId: Patient | null;
+  bookingDate: string; // Date the appointment was booked (required, max 30 characters)
+  startTime: string; // Start time of the appointment (required, max 30 characters)
+  endTime: string; // End time of the appointment (required, max 30 characters)
+  reason: string | null; // Reason for the appointment (nullable, max 100 characters)
+  capacity: number | null; // Capacity for the appointment (min: 1, max: 2, nullable)
+  didPatientSeeDoctor: boolean; // Whether the patient saw the doctor (required)
+  paymentId: Payment[];
+  appointmentType: string; // Type of appointment (e.g., consultancy)
+  cancelRefund: CancelRefund | null;
+  reviewsId: Reviews[] | null;
+  notes: string | null; // Notes for the appointment (nullable, max 150 characters)
+  reasonForCancellationByAdmin: string | null; // Admin cancellation reason (nullable, max 750 characters)
+  reasonForRescheduleByAdmin: string | null; // Admin reschedule reason (nullable, max 300 characters)
+  reasonForReschedule: string | null; // Reason for reschedule (nullable, max 250 characters)
+  medicalRecordsId: MedicalRecord;
+};
 
 export type DoctorAvailability = Models.Document & {
   doctorId: Doctor[] | null;
@@ -77,12 +94,12 @@ export type DoctorAvailability = Models.Document & {
 
 export type Payment = Models.Document & {
   metaData: string;
-  appointment: Appointment[] | null;
+  appointment: Appointment| null;
   amount: number;
   reference: string;
   status: string;
-  patientId: Patient[] | null;
-  doctorId: Doctor[] | null;
+  patientId: Patient | null;
+  doctorId: Doctor | null;
   authorization: string;
   paidOn: string;
 };
@@ -173,6 +190,27 @@ export type CancelRefund = Models.Document & {
   reviewedAt: string;
   processedAt: string;
   completedAt: string;
-  $createdAt: string;
-  $updatedAt: string;
+};
+
+export type Vitals = {
+  Temperature: string;
+  HeartRate: string;
+  BloodPressure: string;
+  Weight: string;
+  Height: string;
+};
+
+export type MedicalRecord = Models.Document & {
+  symptoms: string;
+  diagnosis: string; // Diagnosis made by the doctor, required (max 1000 characters)
+  treatmentPlan: string | null; // Treatment plan prescribed (max 1000 characters), nullable
+  appointmentId: Appointment; // Link to the appointment, One-to-One relationship (nullable)
+  vitals: Vitals | null;
+  patientId: string;
+  isPrescriptionActive: boolean;
+  isPrescriptionCompleted: boolean;
+  prescription: string | null;
+  isFollowUpRequired: boolean;
+  followUpDate: string | null;
+  notes: string | null;
 };

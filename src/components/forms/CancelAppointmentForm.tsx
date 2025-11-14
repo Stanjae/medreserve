@@ -103,7 +103,7 @@ export default function CancelAppointmentForm({
   const calculatedRefund = calculateRefundAmount(
     fetchedAppointment?.bookingDate as string,
     fetchedAppointment?.startTime as string,
-    consultationFeeRecord?.amount
+    consultationFeeRecord?.amount as number
   );
 
   const statusInfo =
@@ -384,7 +384,7 @@ export default function CancelAppointmentForm({
             <div>
               <p className="text-sm text-gray-600">Amount Paid</p>
               <p className="font-semibold text-gray-900">
-                {formatCurrency(consultationFeeRecord?.amount)}
+                {formatCurrency(consultationFeeRecord?.amount as number)}
               </p>
             </div>
           </div>
@@ -437,7 +437,7 @@ export default function CancelAppointmentForm({
               <div className="flex items-center justify-between mb-2">
                 <span className="text-gray-700">Original Amount:</span>
                 <span className="font-semibold text-gray-900">
-                  {formatCurrency(consultationFeeRecord?.amount)}
+                  {formatCurrency(consultationFeeRecord?.amount as number)}
                 </span>
               </div>
               <div className="flex items-center justify-between mb-2">
