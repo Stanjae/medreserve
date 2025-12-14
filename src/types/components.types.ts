@@ -113,3 +113,22 @@ export interface UseModalsStackReturnType<T extends string> {
     stackId: T;
   };
 }
+
+
+export type TabsDataType = {
+  label: string;
+  value: string;
+  count?: number;
+  status?: "unread" | "read";
+};
+
+export type AccountFieldsType ={
+    title: string;
+  key: string;
+    status?:boolean
+    fields: {
+      label: string;
+        type: "select" | "textarea" | "text" | "checkbox" | "password" | "datepicker" | "fileInput" | "phone_no" | "timepicker"
+      value: string;
+    }[];
+  };

@@ -606,3 +606,6 @@ export async function markAsCompletedAppointmentAction(
     return { code: 500, status: "error", message: `${err}` };
   }
 }
+
+
+

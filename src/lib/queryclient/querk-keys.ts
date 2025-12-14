@@ -30,4 +30,10 @@ export const QUERY_KEYS = {
   MEDICAL_RECORDS: {
     getAllMedicalRecords: "all-medical-records",
   },
+  PROFILES: {
+    getUserProfileForUpdate: "user-profile-for-update",
+  },
+  ACCOUNT: {
+    getCurrentAccount: "get-current-account",
+  },
 };

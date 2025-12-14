@@ -3,7 +3,7 @@
 import { newUsersTabData, usersStatusFilter } from "@/constants";
 import { ActionIcon, Button, Menu, Paper } from "@mantine/core";
 import { useMemo, useState } from "react";
-import MedReverseTabs from "../tabs/MedReverseTabs";
+import MedReverseTabs from "../atoms/tabs/MedReverseTabs";
 import useGetUsersCountTabs from "@/hooks/admin/useGetUsersCountTabs";
 import useGetAllUsers from "@/hooks/admin/useGetAllUsers";
 import { ROLES } from "@/types/store.types";

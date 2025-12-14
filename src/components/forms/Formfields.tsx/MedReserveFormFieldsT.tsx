@@ -2,13 +2,11 @@
 "use client";
 import CustomCancelBtn from "@/components/CButton/CustomCancelBtn";
 import SubmitBtn from "@/components/CButton/SubmitBtn";
-import { DropzoneWrapper } from "@/components/dropzone/Dropzone";
 import CustomInput from "@/components/molecules/inputs/CustomInput";
 import useGetMedInfo from "@/hooks/useGetMedId";
 import { ROLES } from "@/types/store.types";
 import { capitalizeFirst } from "@/utils/utilsFn";
 import {
-  ActionIcon,
   Button,
   ComboboxData,
   Fieldset,
@@ -18,20 +16,16 @@ import {
   Loader,
   MultiSelect,
   NumberInput,
-  Paper,
   Text,
 } from "@mantine/core";
 import { DateInputProps, getTimeRange, TimePicker } from "@mantine/dates";
 import {
   IconCalendar,
   IconCircleXFilled,
-  IconPhotoScan,
   IconRosetteDiscountCheckFilled,
   IconTrash,
-  IconX,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
-import Image from "next/image";
 import React, { useEffect } from "react";
 
 type CardItem = {
@@ -70,13 +64,11 @@ type Props = {
   submitBtnLoading: boolean;
   submitBtnAction: () => void;
   handleDeleteUser?: () => void;
-  file: File | string | null;
-  setFile: React.Dispatch<React.SetStateAction<string | File | null>>;
-  documentFile: string | File | null;
-  setDocumentFile: React.Dispatch<React.SetStateAction<string | File | null>>;
+  extraFields?: React.ReactNode;
+ resetState?: boolean;
 };
 
-const MedReserveFormFields = ({
+const MedReserveFormFieldsT = ({
   leftCard,
   rightCard,
   form,
@@ -89,10 +81,8 @@ const MedReserveFormFields = ({
   submitBtnLoading,
   submitBtnAction,
   handleDeleteUser,
-  setFile,
-  file,
-  setDocumentFile,
-  documentFile,
+  extraFields,
+  resetState
 }: Props) => {
   const { handleMedIdSearch, medInfo, loading } = useGetMedInfo(
     form.getValues().profile.medId
@@ -457,112 +447,14 @@ const MedReserveFormFields = ({
                 }
               })}
               <GridCol span={{ base: 12 }}>
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-x-3">
-                    <div className="relative">
-                      {form.getValues().profile.profilePicture ? (
-                        <Image
-                          src={
-                            form.getValues().profile.profilePicture as string
-                          }
-                          alt="profile picture"
-                          width={100}
-                          height={100}
-                          className=" rounded-full"
-                        />
-                      ) : (
-                        <span className=" flex items-center justify-center rounded-full w-[100px] h-[100px] bg-gray-100">
-                          <IconPhotoScan stroke={1.5} width={80} height={80} />
-                        </span>
-                      )}
-                      {form.getValues().profile.profilePicture && (
-                        <ActionIcon
-                          onClick={() => {
-                            setFile(null);
-                            form.setFieldValue("profile.profilePicture", "");
-                          }}
-                          className="absolute top-0 right-0"
-                          color="red"
-                          variant="filled"
-                          size="sm"
-                          radius="lg"
-                          aria-label="Remove profile picture"
-                        >
-                          <IconX stroke={1.5} />
-                        </ActionIcon>
-                      )}
-                    </div>
-
-                    <CustomInput
-                      label={`${form.getValues().profile.profilePicture ? "Update" : "Upload"} Profile Picture`}
-                      type="fileInput"
-                      allowPicture
-                      file={file}
-                      setFile={
-                        setFile as React.Dispatch<
-                          React.SetStateAction<File | null>
-                        >
-                      }
-                    />
-                  </div>
-
-                  {form.getValues().profile.identificationDocument ? (
-                    <section>
-                      <label className="text-sm">Identification Document</label>
-                      <Paper px="md" py="xs" radius="md">
-                        <div className="flex items-center justify-between gap-x-3 ">
-                          <span className="text-wrap">
-                            {form
-                              .getValues()
-                              .profile.identificationDocument?.split("/")[8] +
-                              ".pdf"}
-                          </span>
-                          <Button
-                            size="xs"
-                            variant="subtle"
-                            onClick={() => {
-                              setDocumentFile(null);
-                              form.setFieldValue(
-                                "profile.identificationDocument",
-                                ""
-                              );
-                            }}
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      </Paper>
-                    </section>
-                  ) : (
-                    <DropzoneWrapper
-                      maxSize={2 * 1024 * 1024}
-                      acceptFiles={[
-                        "application/pdf",
-                        "image/jpeg",
-                        "image/png",
-                      ]}
-                      maxFiles={1}
-                      file={documentFile as unknown as File}
-                      title="Drag or Upload your Identification Document"
-                      subtitle="Attach an identification document. A file should not exceed 2mb"
-                      handleDrop={
-                        setDocumentFile as React.Dispatch<
-                          React.SetStateAction<File | null>
-                        >
-                      }
-                      titleSize="md"
-                      titleAlign="center"
-                      groupHeight={200}
-                    />
-                  )}
-                </div>
+               {extraFields && extraFields}
               </GridCol>
             </Grid>
           </Fieldset>
 
           <Fieldset legend={"Actions"}>
             <Group grow>
-              {form.isDirty() && (
+              {resetState && (
                 <Button
                   onClick={resetActions}
                   radius={35}
@@ -589,4 +481,4 @@ const MedReserveFormFields = ({
   );
 };
 
-export default MedReserveFormFields;
+export default MedReserveFormFieldsT;

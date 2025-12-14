@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import DashboardLayout from "@/components/layout/PatientDashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import { patientDashLinks } from "@/constants/urls";
 
 export const metadata: Metadata = {

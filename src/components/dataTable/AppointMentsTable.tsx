@@ -32,7 +32,7 @@ import {
 } from "@/utils/utilsFn";
 import AppointmentReceipt from "../organisms/pdfTemplates/AppointmentReceipt";
 import { useDisclosure } from "@mantine/hooks";
-import MedReverseTabs from "../tabs/MedReverseTabs";
+import MedReverseTabs from "../atoms/tabs/MedReverseTabs";
 import useGetPatientsTabsCount from "@/hooks/useGetPatientsTabsCount";
 import MedReverseDrawer from "../drawers/MedReverseDrawer";
 import AppointmentDetails from "../boxes/AppointmentDetails";

@@ -6,7 +6,7 @@ import { columnsSignups } from "../tables/ColumnsDef";
 import { newSignupsTabData } from "@/constants";
 import { Checkbox, Paper, ScrollArea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import MedReverseTabs from "../tabs/MedReverseTabs";
+import MedReverseTabs from "../atoms/tabs/MedReverseTabs";
 import useGetAllSignUps from "@/hooks/tables/useGetAllSignUps";
 import React, { useEffect } from "react";
 import { ModifiedUser } from "../../../types/appwrite";

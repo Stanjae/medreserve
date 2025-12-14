@@ -2,7 +2,13 @@
 "use server";
 import { createAdminClient } from "@/appwrite/appwrite";
 import { Query } from "node-appwrite";
-import { Doctor, ModifiedHistory, Payment } from "../../../types/appwrite";
+import {
+  AdminProfile,
+  Doctor,
+  ModifiedHistory,
+  Patient,
+  Payment,
+} from "../../../types/appwrite";
 import {
   DoctorReviewsResponse,
   getDashboardBarchartAnalyticsType,
@@ -18,8 +24,8 @@ import {
   isTodayBeforeDateTime,
   isTodaySameWithDateTime,
 } from "@/utils/utilsFn";
-import { cancel_refundStatusFilter } from "@/constants";
-
+import { cancel_refundStatusFilter, userRoles } from "@/constants";
+import { ROLES } from "@/types";
 
 export async function getPatientBookingReference(
   paymentreferenceId: string
@@ -42,9 +48,9 @@ export async function getPatientAppointmentTable(
 ): Promise<getUserAppointmentsResponse> {
   const { database } = await createAdminClient();
   const response = await database.listDocuments(
-    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID! ,
-    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID! ,
-    [ Query.equal("patientId", [ patientId]) , Query.orderDesc("$createdAt") ]
+    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
+    [Query.equal("patientId", [patientId]), Query.orderDesc("$createdAt")]
   );
   let appointRecords;
   const customFn = getFilterByCreatedAt(activeTab);
@@ -425,18 +431,26 @@ export async function getDoctorDetails(doctorId: string): Promise<Doctor> {
 export async function getDoctorReviewByPatient(
   doctorId: string,
   patientId: string
-):Promise<ReviewParams | null> {
+): Promise<ReviewParams | null> {
   const { database } = await createAdminClient();
   const response = await database.listDocuments(
     process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
     process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
     [Query.equal("patientId", patientId), Query.equal("doctorId", doctorId)]
   );
-  if (response.total == 0) return null
+  if (response.total == 0) return null;
 
   const review = response?.documents[0];
 
-  return {_id: review?.$id, rating: review?.rating, reviewText: review?.reviewText,patientId: review?.patientId?.$id, doctorId: review?.doctorId?.$id, type: review?.type, anonymous: review?.anonymous};
+  return {
+    _id: review?.$id,
+    rating: review?.rating,
+    reviewText: review?.reviewText,
+    patientId: review?.patientId?.$id,
+    doctorId: review?.doctorId?.$id,
+    type: review?.type,
+    anonymous: review?.anonymous,
+  };
 }
 
 export async function getDoctorReviews(
@@ -446,7 +460,7 @@ export async function getDoctorReviews(
   const response = await database.listDocuments(
     process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
     process.env.NEXT_APPWRITE_DATABASE_COLLECTION_REVIEWS_ID!,
-    [ Query.equal("doctorId", doctorId), Query.equal("type", "doctor")]
+    [Query.equal("doctorId", doctorId), Query.equal("type", "doctor")]
   );
   if (response.total == 0) return null;
 
@@ -458,25 +472,103 @@ export async function getDoctorReviews(
     anonymous: review?.anonymous,
     patientPicture: review?.patientId?.profilePicture,
     patientName: review?.patientId?.fullname,
-    patientOccupation: review?.patientId?.occupation
+    patientOccupation: review?.patientId?.occupation,
   }));
 }
 
 export const getDocumentHistory = async (
   documentId: string
-): Promise<{documents:ModifiedHistory[], total: number}> => {
+): Promise<{ documents: ModifiedHistory[]; total: number }> => {
   try {
-    const { database} = await createAdminClient();
+    const { database } = await createAdminClient();
     const response = await database.listDocuments(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_HISTORY_ID!,
       [
         Query.equal("relatedEntityId", documentId),
         Query.orderDesc("$createdAt"),
-      ])
-    return response as {documents:ModifiedHistory[], total: number};
-    }catch (error) {
+      ]
+    );
+    return response as { documents: ModifiedHistory[]; total: number };
+  } catch (error) {
     console.error(error);
-    return {documents: [], total: 0};
+    return { documents: [], total: 0 };
   }
-}
+};
+
+export const getUserProfileForUpdateAction = async (role: ROLES, userId: string) => {
+  try {
+    if (!userRoles.includes(role)) {
+      throw new Error("Invalid role");
+    }
+    const collectionId =
+      role == "doctor"
+        ? process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_ID!
+        : role == "patient"
+          ? process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PATIENT_ID!
+          : process.env
+              .NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_ADMIN_PROFILE_ID!;
+    const { database } = await createAdminClient();
+
+    const profile = await database.listDocuments(
+      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+      collectionId,
+      [Query.equal("userId", userId)]
+    );
+
+    const newProfile = profile.documents[0] as unknown as
+      | Doctor
+      | Patient
+      | AdminProfile;
+
+    const emptyProfile = {
+      $id: newProfile?.$id,
+      fullname: newProfile?.fullname,
+      address: newProfile?.address,
+      bio: newProfile?.bio,
+      userId: newProfile?.userId,
+      gender: newProfile?.gender,
+      cadre: newProfile?.cadre,
+      birthDate: newProfile?.birthDate,
+      zipcode: newProfile?.zipcode,
+      experience: newProfile?.experience,
+      medId: newProfile?.medId,
+      jobSpecification: newProfile?.jobSpecification,
+      specialization: newProfile?.specialization,
+      grade: newProfile?.grade,
+      courseOfStudy: newProfile?.courseOfStudy,
+      university: newProfile?.university,
+      yearOfGraduation: newProfile?.yearOfGraduation,
+      degree: newProfile?.degree,
+      courseDuration: newProfile?.courseDuration,
+      stateOfOrigin: newProfile?.stateOfOrigin,
+      lga: newProfile?.lga,
+      identificationType: newProfile?.identificationType,
+      identificationNumber: newProfile?.identificationNumber,
+      identificationDocument: newProfile?.identificationDocument,
+      profilePicture: newProfile?.profilePicture,
+      privacyConsent: newProfile?.privacyConsent,
+      weekdayStartTime: newProfile?.doctorAvailability?.weekdayStartTime,
+      weekdayEndTime: newProfile?.doctorAvailability?.weekdayEndTime,
+      weekendStartTime: newProfile?.doctorAvailability?.weekendStartTime,
+      weekendEndTime: newProfile?.doctorAvailability?.weekendEndTime,
+      workSchedule: newProfile?.doctorAvailability?.workSchedule,
+      scheduleId: newProfile?.doctorAvailability?.$id,
+      occupation: newProfile?.occupation,
+      emergencyContactName: newProfile?.emergencyContactName,
+      emergencyContactNumber: newProfile?.emergencyContactNumber,
+      bloodGroup: newProfile?.bloodGroup,
+      genotype: newProfile?.genotype,
+      insurancePolicyNumber: newProfile?.insurancePolicyNumber,
+      insuranceProvider: newProfile?.insuranceProvider,
+      allergies: newProfile?.allergies,
+      currentMedication: newProfile?.currentMedication,
+      familyMedicalHistory: newProfile?.familyMedicalHistory,
+      pastMedicalHistory: newProfile?.pastMedicalHistory,
+    };
+
+    return { profile: emptyProfile };
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};

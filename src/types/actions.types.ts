@@ -7,6 +7,7 @@ import {
 import { z } from "zod";
 import { AppointmentColumnsType, PaymentColumnsType } from "./table.types";
 import { Payment } from "../../types/appwrite";
+import { ROLES } from "./store.types";
 
 export type ClientRegistrationParams = {
   username: string;
@@ -91,20 +92,20 @@ export type AppointmentStatus =
   | "completed"
   | "rescheduled";
 
-  export type RefundStatus =
-    | "pending"
-    | "under_review"
-    | "approved"
-    | "processing_refund"
-    | "completed"
+export type RefundStatus =
+  | "pending"
+  | "under_review"
+  | "approved"
+  | "processing_refund"
+  | "completed"
   | "rejected";
-    
-  export type StatusHistoryItem =  {
-    status: RefundStatus;
-    timestamp: string;
-    note?: string;
-    updatedBy: string; // userId of admin or 'system'
-  }
+
+export type StatusHistoryItem = {
+  status: RefundStatus;
+  timestamp: string;
+  note?: string;
+  updatedBy: string; // userId of admin or 'system'
+};
 export type AppointmentType = "consultation" | "follow-up" | "emergency";
 export type PaymentDataType = "initial-fees" | "reschedule-fees";
 
@@ -303,3 +304,75 @@ export type EditUserModified = {
     rating?: number;
   };
 };
+
+export type EditProfileType = {
+  profile: {
+    userId: string;
+    fullname: string;
+    birthDate: string;
+    gender: Gender;
+    address: string;
+    privacyConsent: boolean;
+    profilePicture: string;
+    identificationType?: string;
+    identificationNumber?: string;
+    // Role-specific fields will be added based on role
+    // Patient-specific
+    occupation?: string;
+    emergencyContactName?: string;
+    emergencyContactNumber?: string;
+    bloodGroup?: string;
+    genotype?: string;
+    insuranceProvider?: string;
+    insurancePolicyNumber?: string;
+    allergies?: string;
+    currentMedication?: string;
+    familyMedicalHistory?: string;
+    pastMedicalHistory?: string;
+    identificationDocument?: string;
+    // Doctor-specific
+    bio?: string;
+    stateOfOrigin?: string;
+    lga?: string;
+    zipcode?: string;
+    grade?: string;
+    university?: string;
+    courseOfStudy?: string;
+    degree?: string;
+    yearOfGraduation?: string;
+    courseDuration?: number;
+    cadre?: "consultancy" | "residency" | "housemanship";
+    experience?: number;
+    specialization?: string;
+    medId?: string;
+    weekdayStartTime?: string;
+    weekdayEndTime?: string;
+    weekendStartTime?: string;
+    weekendEndTime?: string;
+    workSchedule?: string[];
+    // Admin-specific
+    jobSpecification?: string;
+    // Additional database fields
+    $id?: string;
+    $permissions?: string[];
+    phone?: string;
+    reviewsId?: string;
+    rating?: number;
+  };
+};
+
+export type UpdateProfileParamsType = {
+  profile: EditProfileType["profile"];
+  profileId: string | undefined;
+  scheduleId?: string | null;
+  role: ROLES;
+}
+
+export type AccountSettingsSectionType = {
+  email: string | undefined;
+  name: string | undefined;
+  phone: string  | undefined;
+  role: ROLES;
+  emailVerification: boolean | undefined;
+  prefs: { [key: string]: string | undefined | null | boolean} | undefined;
+}

@@ -7,6 +7,7 @@ import {
   PatientLoginParams,
   CreateDoctorProfileParams,
   ReviewParams,
+  AccountSettingsSectionType,
 } from "@/types/actions.types";
 import { AdminPermissions, ROLES } from "@/types/store.types";
 import { cookies } from "next/headers";
@@ -15,7 +16,6 @@ import { revalidatePath } from "next/cache";
 import { generateSecureOTP } from "@/utils/utilsFn";
 import argon2 from "argon2";
 import { History } from "../../../types/appwrite";
-
 
 /**
  * Checks the authentication status of the current user.
@@ -70,7 +70,7 @@ export async function checkAuthStatus() {
     }
     return null;
   }
-};
+}
 
 export async function registerClientAction(
   data: ClientRegistrationParams,
@@ -144,9 +144,8 @@ export async function isAuthenticated() {
     await clearCookies();
     throw new Error("Not authenticated");
   }
-   
-   
-    return { code: 200, type: "success", message: "Logged out successfully" };
+
+  return { code: 200, type: "success", message: "Logged out successfully" };
 }
 
 export async function loginClientAction(data: PatientLoginParams) {
@@ -288,11 +287,19 @@ export async function getUserByEmail(email: string) {
   }
 }
 
-export async function resetPasswordAction(userId: string, password: string, token: string) {
+export async function resetPasswordAction(
+  userId: string,
+  password: string,
+  token: string
+) {
   try {
     const { users } = await createAdminClient();
     if (((await users.get(userId)).password as string) !== token) {
-      return { code: 400, status: "error", message: "Invalid or expired token" };
+      return {
+        code: 400,
+        status: "error",
+        message: "Invalid or expired token",
+      };
     }
     await users.updatePassword(userId, password);
     return {
@@ -304,7 +311,6 @@ export async function resetPasswordAction(userId: string, password: string, toke
     return { code: 400, status: "error", message: `${err}` };
   }
 }
-
 
 /* reviews */
 
@@ -364,7 +370,7 @@ export async function verifyPassword(
     console.error("Password verification error:", error);
     return false;
   }
-};
+}
 
 export async function loginAdminAction(data: PatientLoginParams) {
   try {
@@ -489,5 +495,133 @@ export async function createHistory(data: History) {
     return { code: 201, status: "success" };
   } catch (err) {
     return { code: 500, status: "error", message: `${err}` };
+  }
+}
+
+export const getCurrentAccountAction =
+  async (): Promise<AccountSettingsSectionType> => {
+    try {
+      const { account } = await createSessionClient();
+      const response = await account?.get();
+      return {
+        email: response?.email,
+        name: response?.name,
+        phone: response?.phone,
+        role: response?.labels[0] as ROLES,
+        emailVerification: response?.emailVerification,
+        prefs: response?.prefs,
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch current account: ${error}`);
+    }
+  };
+
+export const updateCurrentAccountNameAction = async (payload: {
+  name: string;
+}): Promise<{ code: number; status: string; message: string }> => {
+  try {
+    const { account } = await createSessionClient();
+    await account?.updateName(payload.name);
+    return {
+      code: 200,
+      status: "success",
+      message: "Account updated successfully",
+    };
+  } catch (error) {
+    throw new Error(`Failed to update current account: ${error}`);
+  }
+};
+
+export const updateCurrentAccountEmailAction = async (payload: {
+  email: string;
+  password: string;
+}): Promise<{ code: number; status: string; message: string }> => {
+  try {
+    const { account } = await createSessionClient();
+    const { users } = await createAdminClient();
+    const response = await account?.updateEmail(
+      payload.email,
+      payload.password
+    );
+    await users?.updateEmailVerification(response?.$id as string, true);
+    return {
+      code: 200,
+      status: "success",
+      message: "Account updated successfully",
+    };
+  } catch (error) {
+    throw new Error(`Failed to update current account: ${error}`);
+  }
+};
+
+export const updateCurrentAccountPhoneAction = async (payload: {
+  phone: string;
+}): Promise<{ code: number; status: string; message: string }> => {
+  try {
+    const { account } = await createSessionClient();
+    const { users, database } = await createAdminClient();
+    const response = await account?.get();
+    await users?.updatePhone(response?.$id as string, payload.phone);
+    const userProfileId = response?.prefs?.databaseId;
+    const role = response?.labels[0];
+    const collectionId =
+      role == "doctor"
+        ? process.env.NEXT_APPWRITE_DATABASE_COLLECTION_DOCTOR_ID!
+        : role == "patient"
+          ? process.env.NEXT_APPWRITE_DATABASE_COLLECTION_PATIENT_ID!
+          : process.env
+              .NEXT_PUBLIC_APPWRITE_DATABASE_COLLECTION_ADMIN_PROFILE_ID!;
+    if (userProfileId) {
+      await database.updateDocument(
+        process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
+        collectionId,
+        userProfileId,
+        { phone: payload.phone }
+      );
+    }
+    return {
+      code: 200,
+      status: "success",
+      message: "Account Phone number updated successfully",
+    };
+  } catch (error) {
+    throw new Error(`Failed to update current account: ${error}`);
+  }
+};
+
+export const updateCurrentAccountPasswordAction = async (payload: {
+  password: string;
+  oldPassword: string;
+}): Promise<{ code: number; status: string; message: string }> => {
+  try {
+    const { account } = await createSessionClient();
+
+    await account?.updatePassword(payload.password, payload.oldPassword);
+    return {
+      code: 200,
+      status: "success",
+      message: "Account Password updated successfully",
+    };
+  } catch (error) {
+    throw new Error(`Failed to update current account: ${error}`);
+  }
+};
+
+export const updateCurrentAccountPrefsAction = async (payload: {
+  [key: string]: string | boolean | null | undefined;
+}): Promise<{ code: number; status: string; message: string }> => {
+  try {
+    const { account } = await createSessionClient();
+
+    const response = await account?.get();
+
+    await account?.updatePrefs({ ...response?.prefs, ...payload });
+    return {
+      code: 200,
+      status: "success",
+      message: "Account Preferences updated successfully",
+    };
+  } catch (error) {
+    throw new Error(`Failed to update current account: ${error}`);
   }
 };

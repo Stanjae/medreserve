@@ -15,7 +15,7 @@ import {
   Divider,
 } from "@mantine/core";
 import MedReserveLogo from "@/components/atoms/logo/MedReserveLogo";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatPageHeaders, handleNavLinks } from "@/utils/utilsFn";
 import { useMedStore } from "@/providers/med-provider";
@@ -53,6 +53,13 @@ export default function DashboardLayout({
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
   const pathname = usePathname();
+
+  const router = useRouter();
+
+  const handleRouting = (params: string) => {
+    router.push(`/${role}/${credentials?.userId}/dashboard/${params}`);
+  }
+
   const navigationRefined = handleNavLinks(
     role,
     adminPermissions?.type,
@@ -162,12 +169,14 @@ export default function DashboardLayout({
                 <Menu.Item
                   className=" text-[17px]"
                   leftSection={<IconSettings size={17} />}
+                  onClick={() => handleRouting("settings")}
                 >
                   Settings
                 </Menu.Item>
                 <Menu.Item
                   className=" text-[17px]"
                   leftSection={<IconUserCircle size={17} />}
+                  onClick={() => handleRouting("profile")}
                 >
                   Profile
                 </Menu.Item>

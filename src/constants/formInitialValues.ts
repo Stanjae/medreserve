@@ -1,6 +1,8 @@
+import { AccountFieldsType } from "@/types";
 import {
   BloodGroupType,
   Cadre,
+  EditProfileType,
   EditUserModified,
   Gender,
   GenotypeType,
@@ -290,7 +292,120 @@ export const cancelRefundInitialValues = {
   doctorId: "",
   patientId: "",
   paymentId: "",
-  notes:"",
+  notes: "",
   refundReference: "",
   statusHistory: [] as StatusHistoryItem[],
+};
+
+export const profileFormInitials = (role: ROLES): EditProfileType => {
+  const baseUser: EditProfileType = {
+    profile: {
+      userId: "",
+      fullname: "",
+      birthDate: "",
+      gender: "" as Gender,
+      address: "",
+      privacyConsent: false,
+      profilePicture: "",
+    },
+  };
+
+  // Add role-specific fields
+  if (role === "patient") {
+    baseUser.profile = {
+      ...baseUser.profile,
+      occupation: "",
+      emergencyContactName: "",
+      emergencyContactNumber: "",
+      bloodGroup: "o-positive",
+      genotype: "AA",
+      insuranceProvider: "",
+      insurancePolicyNumber: "",
+      identificationDocument: "",
+    };
+  } else if (role === "doctor") {
+    baseUser.profile = {
+      ...baseUser.profile,
+      bio: "",
+      stateOfOrigin: "",
+      lga: "",
+      university: "",
+      courseOfStudy: "",
+      degree: "",
+      yearOfGraduation: "",
+      courseDuration: 0,
+      cadre: "housemanship",
+      experience: 0,
+      medId: "",
+      specialization: "",
+      identificationType: "",
+      identificationNumber: "",
+      weekdayStartTime: "",
+      weekdayEndTime: "",
+      weekendStartTime: "",
+      weekendEndTime: "",
+      workSchedule: [],
+    };
+  } else if (role === "admin") {
+    baseUser.profile = {
+      ...baseUser.profile,
+      jobSpecification: "",
+      identificationType: "",
+      identificationNumber: "",
+    };
+  }
+
+  return baseUser;
+};
+
+export const profileEditArrangeFields = (role: ROLES) => {
+  const newProfile =
+    role == "admin"
+      ? initialAdminProfile
+      : role == "patient"
+        ? EditInitialPatientProfile
+        : EditInitialDoctorProfile;
+
+  if (role == "doctor") {
+    return {
+      profile: newProfile,
+      schedule: EditSchedule,
+    };
+  }
+
+  return {
+    profile: newProfile,
+  };
+};
+
+export const accountSettingsInitialValues = (): AccountFieldsType[] => {
+  return [
+    {
+      title: "Username",
+      key: "name",
+      fields: [{ label: "Username", type: "text", value: "name" }],
+    },
+    {
+      title: "Email",
+      status: true,
+      key: "email",
+      fields: [
+        { label: "Email", type: "text", value: "email" },
+        { label: "Password", type: "password", value: "password" },
+      ],
+    },
+    {
+      title: "Phone Number",
+      key: "phone",
+      fields: [{ label: "Phone Number", type: "phone_no", value: "phone" }],
+    },
+    {
+      title: "Password",
+      key: "password",
+      fields: [
+        { label: "old Password", type: "password", value: "oldPassword" },
+        { label: "confirm New Password", type: "password", value: "password" },
+      ],
+    },
+  ];
 };
