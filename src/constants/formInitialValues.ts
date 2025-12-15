@@ -403,8 +403,8 @@ export const accountSettingsInitialValues = (): AccountFieldsType[] => {
       title: "Password",
       key: "password",
       fields: [
-        { label: "old Password", type: "password", value: "oldPassword" },
-        { label: "confirm New Password", type: "password", value: "password" },
+        { label: "Old Password", type: "password", value: "oldPassword" },
+        { label: "Confirm New Password", type: "password", value: "password" },
       ],
     },
   ];
