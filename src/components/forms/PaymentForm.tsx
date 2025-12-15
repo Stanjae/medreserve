@@ -112,7 +112,6 @@ const PaymentForm = ({
             type="phone_no"
             label="Phone Number"
             placeholder="Enter your Phone Number"
-            className=" phone-no"
             value={response?.phone}
             key={form.key("phone")}
             {...form.getInputProps("phone")}

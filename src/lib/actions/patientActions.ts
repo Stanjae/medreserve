@@ -305,21 +305,20 @@ export const createCancellationAction = async ({
 
 export const markPrescriptionAsCompleted = async (id: string) => {
   try {
-      const { database } = await createAdminClient();
+    const { database } = await createAdminClient();
     await database.updateDocument(
       process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
       process.env.NEXT_APPWRITE_DATABASE_COLLECTION_MEDICAL_RECORDS_ID!,
       id,
-      { isPrescriptionCompleted : true }
+      { isPrescriptionCompleted: true }
     );
     return {
       code: 200,
       status: "success",
       message: "Prescription marked as completed",
     };
-  }catch(err) {
+  } catch (err) {
     throw new Error(`${err}`);
   }
+};
 
-  
-}

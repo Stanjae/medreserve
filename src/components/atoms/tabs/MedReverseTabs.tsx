@@ -1,14 +1,10 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Badge, Tabs } from "@mantine/core";
+import { TabsDataType } from "@/types";
 
 type Props = {
-  tabs: {
-    label: string;
-    value: string;
-    count: number;
-    status: "unread" | "read";
-  }[];
+  tabs:TabsDataType[];
   tabsGrow?: boolean;
   justify?: "center" | "flex-start" | "flex-end" | "space-between";
   tabJustify?: "justify-center" | "flex-start" | "flex-end" | "space-between";
@@ -47,7 +43,7 @@ function MedReverseTabs({ tabs, tabsGrow = false, justify="flex-start", tabJusti
           >
             <div className={`flex items-center gap-2 ${tabJustify}`}>
               {item?.label}{" "}
-              {item.count == 0 ? null : (
+              {(item.count === 0 || !item.count) ? null : (
                 <Badge
                   size="sm"
                   color={item?.status === "unread" ? "red" : "gray"}

@@ -31,7 +31,7 @@ const CustomInput = (props: INPUTFORMPROPS) => {
           <label className=" leading-[21.75px] font-medium text-sm">
             {props.label}
           </label>
-          <PhoneInput {...props} />
+          <PhoneInput className="phone-no" {...props} />
         </div>
       )}
 
@@ -58,7 +58,7 @@ const CustomInput = (props: INPUTFORMPROPS) => {
 
           {props.file && (
             <Text size="sm" className=" truncate" ta="center" mt="sm">
-              Picked file: {props.file instanceof File ? props?.file?.name : ''}
+              Picked file: {props.file instanceof File ? props?.file?.name : ""}
             </Text>
           )}
         </div>

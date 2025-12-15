@@ -13,9 +13,11 @@ import {
 export const pageHeadersLibrary = {
   "our-doctors": "Doctor's details",
   "cancel-appointment": "Cancel Appointment",
-  reschedule: "Reschedule Appointment",
-  dashboard: "Dashboard",
+  "reschedule": "Reschedule Appointment",
+  "dashboard": "Dashboard",
   "medical-records": "Medical Records",
+  "profile": "Profile",
+  "settings": "Settings",
 };
 
 export const IdentificationTypes = [
@@ -545,3 +547,28 @@ export const STATUS_LABELS = {
   completed: "Refund Completed",
   rejected: "Rejected",
 };
+
+
+export const SettingsTabsData = [
+  { label: "Overview", value: "overview" },
+  {label:"Notifications",value:"notifications"},
+  {label:"Payment Methods",value:"payment-methods"},
+];
+
+export const notificationSettingsData = [
+    {
+      key: "emailNotifications",
+      label: "Email Notifications",
+      desc: "Receive updates via email",
+    },
+    {
+      key: "appointmentReminders",
+      label: "Appointment Reminders",
+      desc: "Get reminders before appointments",
+    },
+    {
+      key: "newsletters",
+      label: "Health Newsletters",
+      desc: "Receive health tips and news",
+    },
+  ];

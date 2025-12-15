@@ -483,3 +483,37 @@ export const userSchema = (role: ROLES, userId?: string) => {
 };
 
 export type UserModified = z.infer<ReturnType<typeof userSchema>>;
+
+export const profileSchema = (role: ROLES) => {
+  const profileSchema =
+    role === "patient"
+      ? InitialPatientFormValidation
+      : role === "admin"
+        ? initialAdminProfileSchema
+        : InitialDoctorFormValidation;
+
+  return z.object({
+    profile: profileSchema,
+  });
+};
+
+export type ProfileModified = z.infer<ReturnType<typeof profileSchema>>;
+
+export const accountSettingsSchema = {
+  email: z.object({
+    email: z.string().email(),
+    password: passwordSchema,
+  }),
+  name: z.object({
+    name: z.string(),
+  }),
+  phone: z.object({
+    phone: z
+      .string()
+      .refine((phone) => /^\+\d{10,15}$/.test(phone), "Invalid phone number"),
+  }),
+  password: z.object({
+    password: passwordSchema,
+    oldPassword: passwordSchema,
+  }),
+};

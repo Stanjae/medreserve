@@ -142,11 +142,11 @@ export async function simulateFetchNin(
 export const formatPageHeaders = (pathname: string): string => {
   const resolvedPathname = pathname
     .split("/")
-    .at(pathname.split("/").length - 1)
-  const removeQuery = resolvedPathname?.includes("?") ? resolvedPathname?.split("?")[0] : resolvedPathname
-  return pageHeadersLibrary[
-    removeQuery as keyof typeof pageHeadersLibrary
-  ];
+    .at(pathname.split("/").length - 1);
+  const removeQuery = resolvedPathname?.includes("?")
+    ? resolvedPathname?.split("?")[0]
+    : resolvedPathname;
+  return pageHeadersLibrary[removeQuery as keyof typeof pageHeadersLibrary];
 };
 
 export async function simulateFetchUniversities(
@@ -265,9 +265,11 @@ export function getCalendarDateTime(dateTimeString: string) {
 }
 
 export function getAMPWAT(dateTimeString: string) {
-  const watTime = dayjs.utc(dateTimeString).tz("Africa/Lagos").subtract(1, "hour");
+  const watTime = dayjs
+    .utc(dateTimeString)
+    .tz("Africa/Lagos")
+    .subtract(1, "hour");
   return watTime.format("hA [WAT]"); // "4PM WAT"
-
 }
 
 export const getTimeFromNow = (dateTimeString: string, status = false) => {
@@ -449,9 +451,11 @@ export const rectifyFields = (
             : !excludeFields[item as keyof typeof parent]?.includes(subItem)
         )
         .map((subItem) => {
-          if (selects[subItem as keyof typeof selects]) {
+          if (subItem in selects) {
             return {
-              label: capitalizeFirst(subItem),
+              label: capitalizeFirst(subItem)
+                .replace(/([A-Z])/g, " $1")
+                .trim(),
               value: subItem,
               data: selects[subItem as keyof typeof selects],
               type: "select",
@@ -459,8 +463,7 @@ export const rectifyFields = (
               fullWidth:
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
-          }
-          if (checkBox[subItem as keyof typeof checkBox]) {
+          } else if (subItem in checkBox) {
             return {
               label: checkBox[subItem as keyof typeof checkBox]
                 .replace(/([A-Z])/g, " $1")
@@ -472,8 +475,7 @@ export const rectifyFields = (
               fullWidth:
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
-          }
-          if (workArray.includes(subItem)) {
+          } else if (workArray.includes(subItem)) {
             return {
               label: workArray[0]
                 .replace(/([A-Z])/g, " $1")
@@ -486,8 +488,7 @@ export const rectifyFields = (
               fullWidth:
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
-          }
-          if (timerSchedue.includes(subItem)) {
+          } else if (timerSchedue.includes(subItem)) {
             return {
               label: subItem
                 .replace(/([A-Z])/g, " $1")
@@ -499,8 +500,7 @@ export const rectifyFields = (
               fullWidth:
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
-          }
-          if (numberInputs.includes(subItem)) {
+          } else if (numberInputs.includes(subItem)) {
             return {
               label: subItem
                 .replace(/([A-Z])/g, " $1")
@@ -512,8 +512,7 @@ export const rectifyFields = (
               fullWidth:
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
-          }
-          if (dates.includes(subItem)) {
+          } else if (dates.includes(subItem)) {
             return {
               label: subItem
                 .replace(/([A-Z])/g, " $1")
@@ -525,8 +524,7 @@ export const rectifyFields = (
               fullWidth:
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
-          }
-          if (numbers.includes(subItem)) {
+          } else if (numbers.includes(subItem)) {
             return {
               label: subItem
                 .replace(/([A-Z])/g, " $1")
@@ -549,8 +547,7 @@ export const rectifyFields = (
               fullWidth:
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
-          }
-          if (subItem === "password") {
+          } else if (subItem === "password") {
             return {
               label: subItem
                 .replace(/([A-Z])/g, " $1")
@@ -562,15 +559,18 @@ export const rectifyFields = (
               fullWidth:
                 fullWidth[item as keyof typeof parent]?.includes(subItem),
             };
+          } else {
+            return {
+              label: capitalizeFirst(subItem)
+                .replace(/([A-Z])/g, " $1")
+                .trim(),
+              value: subItem,
+              type: "text",
+              radius: 35,
+              fullWidth:
+                fullWidth[item as keyof typeof parent]?.includes(subItem),
+            };
           }
-          return {
-            label: capitalizeFirst(subItem),
-            value: subItem,
-            type: "text",
-            radius: 35,
-            fullWidth:
-              fullWidth[item as keyof typeof parent]?.includes(subItem),
-          };
         }),
     };
   });
@@ -631,6 +631,51 @@ export const rectifyRightCardFields = (
   };
 };
 
+export const rectifyRightCardProfileFields = (
+  title: string,
+  includeFields: { [key: string]: string[] },
+  fullWidth: { [key: string]: string[] }
+) => {
+  const selects = {
+    gender: genderData,
+    genotype: genotypes,
+    bloodGroup: bloodGroups,
+    identificationType: IdentificationTypes,
+    status: userAccountStatus,
+  };
+  const items: {
+    label: string;
+    value: string;
+    data?: ComboboxData;
+    type?: string;
+    fullWidth?: boolean;
+  }[] = [];
+
+  Object.entries(includeFields).forEach(([sectionKey, fieldsToInclude]) => {
+    fieldsToInclude.forEach((fieldKey) => {
+      const fullPath = `${sectionKey}.${fieldKey}`;
+      const label = fieldKey
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (str) => str.toUpperCase())
+        .trim();
+      if (selects[fieldKey as keyof typeof selects]) {
+        items.push({
+          label,
+          value: fullPath,
+          data: selects[fieldKey as keyof typeof selects],
+          type: "select",
+          fullWidth: !fullWidth[fieldKey as keyof typeof fullWidth],
+        });
+      }
+    });
+  });
+
+  return {
+    title,
+    value: title.toLowerCase().replace(/\s+/g, ""),
+    items,
+  };
+};
 export const timeStringtoHoursAndMinutes = (time: string) =>
   dayjs(time, "HH:mm:ss").format("HH:mm");
 
@@ -677,7 +722,7 @@ export const getRescheduleFeeBasedOnBookingDate = (
   const startDate = dayjs(dateTimeString);
   const initialFee =
     newPrices.find((item) => item.value == specialization)?.price || 0;
-  
+
   if (
     dayjs().isBetween(
       startDate.subtract(2, "day"),
@@ -697,7 +742,6 @@ export const getRescheduleFeeBasedOnBookingDate = (
   }
 };
 
-
 export function calculateRefundAmount(
   appointmentDate: string,
   appointmentTime: string,
@@ -705,19 +749,20 @@ export function calculateRefundAmount(
 ): { refundAmount: number; percentage: number; reason: string } {
   const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
   const now = new Date();
-  const hoursUntilAppointment = (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const hoursUntilAppointment =
+    (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
   if (hoursUntilAppointment > REFUND_POLICY.MORE_THAN_24_HOURS.hours) {
     return {
       refundAmount: originalAmount,
       percentage: 100,
-      reason: 'Cancelled more than 24 hours before appointment'
+      reason: "Cancelled more than 24 hours before appointment",
     };
   } else if (hoursUntilAppointment >= REFUND_POLICY.BETWEEN_12_24_HOURS.hours) {
     return {
       refundAmount: originalAmount * 0.5,
       percentage: 50,
-      reason: 'Cancelled between 12-24 hours before appointment'
+      reason: "Cancelled between 12-24 hours before appointment",
     };
   } else if (hoursUntilAppointment > 0) {
     return {
@@ -729,7 +774,7 @@ export function calculateRefundAmount(
     return {
       refundAmount: 0,
       percentage: 0,
-      reason: 'Appointment time has passed'
+      reason: "Appointment time has passed",
     };
   }
 }
@@ -742,3 +787,27 @@ export function getRefundEligibility(
   const now = new Date();
   return appointmentDateTime > now;
 }
+
+
+export const extractScheduleFields = (profile: any) => {
+  return {
+    weekdayStartTime: profile?.weekdayStartTime,
+    weekdayEndTime: profile?.weekdayEndTime,
+    weekendStartTime: profile?.weekendStartTime,
+    weekendEndTime: profile?.weekendEndTime,
+    workSchedule: profile?.workSchedule,
+  };
+};
+
+export const removeScheduleFields = (profile: any) => {
+  const {
+    weekdayStartTime,
+    weekdayEndTime,
+    weekendStartTime,
+    weekendEndTime,
+    workSchedule,
+    ...cleanProfile
+  } = profile;
+  console.warn(weekdayStartTime, weekdayEndTime, weekendStartTime, weekendEndTime, workSchedule);
+  return cleanProfile;
+};

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import DashboardLayout from "@/components/layout/PatientDashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import { adminDashLinks, adminSecondaryDashLinks } from "@/constants/urls";
 import { NavList } from "@/types/table.types";
 
