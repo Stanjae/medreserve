@@ -1,3 +1,5 @@
+import { TMetricCardStatus } from "./actions.types";
+
 export type GETADDBYPARAMS =
   | "day"
   | "week"
@@ -17,3 +19,12 @@ export type DayUnits =
   | "week"
   | "month"
   | "year";
+
+export type TMetricCard = {
+  label: string;
+  value: string;
+  loading?: boolean;
+  count?: string | number;
+  subLabel?: string;
+  status?: TMetricCardStatus | null;
+  }

@@ -4,7 +4,12 @@ export type TgetDoctorDetailsOnBooking = {
   fullname: string;
   profilePicture: string;
   specialization: string;
-    ratingCount: number;
+  ratingCount: number;
   avgRating: number;
-    doctorAvailability: DoctorAvailability;
+  doctorAvailability: DoctorAvailability;
 };
+
+export type TPatientAgeDemographics ={
+  ageGroup: string;
+  count: number;
+}

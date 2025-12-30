@@ -36,4 +36,13 @@ export const QUERY_KEYS = {
   ACCOUNT: {
     getCurrentAccount: "get-current-account",
   },
+  METRICS: {
+    getPatientDashboardMetrics: "patient-dashboard-metrics",
+    getPatientBarchartAnalytics: "patient-dashboard-barchart",
+    getDoctorDashboardMetrics: "doctor-dashboard-metrics",
+    getDoctorBarchartAnalytics: "doctor-dashboard-barchart",
+    getPatientsAgeDemograph: "get-patients-age-demograph",
+    getPatientsTopDiagnosis: "get-patients-top-diagnosis",
+    getPatientAppointmentTypeDistribution: "get-patient-appointment-type-distribution",
+  },
 };

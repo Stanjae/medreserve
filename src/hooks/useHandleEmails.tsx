@@ -2,7 +2,7 @@
 import {
   EmailMethodTypes,
   TEmailServiceBodyPayload,
-} from "@/types/apiServices.types";
+} from "@/types/apiRoutes.types";
 import { toast } from "sonner";
 
 type Props = {

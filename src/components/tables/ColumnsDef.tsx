@@ -17,7 +17,7 @@ import { compareItems } from "@tanstack/match-sorter-utils";
 import { ColumnDef, SortingFn, sortingFns } from "@tanstack/react-table";
 import { CustomHoverCard } from "../hovercard/CustomHoverCard";
 import AppointmentTableHoverCard from "../cards/TableHoverDoctorCard";
-import { statusConfig } from "@/constants";
+import { appointmentTypeDataColor, statusConfig } from "@/constants";
 import { MedicalRecord, ModifiedUser, Reviews } from "../../../types/appwrite";
 import dayjs from "dayjs";
 import { ROLES } from "@/types/store.types";
@@ -179,13 +179,7 @@ export const columnsAppointment: ColumnDef<AppointmentColumnsType, any>[] = [
     header: "Type",
     cell: (info) => (
       <Badge
-        color={
-          info.getValue() == "follow-up"
-            ? "m-gray"
-            : info.getValue() == "consultation"
-              ? "green.9"
-              : "red"
-        }
+        color={appointmentTypeDataColor[info.getValue() as keyof typeof appointmentTypeDataColor]}
       >
         {info.getValue()}
       </Badge>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { patientDashLinks } from "@/constants/urls";
+import { doctorDashLinks } from "@/constants/urls";
 
 export const metadata: Metadata = {
   title: "Doctor Dashboard",
@@ -18,7 +18,7 @@ export default function DoctorLayout({
       role={"doctor"}
       isSecondarySection={false}
       secondaryNavigation={[]}
-      navigation={patientDashLinks}
+      navigation={doctorDashLinks}
     >
       {children}
     </DashboardLayout>

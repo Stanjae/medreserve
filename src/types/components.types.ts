@@ -114,7 +114,6 @@ export interface UseModalsStackReturnType<T extends string> {
   };
 }
 
-
 export type TabsDataType = {
   label: string;
   value: string;
@@ -122,13 +121,28 @@ export type TabsDataType = {
   status?: "unread" | "read";
 };
 
-export type AccountFieldsType ={
-    title: string;
+export type AccountFieldsType = {
+  title: string;
   key: string;
-    status?:boolean
-    fields: {
-      label: string;
-        type: "select" | "textarea" | "text" | "checkbox" | "password" | "datepicker" | "fileInput" | "phone_no" | "timepicker"
-      value: string;
-    }[];
-  };
+  status?: boolean;
+  fields: {
+    label: string;
+    type:
+      | "select"
+      | "textarea"
+      | "text"
+      | "checkbox"
+      | "password"
+      | "datepicker"
+      | "fileInput"
+      | "phone_no"
+      | "timepicker";
+    value: string;
+  }[];
+};
+
+export type TDonutsChartData = {
+  name: string;
+  value: number;
+  color: string;
+};
