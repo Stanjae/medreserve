@@ -176,3 +176,28 @@ export const adminSecondaryDashLinks = [
     allowedSubRoles: ["super_admin"],
   },
 ];
+
+export const doctorDashLinks = [
+  {
+    label: "Dashboard",
+    href: "dashboard",
+    child: false,
+    leftIcon: IconDashboard,
+  },
+  {
+    label: "Appointments",
+    href: "appointments",
+    child: true,
+    leftIcon: IconCalendarBolt,
+    sub: [
+      { label: "Manage Appointments", href: "index" },
+      { label: "Book an Appointment", href: "book-appointment" },
+    ],
+  },
+  {
+    label: "Medical Records",
+    href: "medical-records",
+    child: false,
+    leftIcon: IconReportMedical,
+  },
+];

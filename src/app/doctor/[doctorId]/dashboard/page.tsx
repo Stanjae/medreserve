@@ -1,9 +1,8 @@
-import React from 'react'
+import DoctorDashboardPage from "@/components/organisms/dashboard/DoctorDashboardPage";
 
-const page = () => {
-  return (
-    <div>doctor dashboard page</div>
-  )
-}
+const Page = async ({ params }: { params: Promise<{ doctorId: string }> }) => {
+  const { doctorId } = await params;
+  return <DoctorDashboardPage doctorId={doctorId} />;
+};
 
-export default page
+export default Page;

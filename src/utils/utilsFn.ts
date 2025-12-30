@@ -811,3 +811,14 @@ export const removeScheduleFields = (profile: any) => {
   console.warn(weekdayStartTime, weekdayEndTime, weekendStartTime, weekendEndTime, workSchedule);
   return cleanProfile;
 };
+
+export const getAgeGroup = (birthDate: string): string => {
+  const age = dayjs().year() - dayjs(birthDate).year();
+
+  if (age < 18) return "Under 18";
+  if (age < 30) return "18-29";
+  if (age < 40) return "30-39";
+  if (age < 50) return "40-49";
+  if (age < 60) return "50-59";
+  return "60+";
+};

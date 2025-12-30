@@ -13,11 +13,11 @@ import {
 export const pageHeadersLibrary = {
   "our-doctors": "Doctor's details",
   "cancel-appointment": "Cancel Appointment",
-  "reschedule": "Reschedule Appointment",
-  "dashboard": "Dashboard",
+  reschedule: "Reschedule Appointment",
+  dashboard: "Dashboard",
   "medical-records": "Medical Records",
-  "profile": "Profile",
-  "settings": "Settings",
+  profile: "Profile",
+  settings: "Settings",
 };
 
 export const IdentificationTypes = [
@@ -103,7 +103,15 @@ export const appointmentTypeData = [
   { label: "Consultation", value: "consultation" },
   { label: "Follow up", value: "follow-up" },
   { label: "Emergency", value: "emergency" },
+  { label: "Routine Check-up", value: "routine-checkup" },
 ];
+
+export const appointmentTypeDataColor = {
+  'consultation': 'green.9',
+  'follow-up': 'm-gray',
+  'emergency': 'red.9',
+  'routine-checkup': 'blue.9',
+}
 
 export const capacityData = [
   { label: "1 Person", value: "1" },
@@ -294,11 +302,18 @@ export const newUsersTabData = [
   { label: "Staffs", value: "admin", status: "read" },
 ];
 
-export const dashboardMetricsCardInfo = [
+export const patientDashboardMetricsCardInfo = [
   { label: "Upcoming Appointment(s)", value: "upcoming" },
   { label: "Total Appointment(s)", value: "total" },
   { label: "Doctors Visited", value: "visited" },
   { label: "Health Score", value: "healthscore" },
+];
+
+export const doctorDashboardMetricsCardInfo = [
+  { label: "Today's Appointments", value: "todayAppt" },
+  { label: "Total Patients Seen", value: "totalPatientsSeen" },
+  { label: "Avg. Consultation", value: "avgTimeOfConsultation" },
+  { label: "Patient Satisfaction", value: "patientAvgRating" },
 ];
 
 export const medicalRecordsMetricsInfo = [
@@ -548,27 +563,41 @@ export const STATUS_LABELS = {
   rejected: "Rejected",
 };
 
-
 export const SettingsTabsData = [
   { label: "Overview", value: "overview" },
-  {label:"Notifications",value:"notifications"},
-  {label:"Payment Methods",value:"payment-methods"},
+  { label: "Notifications", value: "notifications" },
+  { label: "Payment Methods", value: "payment-methods" },
 ];
 
 export const notificationSettingsData = [
-    {
-      key: "emailNotifications",
-      label: "Email Notifications",
-      desc: "Receive updates via email",
-    },
-    {
-      key: "appointmentReminders",
-      label: "Appointment Reminders",
-      desc: "Get reminders before appointments",
-    },
-    {
-      key: "newsletters",
-      label: "Health Newsletters",
-      desc: "Receive health tips and news",
-    },
-  ];
+  {
+    key: "emailNotifications",
+    label: "Email Notifications",
+    desc: "Receive updates via email",
+  },
+  {
+    key: "appointmentReminders",
+    label: "Appointment Reminders",
+    desc: "Get reminders before appointments",
+  },
+  {
+    key: "newsletters",
+    label: "Health Newsletters",
+    desc: "Receive health tips and news",
+  },
+];
+
+export const topDiagnoses = [
+  "Hypertension",
+  "Diabetes",
+  "Asthma",
+  "Heart Disease",
+  "Cancer",
+  "Kidney Disease",
+  "Stroke",
+  "Allergies",
+  "Arthritis",
+  "Others",
+];
+
+export const chartColors = ['indigo.6', 'cyan.6', 'teal.6', 'green.6', 'lime.6', 'yellow.6', 'orange.6', 'red.6', 'pink.6', 'grape.6', 'violet.6', 'blue.6', 'slate.6', 'gray.6',];

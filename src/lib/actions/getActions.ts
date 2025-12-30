@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 "use server";
 import { createAdminClient } from "@/appwrite/appwrite";
 import { Query } from "node-appwrite";
@@ -11,14 +11,12 @@ import {
 } from "../../../types/appwrite";
 import {
   DoctorReviewsResponse,
-  getDashboardBarchartAnalyticsType,
   GetDoctorsMasonryResponse,
   getUserAppointmentsResponse,
   getUserPaymentsResponse,
   ReviewParams,
 } from "@/types/actions.types";
 import {
-  checkIfDateIsBetweenAYear,
   getFilterByCreatedAt,
   isTodayAfterDateTime,
   isTodayBeforeDateTime,
@@ -202,153 +200,7 @@ export const getPatientsTabsCountAction = async (
   };
 };
 
-export const getPatientDashboardMetricsAction = async (
-  patientId: string
-): Promise<{
-  upcoming: number;
-  visited: number;
-  total: number;
-  healthscore: number;
-}> => {
-  const { database } = await createAdminClient();
-  const response = await database.listDocuments(
-    process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-    process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
-    [Query.equal("patientId", patientId)]
-  );
 
-  if (response.total == 0)
-    return { upcoming: 0, visited: 0, total: 0, healthscore: 0 };
-
-  const upcomingCount = response.documents.filter(
-    (doc) =>
-      isTodayBeforeDateTime(doc.bookingDate, "day") &&
-      !isTodaySameWithDateTime(doc.bookingDate, "day") &&
-      !cancel_refundStatusFilter.includes(doc.status)
-  ).length;
-
-  const visitedCount = response.documents.filter(
-    (doc) => doc.didPatientSeeDoctor
-  ).length;
-
-  const hasRecentCheckup = response.documents.filter(
-    (doc) =>
-      doc.appointmentType == "follow-up" &&
-      checkIfDateIsBetweenAYear(doc.bookingDate) &&
-      !cancel_refundStatusFilter.includes(doc.status)
-  ).length;
-
-  const attendanceScore =
-    response.total > 0 ? (visitedCount / response.total) * 100 : 100;
-
-  const checkupScore = !!hasRecentCheckup ? 100 : 0;
-
-  const countNonEmptyValues = Object.values(
-    response?.documents[0].patientId
-  ).filter(
-    (value) => value !== "" && value !== null && value !== undefined
-  ).length;
-  const numberOfKeys = Object.keys(response?.documents[0].patientId).length;
-
-  const profileCompletionScore = (countNonEmptyValues / numberOfKeys) * 100;
-
-  const healthScore = Math.round(
-    attendanceScore * 0.5 + checkupScore * 0.3 + profileCompletionScore * 0.2
-  );
-
-  return {
-    upcoming: upcomingCount,
-    visited: visitedCount,
-    healthscore: healthScore,
-    total: response.total,
-  };
-};
-
-export async function getDashboardBarchartAnalytics(
-  year: number,
-  period: string,
-  patientId: string
-): Promise<Record<string, any>[]> {
-  // Define date ranges based on period
-  let startDate: Date;
-  let endDate: Date;
-
-  if (period === "first-half") {
-    // January 1 to June 30
-    startDate = new Date(year, 0, 1); // January 1
-    endDate = new Date(year, 5, 30, 23, 59, 59); // June 30
-  } else {
-    // July 1 to December 31
-    startDate = new Date(year, 6, 1); // July 1
-    endDate = new Date(year, 11, 31, 23, 59, 59); // December 31
-  }
-
-  try {
-    const { database } = await createAdminClient();
-    const response = await database.listDocuments(
-      process.env.NEXT_APPWRITE_DATABASE_CLUSTER_ID!,
-      process.env.NEXT_APPWRITE_DATABASE_COLLECTION_APPOINTMENT_ID!,
-      [
-        Query.equal("patientId", patientId),
-        Query.greaterThanEqual("$createdAt", startDate.toISOString()),
-        Query.lessThanEqual("$createdAt", endDate.toISOString()),
-        Query.orderAsc("$createdAt"),
-        Query.limit(1000),
-      ]
-    );
-
-    // Group by month and status
-    const monthlyData: { [key: string]: getDashboardBarchartAnalyticsType } =
-      {};
-
-    response.documents.forEach((appointment) => {
-      const date = new Date(appointment.$createdAt);
-      const monthKey = date.toLocaleDateString("en-US", {
-        month: "short",
-      });
-
-      if (!monthlyData[monthKey]) {
-        monthlyData[monthKey] = {
-          month: monthKey,
-          consultation: 0,
-          emergency: 0,
-          followUp: 0,
-        };
-      }
-
-      switch (appointment.appointmentType) {
-        case "follow-up":
-          monthlyData[monthKey].followUp++;
-          break;
-        case "consultation":
-          monthlyData[monthKey].consultation++;
-          break;
-        case "emergency":
-          monthlyData[monthKey].emergency++;
-          break;
-      }
-    });
-
-    // Sort months in correct order
-    const monthOrder =
-      period === "first-half"
-        ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
-        : ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-    return monthOrder.map(
-      (month) =>
-        monthlyData[month] || {
-          month,
-          consultation: 0,
-          emergency: 0,
-          followUp: 0,
-        }
-    );
-  } catch (error) {
-    console.error("Error fetching appointment stats:", error);
-    return [];
-  }
-}
 
 /* fetch appointment for cancel */
 
@@ -496,7 +348,10 @@ export const getDocumentHistory = async (
   }
 };
 
-export const getUserProfileForUpdateAction = async (role: ROLES, userId: string) => {
+export const getUserProfileForUpdateAction = async (
+  role: ROLES,
+  userId: string
+) => {
   try {
     if (!userRoles.includes(role)) {
       throw new Error("Invalid role");

@@ -142,6 +142,7 @@ export type getDashboardBarchartAnalyticsType = {
   followUp: number;
   consultation: number;
   emergency: number;
+  routineCheckup: number;
 };
 
 export type cancelAppointmentResponse = {
@@ -371,8 +372,16 @@ export type UpdateProfileParamsType = {
 export type AccountSettingsSectionType = {
   email: string | undefined;
   name: string | undefined;
-  phone: string  | undefined;
+  phone: string | undefined;
   role: ROLES;
   emailVerification: boolean | undefined;
-  prefs: { [key: string]: string | undefined | null | boolean} | undefined;
-}
+  prefs: { [key: string]: string | undefined | null | boolean } | undefined;
+};
+
+export type TMetricCardStatus = "improve" | "decline" | "stable";
+
+export type TGetDoctorMetricsSubParams = {
+  count: number;
+  subLabel: string;
+  status: TMetricCardStatus;
+};
